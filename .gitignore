@@ -34,3 +34,11 @@
 
 #dir
 SFML/
+.vs/
+
+#vs files
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.db
