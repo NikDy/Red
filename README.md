@@ -9,8 +9,10 @@ conan remote add sfml:bincrafters https://api.bintray.com/conan/bincrafters/publ
 conan install <src> -if <build> --build missing
 cmake -S <src> -B <build>
 cmake --build <build> --config Release
-```
+
 copy all from res to build/bin
+```
+
 
 
 ```
