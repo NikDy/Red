@@ -35,6 +35,8 @@
 #dir
 SFML/
 .vs/
+build/
+Red/
 
 #vs files
 *.sln
