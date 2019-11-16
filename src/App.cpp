@@ -2,10 +2,12 @@
 #include "Json_Parser.h"
 #include <string>
 #include <iostream>
+#include "Net.h"
+
 
 int main(int argc, char* argv[])
 {
-
+	Net::doTry();
 
 	if (argc == 2)
 	{
