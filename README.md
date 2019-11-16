@@ -16,6 +16,12 @@ copy all from res to build/bin
 ```
 usage: Graph_drawer <path_to_json.json>
 ```
+```
+contols:
+ W - zoom in
+ S - zoom out
+ Arrows - camera movement
+ ```
 
 
 
