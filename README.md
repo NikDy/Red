@@ -22,4 +22,4 @@ usage: Graph_drawer <path_to_json.json>
 #### Red team:
 - Nikita Dyrkov - https://github.com/NikDy
 - Ivan Matesha - https://github.com/seillich
-- Yulia Kurilenko - 
+- Yulia Kurilenko - https://github.com/titatititatita
