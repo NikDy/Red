@@ -1,12 +1,18 @@
 #pragma once
 #include <string>
 #include "Event_game.h"
+#include <vector>
 
 class Town
 {
 public:
 	Town(int idx_, int type_, const std::string name_);
-	bool setArmor(int armor_);
+	int getIdx() const;
+	int getType() const;
+	const std::string& getName() const;
+	std::vector<Event_game>& getEvents();
+	bool addEvent(Event_game event_);
+	/*bool setArmor(int armor_);
 	bool setArmorCapacity(int armor_capacity);
 	bool setLevel(int level_);
 	bool setNextLevelPrice(int next_level_capacity_);
@@ -16,14 +22,9 @@ public:
 	bool setPopulationCapacity(int population_capacity_);
 	bool setProduct(int product_);
 	bool setProductCapacity(int product_capacity_);
-	bool setTrainCooldown(int train_cooldown_);
-	bool addEvent(Event_game event_);
-
+	bool setTrainCooldown(int train_cooldown_);*/
 	~Town();
-private:
-	int idx = 0;
-	int type = 1;
-	std::string name = "";
+
 	int armor = 0;
 	int armor_capacity = 0;
 	int level = 0;
@@ -35,6 +36,10 @@ private:
 	int product = 0;
 	int product_capacity = 0;
 	int train_cooldown = 0;
+private:
+	int idx = 0;
+	int type = 1;
+	std::string name = "";
 	std::vector<Event_game> events = std::vector<Event_game>();
 
 };
