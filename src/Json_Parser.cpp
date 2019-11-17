@@ -49,3 +49,8 @@ Graph Json_Parser::createGraph(std::string filepath)
 	new_graph.createAdjacencyLists();
 	return new_graph;
 }
+
+char* Json_Parser::enLogin(std::vector<std::pair<std::string, std::string>>)
+{
+
+}
