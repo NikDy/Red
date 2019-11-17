@@ -3,9 +3,10 @@
 #include "Graph_Point.h"
 #include <map>
 #include <string>
+#include "Game_object.h"
+#include <typeinfo>
 
-
-class Graph
+class Graph : Game_object
 {
 private:
 	std::string name = "";
@@ -19,6 +20,8 @@ public:
 	bool createAdjacencyLists();
 	std::map<int, Graph_Point>& getPoints();
 	std::map<int, Graph_Line>& getLines();
+	Game_object* clone();
+	const std::type_info& getType();
 
 	Graph(std::string name_, int idx_);
 	~Graph();

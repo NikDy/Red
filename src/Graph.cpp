@@ -35,6 +35,16 @@ std::map<int, Graph_Line>& Graph::getLines()
 	return lines;
 }
 
+Game_object * Graph::clone()
+{
+	return new Graph(*this);
+}
+
+const std::type_info & Graph::getType()
+{
+	return typeid(*this);
+}
+
 Graph::Graph(std::string name_, int idx_)
 {
 	name = name_;
