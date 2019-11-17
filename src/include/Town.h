@@ -6,7 +6,7 @@
 class Town
 {
 public:
-	Town(int idx_, int type_, const std::string name_);
+	Town(int idx_ = 0, int type_ = 1, const std::string name_ = "");
 	int getIdx() const;
 	int getType() const;
 	const std::string& getName() const;
