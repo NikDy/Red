@@ -5,11 +5,15 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "Game_object.h"
+#include <typeinfo>
 
-class Player
+class Player : Game_object
 {
 public:
 	Player(std::string idx_, bool in_game_, std::string name_, int rating_);
+	const std::type_info& getType();
+	Game_object* clone();
 	void setHome(Graph_Point home_);
 	void setTown(Town town_);
 	Graph_Point getHome();

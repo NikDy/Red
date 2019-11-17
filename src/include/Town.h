@@ -2,11 +2,15 @@
 #include <string>
 #include "Event_game.h"
 #include <vector>
+#include "Game_object.h"
+#include <typeinfo>
 
-class Town
+class Town: Game_object
 {
 public:
 	Town(int idx_ = 0, int type_ = 1, const std::string name_ = "");
+	const std::type_info& getType();
+	Game_object* clone();
 	int getIdx() const;
 	int getType() const;
 	const std::string& getName() const;

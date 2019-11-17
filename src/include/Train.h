@@ -1,15 +1,21 @@
 #pragma once
 #include "Event_game.h"
 #include <vector>
+#include <iostream>
+#include "Game_object.h"
+#include <typeinfo>
 
-class Train
+class Train: public Game_object
 {
 public:
+	
 	Train(int idx_, int line_idx_, const std::string& player_idx_, int position_, int speed_);
+	const std::type_info& getType();
 	bool addEvent(Event_game event_);
 	int getIdx() const;
 	const std::string& getPlayerIdx() const;
 	std::vector<Event_game>& getEvents();
+	Game_object* clone();
 	~Train();
 
 	int cooldown = 0;

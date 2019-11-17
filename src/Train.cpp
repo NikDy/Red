@@ -12,9 +12,25 @@ Train::Train(int idx_, int line_idx_, const std::string & player_idx_, int posit
 	speed = speed_;
 }
 
+
+const std::type_info& Train::getType()
+{
+	return typeid(*this);
+}
+
+int Train::getIdx() const
+{
+	return idx;
+}
+
 const std::string & Train::getPlayerIdx() const
 {
 	return player_idx;
+}
+
+Game_object * Train::clone()
+{
+	return new Train(*this);
 }
 
 Train::~Train()
