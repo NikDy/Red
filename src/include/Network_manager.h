@@ -52,11 +52,3 @@ public:
 	bool Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
 	bool Logout();
 };
-//LOGIN = 1,
-//LOGOUT = 2,
-//MOVE = 3,
-//UPGRADE = 4,
-//TURN = 5,
-//PLAYER = 6,
-//GAMES = 7,
-//MAP = 10

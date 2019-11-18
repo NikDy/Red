@@ -109,7 +109,7 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	auto json_string = Json_Parser::toJson(login_data);
 	std::string message = "";
 	message.append(shortToCharArray(1), 4);
-	message.append(shortToCharArray(json_string.length()), 4);
+	message.append(shortToCharArray((short)json_string.length()), 4);
 	message.append(json_string);
 
 
@@ -152,7 +152,7 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 	if (action_code == 10)
 	{
 		message.append(shortToCharArray(10), 4);
-		message.append(shortToCharArray(json_string.length()), 4);
+		message.append(shortToCharArray((short)json_string.length()), 4);
 		message.append(json_string);
 	}
 	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
@@ -178,7 +178,8 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 			respounse.append(in, received);
 		}
 	}
-	response_list.push_back(std::shared_ptr<Game_object>(&Json_Parser::fromMapLayer0(respounse)));
+	std::shared_ptr<Game_object> result = std::make_shared<Graph>(Json_Parser::fromMapLayer0(respounse));
+	response_list.push_back(result);
 	return true;
 }
 
