@@ -23,8 +23,9 @@ Drawer::~Drawer()
 {
 }
 
-bool Drawer::graphToShapes(Graph graph)
+bool Drawer::graphToShapes(Graph _graph)
 {
+	Graph graph = _graph;
 	if (graph.getPoints().empty()) return false;
 	int rad = 50;
 	int grid_size = std::ceil(std::sqrt(graph.getPoints().size()));

@@ -8,4 +8,3 @@ public:
 	virtual const std::type_info& getObjectType() = 0;
 	virtual ~Game_object() {};
 };
-
