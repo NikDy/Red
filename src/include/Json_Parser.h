@@ -10,6 +10,7 @@
 
 #include "Game_object.h"
 #include "Graph.h"
+#include "Player.h"
 
 
 class Json_Parser
@@ -23,6 +24,7 @@ public:
 
 	static Graph createGraph(std::string filepath);
 	static Graph fromMapLayer0(std::string json_string);
+	static Player fromPlayer(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
 };
 

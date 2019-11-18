@@ -1,51 +1,6 @@
 #include "Network_manager.h"
 
 
-
-
-
-//void Net::doTry()
-//{
-//	// Ask for the server address
-//	sf::IpAddress server("wgforge-srv.wargaming.net");
-//
-//	// Create a socket for communicating with the server
-//	sf::TcpSocket socket;
-//
-//	// Connect to the server
-//	if (socket.connect(server, 443) != sf::Socket::Done)
-//		return;
-//	std::cout << "Connected to server " << server << std::endl;
-//
-//	// Receive a message from the server
-//	
-//
-//	// Send an answer to the server
-//	//b'\x01\x00\x00\x00\x10\x00\x00\x00{"name":"Boris"}'
-//	//const char out[] = {1, 0, 0, 0, 16, 0, 0, 0, '{', '"', 'n', 'a', 'm', 'e', '"', ':', '"', 'B', 'a', 'r', 'i', 's', '"', '}'};
-//	const char out[] = "\x01\x00\x00\x00\x10\x00\x00\x00{\"name\":\"Boris\"}";
-//	//b'\x02\x00\x00\x00\x0b\x00\x00\x00{"layer":0}'
-//	//const char out[] = {10, 0, 0, 0, 11, 0, 0, 0, '{', '"', 'l', 'a', 'y', 'e', 'r', '"', ':', '0', '}'};
-//	socket.setBlocking(true);
-//
-//	if (socket.send(out, 24) != sf::Socket::Done)
-//		return;
-//	std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
-//
-//
-//	char in[300000];
-//	std::size_t received;
-//	if (socket.receive(in, 300000, received) != sf::Socket::Done)
-//		return;
-//	std::cout << "Message received from the server: \"" << in << "\"" << std::endl;
-//	if (socket.receive(in, 300000, received) != sf::Socket::Done)
-//		return;
-//	for (auto i : in)
-//	{
-//		std::cout << i;
-//	}
-//}
-
 Network_manager::Network_manager()
 {
 	sf::IpAddress server(server_adress);
@@ -83,6 +38,52 @@ char* Network_manager::shortToCharArray(short num)
 }
 
 
+std::string Network_manager::createPackageString(int code, int messageLength, std::string message)
+{
+	std::string package;
+	package.append(shortToCharArray(code), 4);
+	package.append(shortToCharArray(messageLength), 4);
+	package.append(message, messageLength);
+	return package;
+}
+
+
+bool Network_manager::trySend(std::string packageString)
+{
+	if (this->socket.send(packageString.c_str(), packageString.length()) != sf::Socket::Done)
+	{
+		return false;
+	}
+	return true;
+}
+
+
+std::string Network_manager::receiveJsonString()
+{
+	short result_code;
+	size_t received;
+	if (this->socket.receive(&result_code, 4, received) != sf::Socket::Done)
+		return "";
+	if (result_code == 0)
+	{
+		short response_size = 0;
+		if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
+			return "";
+
+		std::string jsonString = "";
+		char* in = new char[sizeof(unsigned short)];
+		size_t already_received = 0;
+		while (already_received < response_size)
+		{
+			this->socket.receive(in, sizeof(unsigned short), received);
+			already_received += received;
+			jsonString.append(in, received);
+		}
+		return jsonString;
+	}
+	return "";
+}
+
 
 bool Network_manager::Login(std::string name, std::string password /*= ""*/, std::string game /*= ""*/, int num_turns /*= -1*/, int num_players /*= 1*/)
 {
@@ -107,41 +108,12 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	
 
 	auto json_string = Json_Parser::toJson(login_data);
-	std::string message = "";
-	message.append(shortToCharArray(1), 4);
-	message.append(shortToCharArray((short)json_string.length()), 4);
-	message.append(json_string);
+	auto message = Network_manager::createPackageString(1, json_string.length(), json_string);
 
-
-	this->socket.setBlocking(true);
-
-	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
-		return false;
-
-	short receive_code;
-	std::size_t received;
-	if (this->socket.receive(&receive_code, 4, received) != sf::Socket::Done)
-		return false;
-	if (receive_code == 0)
-	{
-		short respose_size = 0;
-		if (this->socket.receive(&respose_size, 4, received) != sf::Socket::Done)
-			return false;
-
-		std::string respounse = "";
-		char* in = new char[1024];
-		size_t already_received = 0;
-		while (already_received < respose_size)
-		{
-			this->socket.receive(in, 1024, received);
-			already_received += received;
-			respounse.append(in, received);
-		}
-
-
-		return true;
-	}
-	return false;
+	if(!trySend(message)) return false;
+	std::shared_ptr<Game_object> result = std::make_shared<Player>(Json_Parser::fromPlayer(receiveJsonString()));
+	response_list.push_back(result);
+	return true;
 }
 
 

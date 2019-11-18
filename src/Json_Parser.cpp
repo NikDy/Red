@@ -81,6 +81,64 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 	return new_graph;
 }
 
+
+Player Json_Parser::fromPlayer(std::string json_string)
+{
+	rapidjson::Document doc;
+	doc.Parse(json_string.c_str());
+
+	Player new_player = Player(
+						doc["idx"].GetString(),
+						doc["in_game"].GetBool(),
+						doc["name"].GetString(),
+						doc["rating"].GetInt());
+	new_player.setHome(Graph_Point(	doc["home"]["idx"].GetInt(),
+									doc["home"]["post_idx"].GetInt()));
+
+	Town player_town =		   Town(doc["town"]["idx"].GetInt(),
+									doc["town"]["type"].GetInt(),
+									doc["town"]["name"].GetString());
+	player_town.armor =				doc["town"]["armor"].GetInt();
+	player_town.armor_capacity =	doc["town"]["armor_capacity"].GetInt();
+	player_town.level =				doc["town"]["level"].GetInt();
+	player_town.next_level_price =  doc["town"]["next_level_price"].GetInt();
+	player_town.player_idx =		doc["town"]["player_idx"].GetString();
+	player_town.point_idx =			doc["town"]["point_idx"].GetInt();
+	player_town.population =		doc["town"]["population"].GetInt();
+	player_town.population_capacity = doc["town"]["population_capacity"].GetInt();
+	player_town.product =			doc["town"]["product"].GetInt();
+	player_town.product_capacity =  doc["town"]["product_capacity"].GetInt();
+	player_town.train_cooldown =    doc["town"]["train_cooldown"].GetInt();
+	player_town.type =				doc["town"]["type"].GetInt();
+	
+	new_player.setTown(player_town);
+
+	for (int i = 0; i < doc["trains"].Size(); i++)
+	{
+		Train new_train = Train(doc["trains"][i]["idx"].GetInt(),
+								doc["trains"][i]["line_idx"].GetInt(),
+								doc["trains"][i]["player_idx"].GetString(),
+								doc["trains"][i]["position"].GetInt(),
+								doc["trains"][i]["speed"].GetInt());
+		new_train.fuel = 		doc["trains"][i]["fuel"].GetInt();
+		new_train.fuel_capacity =		doc["trains"][i]["fuel_cpacity"].GetInt();
+		new_train.fuel_consumption =	doc["trains"][i]["fuel_consumption"].GetInt();
+		new_train.goods =				doc["trains"][i]["goods"].GetInt();
+		new_train.goods_capacity =		doc["trains"][i]["goods_capacity"].GetInt();
+		new_train.goods_type = 0;
+		new_train.level =				doc["trains"][i]["level"].GetInt();
+		new_train.next_level_price	=	doc["trains"][i]["next_level_price"].GetInt();
+		new_train.cooldown =			doc["trains"][i]["cooldown"].GetInt();
+
+
+		//event
+		new_player.addTrain(new_train.getIdx(), new_train);
+	}
+
+	return new_player;
+}
+
+
 bool Json_Parser::is_number(const std::string& s)
 {
 	return !s.empty() && std::find_if(s.begin(),

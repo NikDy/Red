@@ -19,6 +19,9 @@ private:
 
 
 	static char* shortToCharArray(short num);
+	std::string createPackageString(int code, int messageLength, std::string message);
+	bool trySend(std::string packageString);
+	std::string receiveJsonString();
 
 public:
 	Network_manager();
