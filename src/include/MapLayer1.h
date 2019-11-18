@@ -16,7 +16,7 @@ public:
 	bool addTrain(int idx_, Train train_);
 	std::map<int, Post*>& getPosts();
 	bool addPost(int idx_, Post* post_);
-	std::map<std::string, Rating>& getRaiting();
+	std::map<int, Rating>& getRaiting();
 	bool addRaiting(int idx_, Rating rating_);
 
 	const std::type_info& getObjectType();
@@ -27,7 +27,7 @@ public:
 private:
 	std::map<int, Train> trains = std::map<int, Train>();
 	std::map<int, Post*> posts = std::map<int, Post*>();
-	std::map<std::string, Rating> ratings = std::map<std::string, Rating>();
+	std::map<int, Rating> ratings = std::map<int, Rating>();
 
 };
 

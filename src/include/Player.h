@@ -11,7 +11,7 @@
 class Player : public Game_object
 {
 public:
-	Player(std::string idx_, bool in_game_, std::string name_, int rating_);
+	Player(std::string idx_, bool in_game_, std::string name_, int rating_) : idx(idx_), in_game(in_game_), name(name_), rating(rating_) {};
 
 	const std::string& getIdx() const;
 	void setIdx(const std::string& idx_);

@@ -2,9 +2,7 @@
 
 
 
-Rating::Rating()
-{
-}
+
 
 const std::type_info & Rating::getObjectType()
 {
