@@ -24,7 +24,7 @@ public:
 	Network_manager();
 	~Network_manager();
 
-	enum class Action
+	enum class Actioncode
 	{
 		LOGIN = 1,
 		LOGOUT = 2,
