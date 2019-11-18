@@ -8,23 +8,28 @@
 #include "Game_object.h"
 #include <typeinfo>
 
-class Player : Game_object
+class Player : public Game_object
 {
 public:
 	Player(std::string idx_, bool in_game_, std::string name_, int rating_);
-	const std::type_info& getType();
-	Game_object* clone();
+
+	const std::string& getIdx() const;
+	void setIdx(const std::string& idx_);
 	void setHome(Graph_Point home_);
-	void setTown(Town town_);
 	Graph_Point getHome();
-	Graph_Point getTown();
+	void setTown(Town town_);
+	Town getTown();
 	bool getInGame();
 	void setInGame(bool in_game_);
-	void setName(std::string& name);
-	std::string& getName();
-	int getRating();
+	void setName(const std::string& name_);
+	const std::string& getName() const;
+	int getRating() const;
+	void setRating(int rating_);
 	std::map<int, Train>& getTrains();
 	bool addTrain(int idx_, Train train_);
+
+	const std::type_info& getObjectType();
+	Game_object* clone();
 	~Player();
 private:
 	Graph_Point home = Graph_Point(0); // mb change in future

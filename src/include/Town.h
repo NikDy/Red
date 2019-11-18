@@ -4,18 +4,25 @@
 #include <vector>
 #include "Game_object.h"
 #include <typeinfo>
+#include "Post.h"
 
-class Town: Game_object
+class Town: public Post
 {
 public:
-	Town(int idx_ = 0, int type_ = 1, const std::string name_ = "");
-	const std::type_info& getType();
-	Game_object* clone();
-	int getIdx() const;
+	Town(int idx_, int type_, const std::string& name_) : Post(idx_, type_, name_) {};
+
+	/*int getIdx() const;
+	void setIdx(int idx_);
+	void setType(int type_);
 	int getType() const;
-	const std::string& getName() const;
+	void setName(std::string& name_);
+	const std::string& getName() const;*/
 	std::vector<Event_game>& getEvents();
 	bool addEvent(Event_game event_);
+
+	const std::type_info& getObjectType();
+	Game_object* clone();
+	Post* clonePost();
 	/*bool setArmor(int armor_);
 	bool setArmorCapacity(int armor_capacity);
 	bool setLevel(int level_);
@@ -41,10 +48,6 @@ public:
 	int product_capacity = 0;
 	int train_cooldown = 0;
 private:
-	int idx = 0;
-	int type = 1;
-	std::string name = "";
 	std::vector<Event_game> events = std::vector<Event_game>();
-
 };
 

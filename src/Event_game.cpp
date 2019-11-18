@@ -6,7 +6,7 @@ Event_game::Event_game()
 {
 }
 
-const std::type_info & Event_game::getType()
+const std::type_info & Event_game::getObjectType()
 {
 	return typeid(*this);
 }

@@ -35,12 +35,32 @@ std::map<int, Graph_Line>& Graph::getLines()
 	return lines;
 }
 
+int Graph::getIdx() const
+{
+	return idx;
+}
+
+void Graph::setIdx(int idx_)
+{
+	idx = idx_;
+}
+
+void Graph::setName(const std::string & name_)
+{
+	name = name_;
+}
+
+const std::string & Graph::getName() const
+{
+	return name;
+}
+
 Game_object * Graph::clone()
 {
 	return new Graph(*this);
 }
 
-const std::type_info & Graph::getType()
+const std::type_info & Graph::getObjectType()
 {
 	return typeid(*this);
 }

@@ -5,7 +5,7 @@ Game_object * Graph_Point::clone()
 	return new Graph_Point(*this);
 }
 
-const std::type_info & Graph_Point::getType()
+const std::type_info & Graph_Point::getObjectType()
 {
 	return typeid(*this);
 }

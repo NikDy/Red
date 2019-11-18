@@ -13,7 +13,7 @@ Train::Train(int idx_, int line_idx_, const std::string & player_idx_, int posit
 }
 
 
-const std::type_info& Train::getType()
+const std::type_info& Train::getObjectType()
 {
 	return typeid(*this);
 }
@@ -21,6 +21,16 @@ const std::type_info& Train::getType()
 int Train::getIdx() const
 {
 	return idx;
+}
+
+void Train::setIdx(int idx_)
+{
+	idx = idx_;
+}
+
+void Train::setPlayerIdx(const std::string & player_idx_)
+{
+	player_idx = player_idx_;
 }
 
 const std::string & Train::getPlayerIdx() const
