@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+
+#dir
+SFML/
+.vs/
+build/
+Red/
+
+#vs files
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.db
