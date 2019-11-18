@@ -2,12 +2,14 @@
 #include "Json_Parser.h"
 #include <string>
 #include <iostream>
-#include "Net.h"
+#include "Network_manager.h"
 
 
 int main(int argc, char* argv[])
 {
-	Net::doTry();
+	Network_manager net;
+	net.Login("Nik");
+	//net.Logout();
 
 	if (argc == 2)
 	{

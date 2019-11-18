@@ -50,7 +50,32 @@ Graph Json_Parser::createGraph(std::string filepath)
 	return new_graph;
 }
 
-char* Json_Parser::enLogin(std::vector<std::pair<std::string, std::string>>)
-{
 
+bool Json_Parser::is_number(const std::string& s)
+{
+	return !s.empty() && std::find_if(s.begin(),
+		s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+}
+
+
+std::string Json_Parser::toJson(std::vector<std::pair<std::string, std::string>> key_value_pairs)
+{
+	rapidjson::StringBuffer str;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(str);
+
+	writer.StartObject();
+	for (auto p : key_value_pairs)
+	{
+		writer.Key(p.first.c_str());
+		if (is_number(p.second))
+		{
+			writer.Int(std::stoi(p.second));
+		}
+		else
+		{
+			writer.String(p.second.c_str());
+		}
+	}
+	writer.EndObject();
+	return str.GetString();
 }
