@@ -56,7 +56,7 @@ std::unique_ptr<Game_object> Json_Parser::fromMapLayer0(std::string json_string)
 	rapidjson::Document doc;
 	doc.Parse(json_string.c_str());
 
-
+	
 }
 
 bool Json_Parser::is_number(const std::string& s)
