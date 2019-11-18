@@ -56,7 +56,6 @@ Network_manager::Network_manager()
 	else
 	{
 		std::cout << "Connected to server: " << server << std::endl;
-		this->socket.setBlocking(true);
 	}
 }
 
@@ -67,7 +66,7 @@ Network_manager::~Network_manager()
 }
 
 
-std::list<Game_object*> Network_manager::getResponseList()
+std::list<std::shared_ptr<Game_object>> Network_manager::getResponseList()
 {
 	return response_list;
 }
@@ -114,6 +113,7 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	message.append(json_string);
 
 
+	this->socket.setBlocking(true);
 
 	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
 		return false;
@@ -128,14 +128,14 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 		if (this->socket.receive(&respose_size, 4, received) != sf::Socket::Done)
 			return false;
 
-		std::string test = "";
+		std::string respounse = "";
 		char* in = new char[1024];
 		size_t already_received = 0;
 		while (already_received < respose_size)
 		{
 			this->socket.receive(in, 1024, received);
 			already_received += received;
-			test.append(in, received);
+			respounse.append(in, received);
 		}
 
 
@@ -149,14 +149,36 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 {
 	auto json_string = Json_Parser::toJson(key_value_pairs);
 	std::string message = "";
-	if (action_code == (int)Network_manager::Actioncode::MAP)
+	if (action_code == 10)
 	{
 		message.append(shortToCharArray(10), 4);
 		message.append(shortToCharArray(json_string.length()), 4);
 		message.append(json_string);
 	}
+	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
+		return false;
 
+	short receive_code;
+	std::size_t received;
+	if (this->socket.receive(&receive_code, 4, received) != sf::Socket::Done)
+		return false;
+	std::string respounse = "";
+	if (receive_code == 0)
+	{
+		short respose_size = 0;
+		if (this->socket.receive(&respose_size, 4, received) != sf::Socket::Done)
+			return false;
 
+		char* in = new char[1024];
+		size_t already_received = 0;
+		while (already_received < respose_size)
+		{
+			this->socket.receive(in, 1024, received);
+			already_received += received;
+			respounse.append(in, received);
+		}
+	}
+	response_list.push_back(std::shared_ptr<Game_object>(&Json_Parser::fromMapLayer0(respounse)));
 	return true;
 }
 

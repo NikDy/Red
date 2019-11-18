@@ -14,7 +14,7 @@ private:
 	
 
 
-	std::list<Game_object*> response_list;
+	std::list<std::shared_ptr<Game_object>> response_list;
 	sf::TcpSocket socket;
 
 
@@ -47,7 +47,7 @@ public:
 		INTERNAL_SERVER_ERROR = 500
 	};
 
-	std::list<Game_object*> getResponseList();
+	std::list<std::shared_ptr<Game_object>> getResponseList();
 	bool Login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
 	bool Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
 	bool Logout();

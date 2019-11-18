@@ -22,7 +22,7 @@ public:
 	~Json_Parser();
 
 	static Graph createGraph(std::string filepath);
-	static std::unique_ptr<Game_object> fromMapLayer0(std::string json_string);
+	static Graph fromMapLayer0(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
 };
 
