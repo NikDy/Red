@@ -15,6 +15,7 @@ class Post : public Game_object
 {
 public:
 	Post(int idx_, int type_, const std::string& name_) : idx(idx_), type(type_), name(name_) {};
+	Post() {};
 	const std::type_info& getObjectType();
 	virtual Post* clonePost() = 0;
 	~Post();

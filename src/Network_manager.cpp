@@ -1,6 +1,5 @@
 #include "Network_manager.h"
 
-
 Network_manager::Network_manager()
 {
 	sf::IpAddress server(server_adress);
@@ -38,19 +37,19 @@ char* Network_manager::shortToCharArray(short num)
 }
 
 
-std::string Network_manager::createPackageString(int code, int messageLength, std::string message)
+std::string Network_manager::createPackageString(short code, short messageLength, std::string message)
 {
 	std::string package;
 	package.append(shortToCharArray(code), 4);
 	package.append(shortToCharArray(messageLength), 4);
-	package.append(message, messageLength);
+	package.append(message);
 	return package;
 }
 
 
 bool Network_manager::trySend(std::string packageString)
 {
-	if (this->socket.send(packageString.c_str(), packageString.length()) != sf::Socket::Done)
+	if (Network_manager::socket.send(packageString.c_str(), packageString.length()) != sf::Socket::Done)
 	{
 		return false;
 	}
@@ -60,13 +59,13 @@ bool Network_manager::trySend(std::string packageString)
 
 std::string Network_manager::receiveJsonString()
 {
-	short result_code;
+	int result_code;
 	size_t received;
 	if (this->socket.receive(&result_code, 4, received) != sf::Socket::Done)
 		return "";
 	if (result_code == 0)
 	{
-		short response_size = 0;
+		int response_size = 0;
 		if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
 			return "";
 
@@ -108,11 +107,11 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	
 
 	auto json_string = Json_Parser::toJson(login_data);
-	auto message = Network_manager::createPackageString(1, json_string.length(), json_string);
-
+	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
 	if(!trySend(message)) return false;
-	std::shared_ptr<Game_object> result = std::make_shared<Player>(Json_Parser::fromPlayer(receiveJsonString()));
-	response_list.push_back(result);
+	auto response = receiveJsonString();
+	//std::shared_ptr<Game_object> result = std::make_shared<Player>(Json_Parser::fromPlayer(response));
+	//response_list.push_back(result);
 	return true;
 }
 
@@ -127,25 +126,25 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 		message.append(shortToCharArray((short)json_string.length()), 4);
 		message.append(json_string);
 	}
-	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
+	if (socket.send(message.c_str(), message.length()) != sf::Socket::Done)
 		return false;
 
 	short receive_code;
 	std::size_t received;
-	if (this->socket.receive(&receive_code, 4, received) != sf::Socket::Done)
+	if (socket.receive(&receive_code, 4, received) != sf::Socket::Done)
 		return false;
 	std::string respounse = "";
 	if (receive_code == 0)
 	{
 		short respose_size = 0;
-		if (this->socket.receive(&respose_size, 4, received) != sf::Socket::Done)
+		if (socket.receive(&respose_size, 4, received) != sf::Socket::Done)
 			return false;
 
 		char* in = new char[1024];
 		size_t already_received = 0;
 		while (already_received < respose_size)
 		{
-			this->socket.receive(in, 1024, received);
+			socket.receive(in, 1024, received);
 			already_received += received;
 			respounse.append(in, received);
 		}
@@ -162,7 +161,7 @@ bool Network_manager::Logout()
 	message.append(shortToCharArray(1), 4);
 	message.append(shortToCharArray(0), 4);
 
-	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
+	if (socket.send(message.c_str(), message.length()) != sf::Socket::Done)
 		return false;
 	return true;
 }

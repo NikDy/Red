@@ -19,7 +19,7 @@ private:
 
 
 	static char* shortToCharArray(short num);
-	std::string createPackageString(int code, int messageLength, std::string message);
+	std::string createPackageString(short code, short messageLength, std::string message);
 	bool trySend(std::string packageString);
 	std::string receiveJsonString();
 

@@ -10,7 +10,7 @@ class Town: public Post
 {
 public:
 	Town(int idx_, int type_, const std::string& name_) : Post(idx_, type_, name_) {};
-
+	Town() {};
 	/*int getIdx() const;
 	void setIdx(int idx_);
 	void setType(int type_);
