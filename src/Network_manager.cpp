@@ -22,7 +22,9 @@ Network_manager::~Network_manager()
 
 std::list<std::shared_ptr<Game_object>> Network_manager::getResponseList()
 {
-	return response_list;
+	auto response_copy = response_list;
+	response_list.clear();
+	return response_copy;
 }
 
 
@@ -49,7 +51,7 @@ std::string Network_manager::createPackageString(short code, short messageLength
 
 bool Network_manager::trySend(std::string packageString)
 {
-	if (Network_manager::socket.send(packageString.c_str(), packageString.length()) != sf::Socket::Done)
+	if (this->socket.send(packageString.c_str(), packageString.length()) != sf::Socket::Done)
 	{
 		return false;
 	}
@@ -119,38 +121,14 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 bool Network_manager::Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs)
 {
 	auto json_string = Json_Parser::toJson(key_value_pairs);
-	std::string message = "";
+	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	if (!trySend(message)) return false;
+	auto response = receiveJsonString();
 	if (action_code == 10)
 	{
-		message.append(shortToCharArray(10), 4);
-		message.append(shortToCharArray((short)json_string.length()), 4);
-		message.append(json_string);
+		std::shared_ptr<Game_object> result = std::make_shared<Graph>(Json_Parser::fromMapLayer0(response));
+		response_list.push_back(result);
 	}
-	if (socket.send(message.c_str(), message.length()) != sf::Socket::Done)
-		return false;
-
-	short receive_code;
-	std::size_t received;
-	if (socket.receive(&receive_code, 4, received) != sf::Socket::Done)
-		return false;
-	std::string respounse = "";
-	if (receive_code == 0)
-	{
-		short respose_size = 0;
-		if (socket.receive(&respose_size, 4, received) != sf::Socket::Done)
-			return false;
-
-		char* in = new char[1024];
-		size_t already_received = 0;
-		while (already_received < respose_size)
-		{
-			socket.receive(in, 1024, received);
-			already_received += received;
-			respounse.append(in, received);
-		}
-	}
-	std::shared_ptr<Game_object> result = std::make_shared<Graph>(Json_Parser::fromMapLayer0(respounse));
-	response_list.push_back(result);
 	return true;
 }
 
