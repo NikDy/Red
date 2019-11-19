@@ -110,8 +110,8 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
 	if(!trySend(message)) return false;
 	auto response = receiveJsonString();
-	//std::shared_ptr<Game_object> result = std::make_shared<Player>(Json_Parser::fromPlayer(response));
-	//response_list.push_back(result);
+	std::shared_ptr<Game_object> result = std::make_shared<Player>(Json_Parser::fromPlayer(response));
+	response_list.push_back(result);
 	return true;
 }
 

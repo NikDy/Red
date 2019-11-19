@@ -120,9 +120,9 @@ Player Json_Parser::fromPlayer(std::string json_string)
 								doc["trains"][i]["player_idx"].GetString(),
 								doc["trains"][i]["position"].GetInt(),
 								doc["trains"][i]["speed"].GetInt());
-		new_train.fuel = 		doc["trains"][i]["fuel"].GetInt();
-		new_train.fuel_capacity =		doc["trains"][i]["fuel_cpacity"].GetInt();
-		new_train.fuel_consumption =	doc["trains"][i]["fuel_consumption"].GetInt();
+		//new_train.fuel = 		doc["trains"][i]["fuel"].GetInt();
+		//new_train.fuel_capacity =		doc["trains"][i]["fuel_cpacity"].GetInt();
+		//new_train.fuel_consumption =	doc["trains"][i]["fuel_consumption"].GetInt();
 		new_train.goods =				doc["trains"][i]["goods"].GetInt();
 		new_train.goods_capacity =		doc["trains"][i]["goods_capacity"].GetInt();
 		new_train.goods_type = 0;
