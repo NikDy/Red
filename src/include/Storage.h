@@ -15,8 +15,8 @@ public:
 	bool addEvent(Event_game event_);
 
 	const std::type_info& getObjectType();
-	Game_object* clone();
-	Post* clonePost();
+	std::shared_ptr<Game_object> getObjectPtr();
+	std::shared_ptr<Post> getPostPtr();
 	~Storage();
 
 	int armor;

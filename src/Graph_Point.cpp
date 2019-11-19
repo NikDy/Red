@@ -1,8 +1,8 @@
 #include "Graph_Point.h"
 
-Game_object * Graph_Point::clone()
+std::shared_ptr<Game_object> Graph_Point::getObjectPtr()
 {
-	return new Graph_Point(*this);
+	return std::make_shared<Graph_Point>(*this);
 }
 
 const std::type_info & Graph_Point::getObjectType()

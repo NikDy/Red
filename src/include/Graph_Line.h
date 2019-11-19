@@ -11,7 +11,7 @@ public:
 	std::pair<int, int> points = std::pair<int, int>(0, 0);
 
 	Graph_Line(int idx_, int lenght_, std::pair<int, int> points_);
-	Game_object * clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	const std::type_info& getObjectType();
 	~Graph_Line();
 };

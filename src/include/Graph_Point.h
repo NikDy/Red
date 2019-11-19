@@ -13,7 +13,7 @@ public:
 
 	Graph_Point(int idx_, int post_idx_);
 	Graph_Point(int idx);
-	Game_object * clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	const std::type_info& getObjectType();
 	~Graph_Point();
 };

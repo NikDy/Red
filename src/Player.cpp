@@ -20,9 +20,9 @@ const std::type_info & Player::getObjectType()
 }
 
 
-Game_object * Player::clone()
+std::shared_ptr<Game_object> Player::getObjectPtr()
 {
-	return new Player(*this);
+	return std::make_shared<Player>(*this);
 }
 
 void Player::setHome(Graph_Point home_)

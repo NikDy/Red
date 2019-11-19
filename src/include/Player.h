@@ -11,7 +11,7 @@
 class Player : public Game_object
 {
 public:
-	Player(std::string idx_, bool in_game_, std::string name_, int rating_);
+	Player(std::string idx_, bool in_game_, std::string name_, int rating_) : idx(idx_), in_game(in_game_), name(name_), rating(rating_) {};
 
 	const std::string& getIdx() const;
 	void setIdx(const std::string& idx_);
@@ -29,11 +29,11 @@ public:
 	bool addTrain(int idx_, Train train_);
 
 	const std::type_info& getObjectType();
-	Game_object* clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	~Player();
 private:
 	Graph_Point home = Graph_Point(0); // mb change in future
-	Town town;
+	Town town = Town(0, 0, "");
 	std::string idx = "";
 	bool in_game = false;
 	std::string name = "";

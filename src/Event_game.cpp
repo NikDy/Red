@@ -11,9 +11,9 @@ const std::type_info & Event_game::getObjectType()
 	return typeid(*this);
 }
 
-Game_object * Event_game::clone()
+std::shared_ptr<Game_object> Event_game::getObjectPtr()
 {
-	return new Event_game(*this);
+	return std::make_shared<Event_game>(*this);
 }
 
 

@@ -68,7 +68,9 @@ Network_manager::~Network_manager()
 
 std::list<std::shared_ptr<Game_object>> Network_manager::getResponseList()
 {
-	return response_list;
+	std::list<std::shared_ptr<Game_object>> list = response_list;
+	response_list = std::list<std::shared_ptr<Game_object>>();
+	return list;
 }
 
 
@@ -84,13 +86,13 @@ char* Network_manager::shortToCharArray(short num)
 
 
 
-bool Network_manager::Login(std::string name, std::string password /*= ""*/, std::string game /*= ""*/, int num_turns /*= -1*/, int num_players /*= 1*/)
+bool Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
 {
-	std::vector<std::pair<std::string, std::string>> login_data;
+	/*std::vector<std::pair<std::string, std::string>> login_data;
 	login_data.emplace_back(std::pair<std::string, std::string>("name", name));
 	if (password != "") 
 	{
-		login_data.emplace_back(std::pair<std::string, std::string>("", name));
+		login_data.emplace_back(std::pair<std::string, std::string>("", password));
 	}
 	if (game != "")
 	{
@@ -103,7 +105,7 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	if (num_players != 1)
 	{
 		login_data.emplace_back(std::pair<std::string, std::string>("", std::to_string(num_players)));
-	}
+	}*/
 	
 
 	auto json_string = Json_Parser::toJson(login_data);
@@ -113,7 +115,7 @@ bool Network_manager::Login(std::string name, std::string password /*= ""*/, std
 	message.append(json_string);
 
 
-	this->socket.setBlocking(true);
+	//this->socket.setBlocking(true);
 
 	if (this->socket.send(message.c_str(), message.length()) != sf::Socket::Done)
 		return false;
@@ -178,8 +180,8 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 			respounse.append(in, received);
 		}
 	}
-	std::shared_ptr<Game_object> result = std::make_shared<Graph>(Json_Parser::fromMapLayer0(respounse));
-	response_list.push_back(result);
+	//std::shared_ptr<Game_object> result = std::make_shared<Graph>(Json_Parser::fromMapLayer0(respounse));
+	response_list.push_back(Json_Parser::fromMapLayer0(respounse).getObjectPtr());
 	return true;
 }
 

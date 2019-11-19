@@ -2,18 +2,15 @@
 
 
 
-Rating::Rating()
-{
-}
 
 const std::type_info & Rating::getObjectType()
 {
 	return typeid(*this);
 }
 
-Game_object * Rating::clone()
+std::shared_ptr<Game_object> Rating::getObjectPtr()
 {
-	return new Rating(*this);
+	return std::make_shared<Rating>(*this);
 }
 
 

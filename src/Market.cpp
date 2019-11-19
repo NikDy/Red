@@ -8,14 +8,15 @@ const std::type_info & Market::getObjectType()
 	return typeid(*this);
 }
 
-Game_object * Market::clone()
+std::shared_ptr<Game_object> Market::getObjectPtr()
 {
-	return new Market(*this);
+	return std::make_shared<Market>(*this);
 }
 
-Post * Market::clonePost()
+
+std::shared_ptr<Post> Market::getPostPtr()
 {
-	return new Market(*this);
+	return std::make_shared<Market>(*this);
 }
 
 Market::~Market()
