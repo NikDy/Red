@@ -11,7 +11,7 @@
 #include "Game_object.h"
 #include "Graph.h"
 #include "Player.h"
-
+#include "MapLayer1.h"
 
 class Json_Parser
 {
@@ -22,7 +22,8 @@ public:
 	Json_Parser();
 	~Json_Parser();
 
-	static Graph createGraph(std::string filepath);
+	//static Graph createGraph(std::string filepath);
+	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
 	static Player fromPlayer(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
