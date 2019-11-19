@@ -18,7 +18,7 @@ public:
 	bool addEvent(Event_game event_);
 	std::vector<Event_game>& getEvents();
 
-	Game_object* clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	const std::type_info& getObjectType();
 	~Train();
 

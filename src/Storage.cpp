@@ -9,14 +9,15 @@ const std::type_info & Storage::getObjectType()
 	return typeid(*this);
 }
 
-Game_object * Storage::clone()
+std::shared_ptr<Game_object> Storage::getObjectPtr()
 {
-	return new Storage(*this);
+	return std::make_shared<Storage>(*this);
 }
 
-Post * Storage::clonePost()
+
+std::shared_ptr<Post> Storage::getPostPtr()
 {
-	return new Storage(*this);
+	return std::make_shared<Storage>(*this);
 }
 
 Storage::~Storage()

@@ -8,7 +8,7 @@ class Event_game : public Game_object
 public:
 	Event_game();
 	const std::type_info& getObjectType();
-	Game_object* clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	~Event_game();
 };
 

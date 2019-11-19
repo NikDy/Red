@@ -6,14 +6,14 @@ const std::type_info & Town::getObjectType()
 	return typeid(*this);
 }
 
-Game_object * Town::clone()
+std::shared_ptr<Game_object> Town::getObjectPtr()
 {
-	return new Town(*this);
+	return std::make_shared<Town>(*this);
 }
 
-Post * Town::clonePost()
+std::shared_ptr<Post> Town::getPostPtr()
 {
-	return new Town(*this);
+	return std::make_shared<Town>(*this);
 }
 
 /*int Town::getIdx() const

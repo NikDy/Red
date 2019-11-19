@@ -1,5 +1,6 @@
 #include "Json_Parser.h"
 #include <iostream>
+#include <cctype>
 
 Json_Parser::Json_Parser()
 {

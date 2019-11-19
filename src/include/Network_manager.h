@@ -4,6 +4,7 @@
 #include "Json_Parser.h"
 #include <list>
 #include <iostream>
+#include <cctype>
 
 class Network_manager
 {
@@ -51,7 +52,7 @@ public:
 	};
 
 	std::list<std::shared_ptr<Game_object>> getResponseList();
-	bool Login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
+	bool Login(std::vector<std::pair<std::string, std::string>> login_data);
 	bool Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
 	bool Logout();
 };

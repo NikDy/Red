@@ -55,9 +55,9 @@ const std::string & Graph::getName() const
 	return name;
 }
 
-Game_object * Graph::clone()
+std::shared_ptr<Game_object> Graph::getObjectPtr()
 {
-	return new Graph(*this);
+	return std::make_shared<Graph>(*this);
 }
 
 const std::type_info & Graph::getObjectType()

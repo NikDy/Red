@@ -38,9 +38,9 @@ const std::string & Train::getPlayerIdx() const
 	return player_idx;
 }
 
-Game_object * Train::clone()
+std::shared_ptr<Game_object> Train::getObjectPtr()
 {
-	return new Train(*this);
+	return std::make_shared<Train>(*this);
 }
 
 Train::~Train()

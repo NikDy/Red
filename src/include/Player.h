@@ -29,11 +29,11 @@ public:
 	bool addTrain(int idx_, Train train_);
 
 	const std::type_info& getObjectType();
-	Game_object* clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	~Player();
 private:
 	Graph_Point home = Graph_Point(0); // mb change in future
-	Town town;
+	Town town = Town(0, 0, "");
 	std::string idx = "";
 	bool in_game = false;
 	std::string name = "";

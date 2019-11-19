@@ -1,8 +1,8 @@
 #include "Graph_Line.h"
 
-Game_object * Graph_Line::clone()
+std::shared_ptr<Game_object> Graph_Line::getObjectPtr()
 {
-	return new Graph_Line(*this);
+	return std::make_shared<Graph_Line>(*this);
 }
 
 const std::type_info & Graph_Line::getObjectType()

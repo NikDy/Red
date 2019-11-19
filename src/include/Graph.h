@@ -27,7 +27,7 @@ public:
 	void setName(const std::string& name_);
 	const std::string& getName() const;
 
-	Game_object* clone();
+	std::shared_ptr<Game_object> getObjectPtr();
 	const std::type_info& getObjectType();
 	~Graph();
 };
