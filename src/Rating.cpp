@@ -2,10 +2,6 @@
 
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> pr/3
 
 const std::type_info & Rating::getObjectType()
 {

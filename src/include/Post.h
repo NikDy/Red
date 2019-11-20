@@ -17,13 +17,9 @@ public:
 	Post(int idx_, int type_, const std::string& name_) : idx(idx_), type(type_), name(name_) {};
 	Post() {};
 	const std::type_info& getObjectType();
-<<<<<<< HEAD
-=======
-	//Game_object* clone();
+
 	virtual std::shared_ptr<Post> getPostPtr() = 0;
->>>>>>> pr/3
 	~Post();
-	Game_object* clone();
 
 	int idx = 0;
 	int type = 0;

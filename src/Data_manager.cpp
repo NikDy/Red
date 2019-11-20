@@ -10,7 +10,11 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 {
 	setLoginData(name, password, game, num_turns, num_players);
 
+
 	net.Login(login_data);
+	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
+	player = std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
+	map_layer_1 = getMapLayer1FromServer();
 	return true;
 }
 

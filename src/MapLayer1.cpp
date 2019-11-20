@@ -23,7 +23,7 @@ bool MapLayer1::addPost(int idx_, std::shared_ptr<Post> post_)
 	return posts.emplace(idx_, post_).second;
 }
 
-std::map<int, Rating>& MapLayer1::getRaiting()
+std::map<std::string, Rating>& MapLayer1::getRaiting()
 {
 	return ratings;
 }

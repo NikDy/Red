@@ -8,18 +8,7 @@
 
 int main(int argc, char* argv[])
 {
-<<<<<<< HEAD
-	Network_manager net;
-	net.Login("Nik1");
-=======
-	/*Network_manager net;
-	//net.Login("Nik");
->>>>>>> pr/3
-	std::vector<std::pair<std::string, std::string>> a = { std::pair<std::string, std::string>("layer", "0") };
-	net.Action(10, a);
-	std::list<std::shared_ptr<Game_object>> list = net.getResponseList();
-	auto ptr = std::dynamic_pointer_cast<Graph, Game_object>(list.back());
-	*/
+
 	Data_manager dat;
 	dat.login("kis");
 

@@ -16,7 +16,17 @@
 class Json_Parser
 {
 private:
+	static Town addTown(const rapidjson::Value& doc);
+	static Storage addStorage(const rapidjson::Value& doc);
+	static Market addMarket(const rapidjson::Value& doc);
+	static Train addTrain(const rapidjson::Value& doc);
 	static bool is_number(const std::string& s);
+	enum class PostCode
+	{
+		TOWN = 1,
+		MARKET = 2,
+		STORAGE = 3
+	};
 
 public:
 	Json_Parser();
