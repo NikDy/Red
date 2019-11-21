@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 	dat.login("kis");
 
 	Drawer drawer = Drawer(800, 600, "Drawer");
-	drawer.graphToShapes(dat.getMapLayer0());
+	drawer.graphToShapes(dat.getMapLayer0(), dat.getMapLayer1());
 	drawer.drawAll();
 
 	/*if (argc == 2)
