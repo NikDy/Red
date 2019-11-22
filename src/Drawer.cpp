@@ -31,15 +31,9 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 	int rad = 135;
 	int grid_size = std::ceil(std::sqrt(graph.getPoints().size()));
 	int grid_mark = 0;
-	if (!market_texture.loadFromFile("Market.png")) {
-		std::cout << "Error!!!!" << std::endl;
-	}
-	if (!storage_texture.loadFromFile("Storage.png")) {
-		std::cout << "Error!!!!" << std::endl;
-	}
-	if (!town_texture.loadFromFile("Town.png")) {
-		std::cout << "Error!!!!" << std::endl;
-	}
+	market_texture.loadFromFile("Market.png");
+	storage_texture.loadFromFile("Storage.png");
+	town_texture.loadFromFile("Town.png");
 	for (auto point: graph.getPoints())
 	{
 		sf::Text text(std::to_string(point.first), font, 50);
