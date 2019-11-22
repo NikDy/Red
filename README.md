@@ -16,7 +16,7 @@ copy all from res to build/bin
 
 
 ```
-usage: Graph_drawer <path_to_json.json>
+usage: Graph_drawer <username>
 ```
 ```
 contols:
