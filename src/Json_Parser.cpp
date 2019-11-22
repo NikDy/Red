@@ -264,26 +264,30 @@ Town Json_Parser::addTown(const rapidjson::Value& doc)
 		doc["name"].GetString());
 	town_map.armor = doc["armor"].GetInt();
 	town_map.armor_capacity = doc["armor_capacity"].GetInt();
-	town_map.level = doc["level"].GetInt();
-	town_map.next_level_price = doc["next_level_price"].GetInt();
+	if(doc.HasMember("level")) town_map.level = doc["level"].GetInt();
+	if (doc.HasMember("next_level_price")) town_map.next_level_price = doc["next_level_price"].GetInt();
 	town_map.player_idx = doc["player_idx"].GetString();
 	town_map.point_idx = doc["point_idx"].GetInt();
 	town_map.population = doc["population"].GetInt();
 	town_map.population_capacity = doc["population_capacity"].GetInt();
 	town_map.product = doc["product"].GetInt();
 	town_map.product_capacity = doc["product_capacity"].GetInt();
-	town_map.train_cooldown = doc["train_cooldown"].GetInt();
-	town_map.type = doc["type"].GetInt();
+	if (doc.HasMember("train_cooldown")) town_map.train_cooldown = doc["train_cooldown"].GetInt();
+	//town_map.type = doc["type"].GetInt();
 	return town_map;
 }
+
 
 Storage Json_Parser::addStorage(const rapidjson::Value& doc)
 {
 	Storage storage_map = Storage(doc["idx"].GetInt(), doc["type"].GetInt(), doc["name"].GetString());
 	storage_map.armor = doc["armor"].GetInt();
 	storage_map.armor_capacity = doc["armor_capacity"].GetInt();
-	for (int i = 0; i < doc["events"].Size(); ++i) {
-		//storage.addEvent();
+	if (doc.HasMember("events"))
+	{
+		for (int i = 0; i < doc["events"].Size(); ++i) {
+			//storage.addEvent();
+		}
 	}
 	storage_map.point_idx = doc["point_idx"].GetInt();
 	storage_map.replenishment = doc["replenishment"].GetInt();
@@ -294,8 +298,11 @@ Market Json_Parser::addMarket(const rapidjson::Value& doc)
 {
 	Market market_map = Market(doc["idx"].GetInt(), doc["type"].GetInt(), doc["name"].GetString());
 	market_map.replenishment = doc["replenishment"].GetInt();
-	for (int i = 0; i < doc["events"].Size(); ++i) {
-		//storage.addEvent();
+	if (doc.HasMember("events"))
+	{
+		for (int i = 0; i < doc["events"].Size(); ++i) {
+			//storage.addEvent();
+		}
 	}
 	market_map.point_idx = doc["point_idx"].GetInt();
 	market_map.product = doc["product"].GetInt();
@@ -315,10 +322,10 @@ Train Json_Parser::addTrain(const rapidjson::Value & doc)
 	//new_train.fuel_consumption =	doc["fuel_consumption"].GetInt();
 	new_train.goods = doc["goods"].GetInt();
 	new_train.goods_capacity = doc["goods_capacity"].GetInt();
-	new_train.goods_type = 0;
-	new_train.level = doc["level"].GetInt();
-	new_train.next_level_price = doc["next_level_price"].GetInt();
-	new_train.cooldown = doc["cooldown"].GetInt();
+	new_train.goods_type = NULL;
+	if(doc.HasMember("level")) new_train.level = doc["level"].GetInt();
+	if(doc.HasMember("next_level_price")) new_train.next_level_price = doc["next_level_price"].GetInt();
+	if(doc.HasMember("cooldown")) new_train.cooldown = doc["cooldown"].GetInt();
 
 	return new_train;
 }

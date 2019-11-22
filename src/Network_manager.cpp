@@ -109,7 +109,7 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
-	//std::cout << response <<std::endl;
+	std::cout << response <<std::endl;
 	if (action_code == 10)
 	{
 		if (key_value_pairs[0].second == "0")
