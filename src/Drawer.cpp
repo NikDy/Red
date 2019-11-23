@@ -101,7 +101,10 @@ void Drawer::drawAll()
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+
+			}
 		}
 
 

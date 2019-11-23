@@ -10,11 +10,11 @@ int main(int argc, char* argv[])
 {
 	//if (argc == 2)
 	//{
-		Data_manager dat;
-		dat.login("nik");
+		
+	Data_manager::getInstance().login("nik");
 
 		Drawer drawer = Drawer(800, 600, "Drawer");
-		drawer.graphToShapes(dat.getMapLayer0(), dat.getMapLayer1());
+		drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
 		drawer.drawAll();
 	//}
 	//else 

@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <numeric>
-#include "Graph.h"
 #include "Line.h"
-#include "MapLayer1.h"
+
+#include "Data_manager.h"
 
 class Drawer
 {
@@ -15,8 +15,8 @@ private:
 	std::vector<selbaward::Line> lines_to_draw;
 	std::vector<sf::Text> text_lay0_to_draw;
 	std::vector<sf::Text> text_lay1_to_draw;
-	int w_sizeX = 800;
-	int w_sizeY = 600;
+	float w_sizeX = 800.f;
+	float w_sizeY = 600.f;
 	std::string w_name = "Drawer window";
 	sf::Color w_background_color = sf::Color::White;
 	sf::Color w_outline_color = sf::Color::Black;

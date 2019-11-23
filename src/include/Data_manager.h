@@ -9,13 +9,23 @@
 class Data_manager
 {
 public:
-	Data_manager();
+	static Data_manager& getInstance()
+	{
+		static Data_manager instance;
+		return instance;
+	}
+	Data_manager(Data_manager const&) = delete;
+	Data_manager operator=(Data_manager const&) = delete;
+
+
 	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
 	Graph getMapLayer0();
 	MapLayer1 getMapLayer1();
 	Player getPlayer();
 	~Data_manager();
 private:
+	Data_manager() {};
+
 	std::shared_ptr<Player> player = nullptr;
 	std::shared_ptr<MapLayer1> map_layer_1 = nullptr;
 	std::shared_ptr<Graph> map_layer_0 = nullptr;

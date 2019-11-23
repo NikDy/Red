@@ -2,9 +2,6 @@
 
 
 
-Data_manager::Data_manager()
-{
-}
 
 bool Data_manager::login(std::string name, std::string password, std::string game, int num_turns, int num_players)
 {
