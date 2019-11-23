@@ -94,7 +94,7 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 void Drawer::drawAll()
 {	
 	sf::RenderWindow window(sf::VideoMode(w_sizeX, w_sizeY), w_name.c_str());
-	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX, w_sizeY));
+	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3, w_sizeY * 3));
 	while (window.isOpen())
 	{
 		sf::Event event;
