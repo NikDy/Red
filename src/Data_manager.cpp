@@ -18,8 +18,9 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 
 Graph Data_manager::getMapLayer0()
 {
-	map_layer_0 = getMapLayer0FromServer();
-	return *map_layer_0;
+	this->map_layer_0 = getMapLayer0FromServer();
+	this->map_layer_0->createAdjacencyLists();
+	return *this->map_layer_0;
 }
 
 MapLayer1 Data_manager::getMapLayer1()

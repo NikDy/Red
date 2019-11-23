@@ -13,15 +13,26 @@ bool Graph::addLine(int idx_, Graph_Line line_)
 
 bool Graph::createAdjacencyLists()
 {
-	for (auto point : points)
+	for (auto &point : points)
 	{
-		for (auto line : lines)
+		for (auto &line : lines)
 		{
-			if (line.second.points.first == point.second.idx &&
-				std::find(point.second.adjacency_list.begin(), point.second.adjacency_list.end(), line.second.points.second) == point.second.adjacency_list.end())
-					point.second.adjacency_list.emplace_back(line.second.points.second);
+			auto point_idx = point.second.idx;
+			auto line_begin = line.second.points.first;
+			auto line_end = line.second.points.second;
+			if (line_end == point_idx &&
+				std::find(point.second.adjacency_list.begin(), point.second.adjacency_list.end(), line_begin) == point.second.adjacency_list.end())
+			{
+				point.second.adjacency_list.emplace_back(line_begin);
+			}
+			else if (line_begin == point_idx &&
+				std::find(point.second.adjacency_list.begin(), point.second.adjacency_list.end(), line_end) == point.second.adjacency_list.end())
+			{
+				point.second.adjacency_list.emplace_back(line_end);
+			}
 		}
 	}
+	
 	return true;
 }
 
