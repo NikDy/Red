@@ -1,9 +1,6 @@
 #include "MapLayer10.h"
 
 
-
-
-
 MapLayer10::MapLayer10()
 {
 

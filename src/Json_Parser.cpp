@@ -49,76 +49,6 @@ MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 
 	return new_mapLayer1;
 
-	//{
-	//	"idx": 1,
-	//		"posts" : [
-	//	{
-	//		"events": [] ,
-	//			"idx" : 17,
-	//			"name" : "market-small",
-	//			"point_idx" : 107,
-	//			"product" : 5,
-	//			"product_capacity" : 5,
-	//			"replenishment" : 1,
-	//			"type" : 2
-	//	},
-	//	{
-	//		"armor": 3,
-	//		"armor_capacity" : 200,
-	//		"events" : [] ,
-	//		"idx" : 13,
-	//		"level" : 1,
-	//		"name" : "Minsk",
-	//		"next_level_price" : 100,
-	//		"player_idx" : "a33dc107-04ab-4039-9578-1dccd00867d1",
-	//		"point_idx" : 101,
-	//		"population" : 3,
-	//		"population_capacity" : 10,
-	//		"product" : 60,
-	//		"product_capacity" : 200,
-	//		"train_cooldown" : 2,
-	//		"type" : 1
-	//	},
-	//	{
-	//		"armor": 48,
-	//		"armor_capacity" : 48,
-	//		"events" : [] ,
-	//		"idx" : 18,
-	//		"name" : "storage-big",
-	//		"point_idx" : 106,
-	//		"replenishment" : 2,
-	//		"type" : 3
-	//	},
-	//			...
-	//		],
-	//		"ratings": {
-	//			"a33dc107-04ab-4039-9578-1dccd00867d1": {
-	//				"idx": "a33dc107-04ab-4039-9578-1dccd00867d1",
-	//					"name" : "Boris",
-	//					"rating" : 0
-	//			}
-	//		},
-	//			"trains": [
-	//		{
-	//			"cooldown": 0,
-	//				"events" : [] ,
-	//				"fuel" : 400,
-	//				"fuel_capacity" : 400,
-	//				"fuel_consumption" : 1,
-	//				"goods" : 0,
-	//				"goods_capacity" : 40,
-	//				"goods_type" : null,
-	//				"idx" : 1,
-	//				"level" : 1,
-	//				"line_idx" : 193,
-	//				"next_level_price" : 40,
-	//				"player_idx" : "a33dc107-04ab-4039-9578-1dccd00867d1",
-	//				"position" : 0,
-	//				"speed" : 0
-	//		},
-	//			...
-	//			]
-	//}
 }
 
 //Graph Json_Parser::createGraph(std::string filepath)
@@ -189,6 +119,25 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 		new_graph.addLine(doc["lines"][i]["idx"].GetInt(), new_line);
 	}
 	return new_graph;
+}
+
+
+MapLayer10 Json_Parser::fromMapLayer10(std::string json_string)
+{
+	std::cout << json_string << std::endl;
+	rapidjson::Document doc;
+	doc.Parse(json_string.c_str());
+
+	MapLayer10 new_mapLayer10;
+	new_mapLayer10.idx  = doc["idx"].GetInt();
+	new_mapLayer10.size = { doc["size"][0].GetInt(), doc["size"][1].GetInt() };
+	for (int i = 0; i < doc["coordinates"].Size(); i++)
+	{
+		std::pair<int, int>  point(doc["coordinates"][i]["x"].GetInt(), doc["coordinates"][i]["y"].GetInt());
+		std::pair<int, std::pair<int, int>> full(doc["coordinates"][i]["idx"].GetInt(), point);
+		new_mapLayer10.points.emplace_back(full);
+	}
+	return new_mapLayer10;
 }
 
 

@@ -12,6 +12,7 @@
 #include "Graph.h"
 #include "Player.h"
 #include "MapLayer1.h"
+#include "MapLayer10.h"
 
 class Json_Parser
 {
@@ -35,6 +36,7 @@ public:
 	//static Graph createGraph(std::string filepath);
 	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
+	static MapLayer10 fromMapLayer10(std::string json_string);
 	static Player fromPlayer(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
 };

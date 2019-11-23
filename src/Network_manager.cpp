@@ -120,6 +120,11 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
 			response_list.push_back(result);
 		}
+		else if (key_value_pairs[0].second == "10")
+		{
+			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer10(response).getObjectPtr();
+			response_list.push_back(result);
+		}
 	}
 	return true;
 }
@@ -140,6 +145,11 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 		}
 		else if (key_value_pair.second == "1") {
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
+			response_list.push_back(result);
+		}
+		else if (key_value_pair.second == "10")
+		{
+			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer10(response).getObjectPtr();
 			response_list.push_back(result);
 		}
 	}

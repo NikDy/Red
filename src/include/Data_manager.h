@@ -25,6 +25,7 @@ private:
 	void setLoginData(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
 	std::shared_ptr<Graph> getMapLayer0FromServer();
 	std::shared_ptr<MapLayer1> getMapLayer1FromServer();
+	std::shared_ptr<MapLayer10> getMapLayer10FromServer();
 	std::shared_ptr<Player> getPlayerFromServer();
 };
 
