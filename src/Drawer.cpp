@@ -1,7 +1,7 @@
 #include "Drawer.h"
 
 
-Drawer::Drawer(int w_sizeX_, int w_sizeY_ , std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_)
+Drawer::Drawer(float w_sizeX_, float w_sizeY_ , std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_)
 {
 	font.loadFromFile("font.ttf");
 	w_sizeX = w_sizeX_;
@@ -11,7 +11,7 @@ Drawer::Drawer(int w_sizeX_, int w_sizeY_ , std::string w_name_, sf::Color w_bac
 	w_shapes_color = w_shapes_color_;
 }
 
-Drawer::Drawer(int w_sizeX_, int w_sizeY_, std::string w_name_)
+Drawer::Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_)
 {
 	font.loadFromFile("font.ttf");
 	w_sizeX = w_sizeX_;
@@ -29,7 +29,7 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 	MapLayer1 layer1 = _layer1;
 	if (graph.getPoints().empty()) return false;
 	int rad = 135;
-	int grid_size = std::ceil(std::sqrt(graph.getPoints().size()));
+	int grid_size = (int)std::ceil(std::sqrt(graph.getPoints().size()));
 	int grid_mark = 0;
 	market_texture.loadFromFile("Market.png");
 	storage_texture.loadFromFile("Storage.png");
@@ -43,9 +43,9 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 		shape.setOutlineThickness(6.f);
 		text.setFillColor(sf::Color::Black);
 		shape.setRadius(float(rad));
-		shape.setPosition(4 * rad * (grid_mark % grid_size) + 2 * rad, 4 * rad * (grid_mark / grid_size) + 2 * rad);
+		shape.setPosition(float(4 * rad * (grid_mark % grid_size) + 2 * rad), float(4 * rad * (grid_mark / grid_size) + 2 * rad));
 		text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
-		text.setPosition(shape.getPosition().x + rad, shape.getPosition().y + 2.2*rad );
+		text.setPosition(shape.getPosition().x + rad, shape.getPosition().y + 2.2f*rad );
 
 		map_to_draw.emplace(point.first, shape);
 		text_lay0_to_draw.emplace_back(text);
@@ -79,12 +79,12 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 			s = "Town # " + std::to_string(post.first);
 		}
 
-		sprite.setPosition(4 * rad * (grid_mark % grid_size) + 2.3 * rad, 4 * rad * (grid_mark / grid_size) + 2.3 * rad);
+		sprite.setPosition(4.f * rad * (grid_mark % grid_size) + 2.3f * rad, 4.f * rad * (grid_mark / grid_size) + 2.3f * rad);
 		posts_to_draw.emplace(post.first, sprite);
 		sf::Text text(s, font, 50);
 		text.setFillColor(sf::Color::Black);
-		text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
-		text.setPosition(sprite.getPosition().x + 0.7*rad, sprite.getPosition().y -0.7*rad);
+		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
+		text.setPosition(sprite.getPosition().x + 0.7f*rad, sprite.getPosition().y -0.7f*rad);
 		text_lay1_to_draw.emplace_back(text);
 		grid_mark++;
 	}
@@ -93,7 +93,7 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 
 void Drawer::drawAll()
 {	
-	sf::RenderWindow window(sf::VideoMode(w_sizeX, w_sizeY), w_name.c_str());
+	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX, w_sizeY));
 	while (window.isOpen())
 	{

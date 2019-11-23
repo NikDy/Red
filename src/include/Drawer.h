@@ -38,8 +38,8 @@ private:
 
 
 public:
-	Drawer(int w_sizeX_, int w_sizeY_, std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_);
-	Drawer(int w_sizeX_, int w_sizeY_, std::string w_name_);
+	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_);
+	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_);
 	~Drawer();
 
 	bool graphToShapes(Graph graph, MapLayer1 mapLayer1);
