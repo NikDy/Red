@@ -125,6 +125,28 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 }
 
 
+bool Network_manager::Action(int action_code, std::pair<std::string, std::string> key_value_pair)
+{
+	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pair});
+	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	if (!trySend(message)) return false;
+	auto response = receiveJsonString();
+	if (action_code == 10)
+	{
+		if (key_value_pair.second == "0")
+		{
+			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer0(response).getObjectPtr();
+			response_list.push_back(result);
+		}
+		else if (key_value_pair.second == "1") {
+			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
+			response_list.push_back(result);
+		}
+	}
+	return true;
+}
+
+
 bool Network_manager::Logout()
 {
 	std::string message = "";

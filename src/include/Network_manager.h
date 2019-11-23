@@ -54,5 +54,6 @@ public:
 	std::list<std::shared_ptr<Game_object>> getResponseList();
 	bool Login(std::vector<std::pair<std::string, std::string>> login_data);
 	bool Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
+	bool Action(int action_code, std::pair<std::string, std::string> key_value_pairs);
 	bool Logout();
 };
