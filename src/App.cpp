@@ -13,9 +13,9 @@ int main(int argc, char* argv[])
 		
 	Data_manager::getInstance().login("nik");
 
-		Drawer drawer = Drawer(800, 600, "Drawer");
-		drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
-		drawer.drawAll();
+	Drawer drawer = Drawer(800, 600, "Drawer");
+	drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
+	drawer.drawAll();
 	//}
 	//else 
 	//{

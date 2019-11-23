@@ -33,7 +33,7 @@ private:
 
 	const float lines_thickness = 4.f;
 	const float camera_movement_speed = 1.5f;
-	const float camera_zoom_speed = 0.005f;
+	const float camera_zoom_speed = 0.003f;
 	
 
 
