@@ -30,6 +30,10 @@ MapLayer1 Data_manager::getMapLayer1()
 	return *map_layer_1;
 }
 
+
+
+
+
 Player Data_manager::getPlayer()
 {
 	player = getPlayerFromServer();
