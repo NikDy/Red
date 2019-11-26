@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Network_manager.h"
 #include "Data_manager.h"
+#include "Regulator.h"
 
 
 int main(int argc, char* argv[])
@@ -11,7 +12,13 @@ int main(int argc, char* argv[])
 	//if (argc == 2)
 	//{
 		
-	Data_manager::getInstance().login("nik");
+	Data_manager::getInstance().login("ni");
+	Regulator reg;
+	auto a = reg.findWay(1, 5);
+	for (auto i : Data_manager::getInstance().getMapLayer0().getLines())
+	{
+		std::cout << i.first.first << " " << i.first.second << std::endl;
+	}
 
 	Drawer drawer = Drawer(800, 600, "Drawer");
 	drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());

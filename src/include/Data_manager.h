@@ -19,9 +19,9 @@ public:
 
 
 	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
-	Graph getMapLayer0();
-	MapLayer1 getMapLayer1();
-	Player getPlayer();
+	Graph& getMapLayer0();
+	MapLayer1& getMapLayer1();
+	Player& getPlayer();
 	~Data_manager();
 private:
 	Data_manager() {};

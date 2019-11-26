@@ -6,16 +6,16 @@ bool Graph::addPoint(int idx_, Graph_Point point_)
 	return points.emplace(idx_, point_).second;
 }
 
-bool Graph::addLine(int idx_, Graph_Line line_)
+bool Graph::addLine(int first_idx_, int second_idx_, Graph_Line line_)
 {
-	return lines.emplace(idx_, line_).second;
+	return lines.emplace(std::make_pair(first_idx_, second_idx_), line_).second;
 }
 
 bool Graph::createAdjacencyLists()
 {
-	for (auto &point : points)
+	for (auto& point : points)
 	{
-		for (auto &line : lines)
+		for (auto& line : lines)
 		{
 			auto point_idx = point.second.idx;
 			auto line_begin = line.second.points.first;
@@ -32,7 +32,7 @@ bool Graph::createAdjacencyLists()
 			}
 		}
 	}
-	
+
 	return true;
 }
 
@@ -41,7 +41,7 @@ std::map<int, Graph_Point>& Graph::getPoints()
 	return points;
 }
 
-std::map<int, Graph_Line>& Graph::getLines()
+std::map<std::pair<int, int>, Graph_Line>& Graph::getLines()
 {
 	return lines;
 }
@@ -80,6 +80,23 @@ Graph::Graph(std::string name_, int idx_)
 {
 	name = name_;
 	idx = idx_;
+}
+
+
+Graph_Line& Graph::getLineByTwoPoints(const int& first_idx, const int& second_idx)
+{
+	if (lines.find(std::pair<int, int>(first_idx, second_idx)) != lines.end())
+	{
+		return lines[std::make_pair(first_idx, second_idx)];
+	}
+	else if (lines.find(std::pair<int, int>(second_idx, first_idx)) != lines.end())
+	{
+		return lines[std::make_pair(second_idx, first_idx)];
+	}
+	else
+	{
+		return lines[std::make_pair(second_idx, first_idx)];
+	}
 }
 
 Graph::~Graph()

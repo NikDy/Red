@@ -116,7 +116,7 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 			doc["lines"][i]["length"].GetInt(),
 			std::pair<int, int>(doc["lines"][i]["points"][0].GetInt(),
 				doc["lines"][i]["points"][1].GetInt()));
-		new_graph.addLine(doc["lines"][i]["idx"].GetInt(), new_line);
+		new_graph.addLine(new_line.points.first, new_line.points.second, new_line);
 	}
 	return new_graph;
 }

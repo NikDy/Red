@@ -21,6 +21,11 @@ Graph_Point::Graph_Point(int idx_)
 	idx = idx_;
 }
 
+Graph_Point::Graph_Point()
+{
+
+}
+
 Graph_Point::~Graph_Point()
 {
 

@@ -12,25 +12,24 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	player = std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
 	map_layer_1 = getMapLayer1FromServer();
-	//map_layer_10 = getMapLayer10FromServer();
 	return true;
 }
 
-Graph Data_manager::getMapLayer0()
+Graph& Data_manager::getMapLayer0()
 {
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
 	return *this->map_layer_0;
 }
 
-MapLayer1 Data_manager::getMapLayer1()
+MapLayer1& Data_manager::getMapLayer1()
 {
 	map_layer_1 = getMapLayer1FromServer();
 	return *map_layer_1;
 }
 
 
-Player Data_manager::getPlayer()
+Player& Data_manager::getPlayer()
 {
 	player = getPlayerFromServer();
 	return *player;
