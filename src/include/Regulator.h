@@ -2,6 +2,7 @@
 #include "Data_manager.h"
 #include "Network_manager.h"
 #include <queue>
+#include <unordered_map>
 
 class Regulator
 {

@@ -4,11 +4,11 @@
 std::vector<int> Regulator::findWay(int begin, int end)
 {
 	auto& Graph = Data_manager::getInstance().getMapLayer0();
-	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> frontier;
+	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::less<std::pair<int, int>>> frontier;
 	frontier.emplace(std::pair<int, int>(Graph.getPoints()[begin].idx, 0));
-	std::map<int, int> came_from;
+	std::unordered_map<int, int> came_from;
 	came_from[begin] = begin;
-	std::map<int, int> cost_so_far;
+	std::unordered_map<int, int> cost_so_far;
 	cost_so_far[begin] = 0;
 
 	while (!frontier.empty())
