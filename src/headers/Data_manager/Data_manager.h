@@ -5,6 +5,9 @@
 #include "MapLayer1.h"
 #include "Player.h"
 #include "MapLayer10.h"
+#include <condition_variable>
+#include <mutex>
+#include <thread>
 
 class Data_manager
 {
@@ -22,10 +25,14 @@ public:
 	Graph& getMapLayer0();
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
+	bool update_on = true;
 	~Data_manager();
+	bool forceTurn();
+
 private:
 	Data_manager() {};
 
+	bool turn = false;
 	std::shared_ptr<Player> player = nullptr;
 	std::shared_ptr<MapLayer1> map_layer_1 = nullptr;
 	std::shared_ptr<Graph> map_layer_0 = nullptr;
@@ -37,5 +44,9 @@ private:
 	std::shared_ptr<MapLayer1> getMapLayer1FromServer();
 	std::shared_ptr<MapLayer10> getMapLayer10FromServer();
 	std::shared_ptr<Player> getPlayerFromServer();
+	std::thread updateThread;
+	void updateGame();
+	std::mutex update_mutex;
+	std::condition_variable update_check;
 };
 

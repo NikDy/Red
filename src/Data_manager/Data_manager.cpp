@@ -1,4 +1,5 @@
 #include "Data_manager.h"
+#include <chrono>
 
 
 
@@ -12,19 +13,20 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	player = std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
 	map_layer_1 = getMapLayer1FromServer();
+	this->map_layer_0 = getMapLayer0FromServer();
+	this->map_layer_0->createAdjacencyLists();
+	updateThread = std::thread(&Data_manager::updateGame, this);
 	return true;
 }
 
 Graph& Data_manager::getMapLayer0()
 {
-	this->map_layer_0 = getMapLayer0FromServer();
-	this->map_layer_0->createAdjacencyLists();
+
 	return *this->map_layer_0;
 }
 
 MapLayer1& Data_manager::getMapLayer1()
 {
-	map_layer_1 = getMapLayer1FromServer();
 	return *map_layer_1;
 }
 
@@ -38,7 +40,18 @@ Player& Data_manager::getPlayer()
 
 Data_manager::~Data_manager()
 {
+	updateThread.join();
 	net.Logout();
+}
+
+
+bool Data_manager::forceTurn()
+{
+	if(!net.Action(5, std::pair<std::string, std::string>("", ""))) return false;
+	std::unique_lock<std::mutex> locker(update_mutex);
+	turn = true;
+	update_check.notify_all();
+	return true;
 }
 
 
@@ -93,4 +106,15 @@ std::shared_ptr<Player> Data_manager::getPlayerFromServer()
 	net.Action(6, std::pair<std::string, std::string>("", ""));
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	return std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
+}
+
+void Data_manager::updateGame()
+{
+	while (update_on) 
+	{
+		std::unique_lock<std::mutex> locker(update_mutex);
+		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn);});
+		map_layer_1 = getMapLayer1FromServer();
+		turn = false;
+	}
 }

@@ -152,9 +152,11 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer10(response).getObjectPtr();
 			response_list.push_back(result);
 		}
-	}
+	} 
 	return true;
 }
+
+
 
 
 bool Network_manager::Logout()
