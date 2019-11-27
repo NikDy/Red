@@ -29,7 +29,6 @@ std::vector<int> Regulator::findWay(int begin, int end)
 		}
 	}
 
-	//return came_from;
 	std::vector<int> path;
 	auto current = end;
 	path.push_back(current);
