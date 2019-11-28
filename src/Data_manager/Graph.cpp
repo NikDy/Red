@@ -99,6 +99,14 @@ Graph_Line& Graph::getLineByTwoPoints(const int& first_idx, const int& second_id
 	}
 }
 
+Graph_Line& Graph::getLineByIdx(const int& idx) {
+	for (auto line : lines) {
+		if (line.second.idx == idx) {
+			return line.second;
+		}
+	}
+}
+
 Graph::~Graph()
 {
 
