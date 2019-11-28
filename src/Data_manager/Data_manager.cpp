@@ -27,14 +27,13 @@ Graph& Data_manager::getMapLayer0()
 
 MapLayer1& Data_manager::getMapLayer1()
 {
-	return *map_layer_1;
+	return *this->map_layer_1;
 }
 
 
 Player& Data_manager::getPlayer()
 {
-	player = getPlayerFromServer();
-	return *player;
+	return *this->player;
 }
 
 
@@ -115,6 +114,7 @@ void Data_manager::updateGame()
 		std::unique_lock<std::mutex> locker(update_mutex);
 		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn);});
 		map_layer_1 = getMapLayer1FromServer();
+		player = getPlayerFromServer();
 		turn = false;
 	}
 }
