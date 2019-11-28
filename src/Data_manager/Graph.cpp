@@ -83,7 +83,7 @@ Graph::Graph(std::string name_, int idx_)
 }
 
 
-Graph_Line& Graph::getLineByTwoPoints(const int& first_idx, const int& second_idx)
+Graph_Line Graph::getLineByTwoPoints(const int& first_idx, const int& second_idx)
 {
 	if (lines.find(std::pair<int, int>(first_idx, second_idx)) != lines.end())
 	{
@@ -99,7 +99,7 @@ Graph_Line& Graph::getLineByTwoPoints(const int& first_idx, const int& second_id
 	}
 }
 
-Graph_Line& Graph::getLineByIdx(const int& idx) {
+Graph_Line Graph::getLineByIdx(const int& idx) {
 	for (auto line : lines) {
 		if (line.second.idx == idx) {
 			return line.second;
