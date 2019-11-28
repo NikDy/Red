@@ -33,7 +33,6 @@ MapLayer1& Data_manager::getMapLayer1()
 
 Player& Data_manager::getPlayer()
 {
-	player = getPlayerFromServer();
 	return *player;
 }
 

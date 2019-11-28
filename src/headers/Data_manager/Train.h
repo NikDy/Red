@@ -13,6 +13,16 @@ public:
 
 	int getIdx() const;
 	void setIdx(int idx_);
+
+	int getPosition() const;
+	void setPosition(int position);
+	int getGoods() const;
+	int getGoodsCapacity() const;
+	int getLineIdx() const;
+	int getSpeed() const;
+	void setSpeed(int speed_);
+	void setLineIdx(int lineIdx_);
+
 	void setPlayerIdx(const std::string& player_idx_);
 	const std::string& getPlayerIdx() const;
 	bool addEvent(Event_game event_);

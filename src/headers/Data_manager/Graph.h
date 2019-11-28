@@ -18,6 +18,7 @@ public:
 	Graph(std::string name_, int idx_);
 
 	Graph_Line& getLineByTwoPoints(const int& first_idx, const int& second_idx);
+	Graph_Line& getLineByIdx(const int& idx);
 	bool addPoint(int idx_, Graph_Point point_); //return false if point with idx already exist
 	bool addLine(int first_idx_, int second_idx_, Graph_Line line_); //return false if line with idx already exist
 	bool createAdjacencyLists();

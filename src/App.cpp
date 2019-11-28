@@ -19,6 +19,9 @@ int main(int argc, char* argv[])
 	{
 		std::cout << i.first.first << " " << i.first.second << std::endl;
 	}
+	auto b = reg.nearestMarket(2, 0);
+	auto c = reg.whereToGo(0, 2, 7);
+	auto d = reg.makeTurn();
 
 	Drawer drawer = Drawer(800, 600, "Drawer");
 	drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
