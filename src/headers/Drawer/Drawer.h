@@ -4,6 +4,10 @@
 #include <vector>
 #include <numeric>
 #include "Line.h"
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+#include <chrono>
 
 #include "Data_manager.h"
 
@@ -31,18 +35,33 @@ private:
 	sf::Texture storage_texture;
 	sf::Texture town_texture;
 
+	int grid_size = 0;
+	int rad = 135;
+	MapLayer1 layer1 = MapLayer1(-1);
 	const float lines_thickness = 4.f;
 	const float camera_movement_speed = 1.5f;
 	const float camera_zoom_speed = 0.003f;
 	
-
-
+	bool marketsToShapes(std::map<int, std::shared_ptr<Market>>& markets, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
+	bool townsToShapes(std::map<int, std::shared_ptr<Town>>& towns, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
+	bool storagesToShapes(std::map<int, std::shared_ptr<Storage>>& storages, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
+	bool updateDataShapes();
+	
+	bool update_window = false;
+	std::thread updateThread;
+	std::thread windowThread;
+	void updateShapes();
+	std::mutex update_mutex;
+	std::mutex window_mutex;
+	std::condition_variable update_check;
 public:
 	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_);
 	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_);
 	~Drawer();
-
+	bool update(MapLayer1 mapLayer1);
 	bool graphToShapes(Graph graph, MapLayer1 mapLayer1);
 	void drawAll();
+
+	bool update_on = true;
 };
 

@@ -5,6 +5,9 @@
 #include "Network_manager.h"
 #include "Data_manager.h"
 #include "Regulator.h"
+#include <Windows.h>
+#include <mutex>
+#include <thread>
 
 
 int main(int argc, char* argv[])
@@ -22,15 +25,18 @@ int main(int argc, char* argv[])
 	auto b = reg.nearestMarket(2, 0);
 	auto c = reg.whereToGo(0, 2, 7);
 	auto d = reg.makeTurn();
-
-	Drawer drawer = Drawer(800, 600, "Drawer");
+	Drawer drawer(800, 600, "Drawer");
 	drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
-	drawer.drawAll();
+	for (int i = 0; i < 100; ++i) {
+		Data_manager::getInstance().forceTurn();
+		drawer.update(Data_manager::getInstance().getMapLayer1());
+		std::cout << i << std::endl;
+}
+	//drawer.drawAll();
 	//}
 	//else 
 	//{
 	//	std::cout << "Usage: Graph_drawer <path_to_graph.json>" << std::endl;
 	//}
-
 	return 0;
 }

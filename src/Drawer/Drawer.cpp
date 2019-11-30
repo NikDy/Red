@@ -1,5 +1,5 @@
 #include "Drawer.h"
-
+#include <Windows.h>
 
 Drawer::Drawer(float w_sizeX_, float w_sizeY_ , std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_)
 {
@@ -9,6 +9,9 @@ Drawer::Drawer(float w_sizeX_, float w_sizeY_ , std::string w_name_, sf::Color w
 	w_name = w_name_;
 	w_background_color = w_background_color_;
 	w_shapes_color = w_shapes_color_;
+	market_texture.loadFromFile("Market.png");
+	storage_texture.loadFromFile("Storage.png");
+	town_texture.loadFromFile("Town.png");
 }
 
 Drawer::Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_)
@@ -17,10 +20,24 @@ Drawer::Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_)
 	w_sizeX = w_sizeX_;
 	w_sizeY = w_sizeY_;
 	w_name = w_name_;
+	market_texture.loadFromFile("Market.png");
+	storage_texture.loadFromFile("Storage.png");
+	town_texture.loadFromFile("Town.png");
 }
 
 Drawer::~Drawer()
 {
+	windowThread.join();
+	updateThread.join();
+}
+
+bool Drawer::update(MapLayer1 mapLayer1)
+{
+	std::unique_lock<std::mutex> locker(update_mutex);
+	layer1 = mapLayer1;
+	update_window = true;
+	update_check.notify_all();
+	return true;
 }
 
 bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
@@ -28,12 +45,8 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 	Graph graph = _graph;
 	MapLayer1 layer1 = _layer1;
 	if (graph.getPoints().empty()) return false;
-	int rad = 135;
-	int grid_size = (int)std::ceil(std::sqrt(graph.getPoints().size()));
+	grid_size = (int)std::ceil(std::sqrt(graph.getPoints().size()));
 	int grid_mark = 0;
-	market_texture.loadFromFile("Market.png");
-	storage_texture.loadFromFile("Storage.png");
-	town_texture.loadFromFile("Town.png");
 	for (auto point: graph.getPoints())
 	{
 		sf::Text text(std::to_string(point.first), font, 50);
@@ -61,33 +74,11 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 		drawable_line.setThickness(lines_thickness);
 		lines_to_draw.emplace_back(drawable_line);
 	}
-	grid_mark = 0;
-	for (auto post : layer1.getPosts())
-	{
-		sf::Sprite sprite;
-		std::string s;
-		if (post.second->getObjectType() == typeid(Market)) {			
-			sprite.setTexture(market_texture);
-			s = "Market # " + std::to_string(post.first);
-		}
-		else if (post.second->getObjectType() == typeid(Storage)) {			
-			sprite.setTexture(storage_texture);
-			s = "Storage # " + std::to_string(post.first);
-		}
-		else if (post.second->getObjectType() == typeid(Town)) {			
-			sprite.setTexture(town_texture);
-			s = "Town # " + std::to_string(post.first);
-		}
-
-		sprite.setPosition(4.f * rad * (grid_mark % grid_size) + 2.3f * rad, 4.f * rad * (grid_mark / grid_size) + 2.3f * rad);
-		posts_to_draw.emplace(post.first, sprite);
-		sf::Text text(s, font, 50);
-		text.setFillColor(sf::Color::Black);
-		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
-		text.setPosition(sprite.getPosition().x + 0.7f*rad, sprite.getPosition().y -0.7f*rad);
-		text_lay1_to_draw.emplace_back(text);
-		grid_mark++;
-	}
+	marketsToShapes(layer1.getMarkets(), text_lay1_to_draw, posts_to_draw);
+	townsToShapes(layer1.getTowns(), text_lay1_to_draw, posts_to_draw);
+	storagesToShapes(layer1.getStorages(), text_lay1_to_draw, posts_to_draw);
+	windowThread = std::thread(&Drawer::drawAll, this);
+	updateThread = std::thread(&Drawer::updateShapes, this);
 	return true;
 }
 
@@ -97,6 +88,8 @@ void Drawer::drawAll()
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	while (window.isOpen())
 	{
+		std::vector<sf::Text> text_lay1_to_draw1 = text_lay1_to_draw;
+		std::lock_guard<std::mutex> lock(window_mutex);
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -106,7 +99,6 @@ void Drawer::drawAll()
 
 			}
 		}
-
 
 		window.clear(w_background_color);
 		for (auto line : lines_to_draw)
@@ -125,7 +117,7 @@ void Drawer::drawAll()
 		{
 			window.draw(text);
 		}
-		for (auto text : text_lay1_to_draw)
+		for (auto text : text_lay1_to_draw1)
 		{
 			window.draw(text);
 		}
@@ -154,9 +146,93 @@ void Drawer::drawAll()
 			camera.move(0, camera_movement_speed);
 		}
 
-
-
 		window.setView(camera);
 		window.display();
+	}
+}
+
+
+bool Drawer::marketsToShapes(std::map<int, std::shared_ptr<Market>>& markets, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw)
+{
+	int rad = 135;
+	for (auto market : markets)
+	{
+		sf::Sprite sprite;
+		std::string s;
+		sprite.setTexture(market_texture);
+		s = "Market # " + market.second->name + " product - " + std::to_string(market.second->product);
+		sprite.setPosition(4.f * rad * (market.first % grid_size) + 2.3f * rad, 4.f * rad * (market.first / grid_size) + 2.3f * rad);
+		posts_to_draw.emplace(market.first, sprite);
+		sf::Text text(s, font, 50);
+		text.setFillColor(sf::Color::Black);
+		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
+		text.setPosition(sprite.getPosition().x + 0.7f*rad, sprite.getPosition().y - 0.7f*rad);
+		text_lay1_to_draw.emplace_back(text);
+	}
+	return true;
+}
+
+
+bool Drawer::townsToShapes(std::map<int, std::shared_ptr<Town>>& towns, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw)
+{
+	int rad = 135;
+	for (auto town : towns)
+	{
+		sf::Sprite sprite;
+		std::string s;
+		sprite.setTexture(town_texture);
+		s = "Town # " + town.second->name + " product - " + std::to_string(town.second->product);
+		sprite.setPosition(4.f * rad * (town.first % grid_size) + 2.3f * rad, 4.f * rad * (town.first / grid_size) + 2.3f * rad);
+		posts_to_draw.emplace(town.first, sprite);
+		sf::Text text(s, font, 50);
+		text.setFillColor(sf::Color::Black);
+		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
+		text.setPosition(sprite.getPosition().x + 0.7f*rad, sprite.getPosition().y - 0.7f*rad);
+		text_lay1_to_draw.emplace_back(text);
+	}
+	return true;
+}
+
+bool Drawer::storagesToShapes(std::map<int, std::shared_ptr<Storage>>& storages, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw)
+{
+	int rad = 135;
+	for (auto storage : storages)
+	{
+		sf::Sprite sprite;
+		std::string s;
+		sprite.setTexture(storage_texture);
+		s = "Town # " + storage.second->name + " armor - " + std::to_string(storage.second->armor);
+		sprite.setPosition(4.f * rad * (storage.first % grid_size) + 2.3f * rad, 4.f * rad * (storage.first / grid_size) + 2.3f * rad);
+		posts_to_draw.emplace(storage.first, sprite);
+		sf::Text text(s, font, 50);
+		text.setFillColor(sf::Color::Black);
+		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
+		text.setPosition(sprite.getPosition().x + 0.7f*rad, sprite.getPosition().y - 0.7f*rad);
+		text_lay1_to_draw.emplace_back(text);
+	}
+	return true;
+}
+
+bool Drawer::updateDataShapes()
+{
+
+	std::map<int, sf::Sprite> posts = std::map<int, sf::Sprite>();
+	std::vector<sf::Text> text_lay1 = std::vector<sf::Text>();
+	marketsToShapes(layer1.getMarkets(), text_lay1, posts);
+	townsToShapes(layer1.getTowns(), text_lay1, posts);
+	storagesToShapes(layer1.getStorages(), text_lay1, posts);
+	text_lay1_to_draw = text_lay1;
+	posts_to_draw = posts;
+	return true;
+}
+
+void Drawer::updateShapes()
+{
+	while (update_on)
+	{
+		std::unique_lock<std::mutex> locker(update_mutex);
+		update_check.wait(locker, [&]() {return (this->update_window); });
+		updateDataShapes();
+		this->update_window = false;
 	}
 }
