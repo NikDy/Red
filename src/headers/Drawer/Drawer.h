@@ -16,6 +16,7 @@ class Drawer
 private:
 	std::map<int, sf::CircleShape> map_to_draw;
 	std::map<int, sf::Sprite> posts_to_draw;
+	std::map<int, sf::Sprite> trains_to_draw;
 	std::vector<selbaward::Line> lines_to_draw;
 	std::vector<sf::Text> text_lay0_to_draw;
 	std::vector<sf::Text> text_lay1_to_draw;
@@ -34,10 +35,12 @@ private:
 	sf::Texture market_texture;
 	sf::Texture storage_texture;
 	sf::Texture town_texture;
+	sf::Texture train_texture;
 
 	int grid_size = 0;
 	int rad = 135;
 	MapLayer1 layer1 = MapLayer1(-1);
+	Graph graph = Graph("", -1);
 	const float lines_thickness = 4.f;
 	const float camera_movement_speed = 1.5f;
 	const float camera_zoom_speed = 0.003f;
@@ -45,6 +48,7 @@ private:
 	bool marketsToShapes(std::map<int, std::shared_ptr<Market>>& markets, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
 	bool townsToShapes(std::map<int, std::shared_ptr<Town>>& towns, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
 	bool storagesToShapes(std::map<int, std::shared_ptr<Storage>>& storages, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
+	bool trainsToShapes(std::map<int, Train>&  trains, std::map<int, sf::Sprite>& trains_to_draw);
 	bool updateDataShapes();
 	
 	bool update_window = false;

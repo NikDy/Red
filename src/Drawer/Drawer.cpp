@@ -12,6 +12,7 @@ Drawer::Drawer(float w_sizeX_, float w_sizeY_ , std::string w_name_, sf::Color w
 	market_texture.loadFromFile("Market.png");
 	storage_texture.loadFromFile("Storage.png");
 	town_texture.loadFromFile("Town.png");
+	train_texture.loadFromFile("Trainn.png");
 }
 
 Drawer::Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_)
@@ -23,6 +24,7 @@ Drawer::Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_)
 	market_texture.loadFromFile("Market.png");
 	storage_texture.loadFromFile("Storage.png");
 	town_texture.loadFromFile("Town.png");
+	train_texture.loadFromFile("Trainn.png");
 }
 
 Drawer::~Drawer()
@@ -42,8 +44,8 @@ bool Drawer::update(MapLayer1 mapLayer1)
 
 bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 {
-	Graph graph = _graph;
-	MapLayer1 layer1 = _layer1;
+	graph = _graph;
+	layer1 = _layer1;
 	if (graph.getPoints().empty()) return false;
 	grid_size = (int)std::ceil(std::sqrt(graph.getPoints().size()));
 	int grid_mark = 0;
@@ -77,6 +79,7 @@ bool Drawer::graphToShapes(Graph _graph, MapLayer1 _layer1)
 	marketsToShapes(layer1.getMarkets(), text_lay1_to_draw, posts_to_draw);
 	townsToShapes(layer1.getTowns(), text_lay1_to_draw, posts_to_draw);
 	storagesToShapes(layer1.getStorages(), text_lay1_to_draw, posts_to_draw);
+	trainsToShapes(layer1.getTrains(), trains_to_draw);
 	windowThread = std::thread(&Drawer::drawAll, this);
 	updateThread = std::thread(&Drawer::updateShapes, this);
 	return true;
@@ -121,6 +124,10 @@ void Drawer::drawAll()
 		{
 			window.draw(text);
 		}
+		for (auto train : trains_to_draw)
+		{
+			window.draw(train.second);
+		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
@@ -161,7 +168,7 @@ bool Drawer::marketsToShapes(std::map<int, std::shared_ptr<Market>>& markets, st
 		std::string s;
 		sprite.setTexture(market_texture);
 		s = "Market # " + market.second->name + " product - " + std::to_string(market.second->product);
-		sprite.setPosition(4.f * rad * (market.first % grid_size) + 2.3f * rad, 4.f * rad * (market.first / grid_size) + 2.3f * rad);
+		sprite.setPosition(4.f * rad * ((market.first - 1) % grid_size) + 2.3f * rad, 4.f * rad * ((market.first - 1)/ grid_size) + 2.3f * rad);
 		posts_to_draw.emplace(market.first, sprite);
 		sf::Text text(s, font, 50);
 		text.setFillColor(sf::Color::Black);
@@ -182,7 +189,7 @@ bool Drawer::townsToShapes(std::map<int, std::shared_ptr<Town>>& towns, std::vec
 		std::string s;
 		sprite.setTexture(town_texture);
 		s = "Town # " + town.second->name + " product - " + std::to_string(town.second->product);
-		sprite.setPosition(4.f * rad * (town.first % grid_size) + 2.3f * rad, 4.f * rad * (town.first / grid_size) + 2.3f * rad);
+		sprite.setPosition(4.f * rad * ((town.first - 1) % grid_size) + 2.3f * rad, 4.f * rad * ((town.first - 1) / grid_size) + 2.3f * rad);
 		posts_to_draw.emplace(town.first, sprite);
 		sf::Text text(s, font, 50);
 		text.setFillColor(sf::Color::Black);
@@ -202,7 +209,7 @@ bool Drawer::storagesToShapes(std::map<int, std::shared_ptr<Storage>>& storages,
 		std::string s;
 		sprite.setTexture(storage_texture);
 		s = "Town # " + storage.second->name + " armor - " + std::to_string(storage.second->armor);
-		sprite.setPosition(4.f * rad * (storage.first % grid_size) + 2.3f * rad, 4.f * rad * (storage.first / grid_size) + 2.3f * rad);
+		sprite.setPosition(4.f * rad * ((storage.first - 1) % grid_size) + 2.3f * rad, 4.f * rad * ((storage.first - 1) / grid_size) + 2.3f * rad);
 		posts_to_draw.emplace(storage.first, sprite);
 		sf::Text text(s, font, 50);
 		text.setFillColor(sf::Color::Black);
@@ -217,10 +224,12 @@ bool Drawer::updateDataShapes()
 {
 
 	std::map<int, sf::Sprite> posts = std::map<int, sf::Sprite>();
+	std::map<int, sf::Sprite> trains= std::map<int, sf::Sprite>();
 	std::vector<sf::Text> text_lay1 = std::vector<sf::Text>();
 	marketsToShapes(layer1.getMarkets(), text_lay1, posts);
 	townsToShapes(layer1.getTowns(), text_lay1, posts);
 	storagesToShapes(layer1.getStorages(), text_lay1, posts);
+	trainsToShapes(layer1.getTrains(), trains);
 	text_lay1_to_draw = text_lay1;
 	posts_to_draw = posts;
 	return true;
@@ -236,3 +245,20 @@ void Drawer::updateShapes()
 		this->update_window = false;
 	}
 }
+
+bool Drawer::trainsToShapes(std::map<int, Train>&  trains, std::map<int, sf::Sprite>& trains_to_draw)
+{
+	for (auto train : trains)
+	{
+		Graph_Line line = graph.getLineByIdx(train.second.getLineIdx());
+		auto start_pos = map_to_draw[line.points.first].getPosition();
+		auto end_pos = map_to_draw[line.points.second].getPosition();
+		sf::Sprite sprite;
+		std::string s;
+		sprite.setTexture(train_texture);
+		sprite.setPosition(start_pos.x + ((train.second.position / line.lenght) * (end_pos.x - start_pos.x)) + rad, start_pos.y + ((train.second.position / line.lenght) * (end_pos.y - start_pos.y)) + rad);
+		trains_to_draw.emplace(train.first, sprite);
+	}
+	return true;
+}
+
