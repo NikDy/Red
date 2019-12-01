@@ -61,29 +61,26 @@ int Regulator::nearestMarket(int _lineIdx, int _position) {
 		Market _market = *market.second;
 		if (!case3) {
 			std::vector<std::pair<int, int>> path = this->findWay(_point, _market.point_idx);
-			int size1 = path.size();
-			 length1 = path[size1 - 1].second;
+			length1 = path[path.size() - 1].second;
 		}
 		else {
 			std::vector<std::pair<int, int>> path1 = this->findWay(line.points.first, _market.point_idx);
-			int size1 = path1.size();
-			if (size1 > 1) {
+			if (path1.size()  > 1) {
 				if (path1[1].first == line.points.second) {
-					length1 = path1[size1 - 1].second + line.lenght - _position;
+					length1 = path1[path1.size() - 1].second + line.lenght - _position;
 				}
 				else {
-					length1 = path1[size1 - 1].second + _position;
+					length1 = path1[path1.size() - 1].second + _position;
 				}
 			}
 			std::vector<std::pair<int, int>> path2 = this->findWay(line.points.second, _market.point_idx);
-			int size2 = path2.size();
 			int length2 = 10000000;
-			if (size2 > 1) {
+			if (path2.size() > 1) {
 				if (path2[1].first == line.points.first) {
-					length2 = path2[size1 - 1].second + _position;
+					length2 = path2[path1.size() - 1].second + _position;
 				}
 				else {
-					length2 = path2[size2 - 1].second + line.lenght - _position;
+					length2 = path2[path2.size() - 1].second + line.lenght - _position;
 				}
 			}
 			if (length1 > length2) {
@@ -134,29 +131,27 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 	}
 	else {
 		std::vector<std::pair<int, int>> path1 = this->findWay(line.points.first, pointToGo);
-		int size1 = path1.size();
 		int length1 = 0;
 		int koef1 = 1;
-		if (size1 > 1) {
+		if (path1.size() > 1) {
 			if (path1[1].first == line.points.second) {
-				length1 = path1[size1 - 1].second + line.lenght - _position;
+				length1 = path1[path1.size() - 1].second + line.lenght - _position;
 				koef1 = -1;
 			}
 			else {
-				length1 = path1[size1 - 1].second + _position;
+				length1 = path1[path1.size() - 1].second + _position;
 			}
 		}
 		std::vector<std::pair<int, int>> path2 = this->findWay(line.points.second, pointToGo);
-		int size2 = path2.size();
 		int length2 = 0;
 		int koef2 = 1;
-		if (size2 > 1) {
+		if (path2.size() > 1) {
 			if (path2[1].first == line.points.first) {
-				length2 = path2[size1 - 1].second + _position;
+				length2 = path2[path1.size() - 1].second + _position;
 				koef2 = -1;
 			}
 			else {
-				length2 = path2[size2 - 1].second + line.lenght - _position;
+				length2 = path2[path2.size() - 1].second + line.lenght - _position;
 			}
 		}
 		if (length1 <= length2) {
@@ -176,14 +171,13 @@ std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 	Player& _player = Data_manager::getInstance().getPlayer();
 
 	std::map<int, Train>& trains = _player.getTrains();
-	std::map<int, std::shared_ptr<Market>> markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	std::map<int, std::shared_ptr<Market>>& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	std::map<int, std::pair<int, int>> turn;
 	int lineIdx = 0;
 	int position = 0;
 	int speed = 0;
 	int goods = 0;
 	int goods_cap = 0;
-	Regulator reg;
 
 	for (auto train : trains) {
 		lineIdx = train.second.getLineIdx();
@@ -198,7 +192,7 @@ std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 			speedNLine = this->whereToGo(position, lineIdx, _player.getHome().post_idx);
 		}
 		else {
-			speedNLine = this->whereToGo(position, lineIdx, reg.nearestMarket(lineIdx, position));
+			speedNLine = this->whereToGo(position, lineIdx, this->nearestMarket(lineIdx, position));
 		}
 		//std::cout << "lineIdx:" << speedNLine.first << " speed: " << speedNLine.second << " trainIdx" << train.first;
 		std::pair<int, int> trainNSpeed(speedNLine.second, train.first);
