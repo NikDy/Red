@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 project(Red)			
 
+set(COMPILER "Visual Studio")
+
+execute_process(COMMAND conan remote add sfml:bincrafters https://api.bintray.com/conan/bincrafters/public-conan)
+execute_process(COMMAND conan install ./src -if ./build --build missing)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
