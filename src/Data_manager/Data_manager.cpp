@@ -94,14 +94,6 @@ std::shared_ptr<MapLayer1> Data_manager::getMapLayer1FromServer()
 }
 
 
-std::shared_ptr<MapLayer10> Data_manager::getMapLayer10FromServer()
-{
-	net.Action(10, std::pair<std::string, std::string>("layer", "10"));
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	return std::dynamic_pointer_cast<MapLayer10, Game_object>(list_objects.back());
-}
-
-
 std::shared_ptr<Player> Data_manager::getPlayerFromServer()
 {
 	net.Action(6, std::pair<std::string, std::string>("", ""));
