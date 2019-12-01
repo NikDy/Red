@@ -92,7 +92,7 @@ void Drawer::drawAll()
 	while (window.isOpen())
 	{
 		std::vector<sf::Text> text_lay1_to_draw1 = text_lay1_to_draw;
-		std::lock_guard<std::mutex> lock(window_mutex);
+		std::lock_guard<std::mutex> lock(update_mutex);
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
