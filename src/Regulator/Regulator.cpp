@@ -68,20 +68,24 @@ int Regulator::nearestMarket(int _lineIdx, int _position) {
 		else {
 			std::vector<std::pair<int, int>> path1 = reg.findWay(line.points.first, _market.point_idx);
 			int size1 = path1.size();
-			if (path1[1].first == line.points.second) {
-				length1 = path1[size1 - 1].second + line.lenght - _position;
-			}
-			else {
-				length1 = path1[size1 - 1].second + _position;
+			if (size1 > 1) {
+				if (path1[1].first == line.points.second) {
+					length1 = path1[size1 - 1].second + line.lenght - _position;
+				}
+				else {
+					length1 = path1[size1 - 1].second + _position;
+				}
 			}
 			std::vector<std::pair<int, int>> path2 = reg.findWay(line.points.second, _market.point_idx);
 			int size2 = path2.size();
-			int length2 = 0;
-			if (path2[1].first == line.points.first) {
-				length2 = path2[size1 - 1].second + _position;
-			}
-			else {
-				length2 = path2[size2 - 1].second + line.lenght - _position;
+			int length2 = 10000000;
+			if (size2 > 1) {
+				if (path2[1].first == line.points.first) {
+					length2 = path2[size1 - 1].second + _position;
+				}
+				else {
+					length2 = path2[size2 - 1].second + line.lenght - _position;
+				}
 			}
 			if (length1 > length2) {
 				length1 = length2;
@@ -93,7 +97,7 @@ int Regulator::nearestMarket(int _lineIdx, int _position) {
 			min = _market.point_idx;
 		}
 	}
-	std::cout << min << std :: endl;
+	//std::cout << min << std :: endl;
 	return min;
 }
 
@@ -113,7 +117,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 			speed = -1;
 		}
 		lineToGo = line.idx;
-		std::cout << "line to go:" << lineToGo << " speed:" << speed << std::endl;
+		//std::cout << "line to go:" << lineToGo << " speed:" << speed << std::endl;
 		return std::make_pair(lineToGo, speed);
 	}
 	else if (_position == line.lenght) {
@@ -127,7 +131,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 			speed = -1;
 		}
 		lineToGo = line.idx;
-		std::cout << "line to go:" << lineToGo << " speed:" << speed << std::endl;
+		//std::cout << "line to go:" << lineToGo << " speed:" << speed << std::endl;
 		return std::make_pair(lineToGo, speed);
 	}
 	else {
@@ -135,23 +139,27 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 		int size1 = path1.size();
 		int length1 = 0;
 		int koef1 = 1;
-		if (path1[1].first == line.points.second) {
-			length1 = path1[size1 - 1].second + line.lenght - _position;
-			koef1 = -1;
-		}
-		else {
-			 length1 = path1[size1 - 1].second + _position;
+		if (size1 > 1) {
+			if (path1[1].first == line.points.second) {
+				length1 = path1[size1 - 1].second + line.lenght - _position;
+				koef1 = -1;
+			}
+			else {
+				length1 = path1[size1 - 1].second + _position;
+			}
 		}
 		std::vector<std::pair<int, int>> path2 = reg.findWay(line.points.second, pointToGo);
 		int size2 = path2.size();
 		int length2 = 0;
 		int koef2 = 1;
-		if (path2[1].first == line.points.first) {
-			 length2 = path2[size1 - 1].second + _position;
-			 koef2 = -1;
-		}
-		else {
-			 length2 = path2[size2 - 1].second + line.lenght - _position;
+		if (size2 > 1) {
+			if (path2[1].first == line.points.first) {
+				length2 = path2[size1 - 1].second + _position;
+				koef2 = -1;
+			}
+			else {
+				length2 = path2[size2 - 1].second + line.lenght - _position;
+			}
 		}
 		if (length1 <= length2) {
 			speed = -1*koef1;
@@ -159,14 +167,14 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 		else {
 			speed = 1*koef2;
 		}
-		std::cout << "line to go:" << lineToGo << " speed:" << speed << std::endl;
+		//std::cout << "line to go:" << lineToGo << " speed:" << speed << std::endl;
 		return std::make_pair(_lineIdx, speed);
 	}
 
 }
 
 std::map<int, std::pair<int, int>> Regulator::makeTurn() { 
-	std::cout << "I got inside" << std::endl;
+	//std::cout << "I got inside" << std::endl;
 	Player& _player = Data_manager::getInstance().getPlayer();
 
 	std::map<int, Train>& trains = _player.getTrains();
@@ -194,7 +202,7 @@ std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 		else {
 			speedNLine = reg.whereToGo(position, lineIdx, reg.nearestMarket(lineIdx, position));
 		}
-		std::cout << "lineIdx:" << speedNLine.first << " speed: " << speedNLine.second << " trainIdx" << train.first;
+		//std::cout << "lineIdx:" << speedNLine.first << " speed: " << speedNLine.second << " trainIdx" << train.first;
 		std::pair<int, int> trainNSpeed(speedNLine.second, train.first);
 		turn.emplace(speedNLine.first, trainNSpeed);
 	}
