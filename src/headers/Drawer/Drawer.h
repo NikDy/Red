@@ -51,7 +51,7 @@ private:
 	bool trainsToShapes(std::map<int, Train>&  trains, std::map<int, sf::Sprite>& trains_to_draw);
 	bool updateDataShapes();
 	
-	bool update_window = false;
+	bool update_window = true;
 	std::thread updateThread;
 	std::thread windowThread;
 	void updateShapes();

@@ -19,6 +19,15 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	return true;
 }
 
+bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
+{
+	std::lock_guard<std::mutex> locker(update_mutex);
+	for (auto train : turn) {
+		net.Action(3, setMoveData(std::to_string(train.first), std::to_string(train.second.first), std::to_string(train.second.second)));
+	}
+	return true;
+}
+
 Graph& Data_manager::getMapLayer0()
 {
 
@@ -75,6 +84,15 @@ void Data_manager::setLoginData(std::string name, std::string password, std::str
 	{
 		login_data.emplace_back(std::pair<std::string, std::string>("", std::to_string(num_players)));
 	}
+}
+
+std::vector<std::pair<std::string, std::string>> Data_manager::setMoveData(std::string lineIdx, std::string speed, std::string trainIdx)
+{
+	std::vector<std::pair<std::string, std::string>> move_data;
+	move_data.emplace_back(std::pair<std::string, std::string>("line_idx", lineIdx));
+	move_data.emplace_back(std::pair<std::string, std::string>("speed", speed));
+	move_data.emplace_back(std::pair<std::string, std::string>("train_idx", trainIdx));
+	return move_data;
 }
 
 

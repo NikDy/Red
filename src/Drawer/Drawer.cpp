@@ -232,6 +232,7 @@ bool Drawer::updateDataShapes()
 	trainsToShapes(layer1.getTrains(), trains);
 	text_lay1_to_draw = text_lay1;
 	posts_to_draw = posts;
+	trains_to_draw = trains;
 	return true;
 }
 
@@ -256,7 +257,8 @@ bool Drawer::trainsToShapes(std::map<int, Train>&  trains, std::map<int, sf::Spr
 		sf::Sprite sprite;
 		std::string s;
 		sprite.setTexture(train_texture);
-		sprite.setPosition(start_pos.x + ((train.second.position / line.lenght) * (end_pos.x - start_pos.x)) + rad, start_pos.y + ((train.second.position / line.lenght) * (end_pos.y - start_pos.y)) + rad);
+		std::cout << std::endl << std::endl << train.second.position << std::endl;
+		sprite.setPosition(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) + rad / 2.0, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) + rad/2.0);
 		trains_to_draw.emplace(train.first, sprite);
 	}
 	return true;
