@@ -1,7 +1,5 @@
 #include "Json_Parser.h"
-#include <iostream>
-#include <cctype>
-#include <string>
+
 
 Json_Parser::Json_Parser()
 {
@@ -51,45 +49,6 @@ MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 
 }
 
-//Graph Json_Parser::createGraph(std::string filepath)
-//{
-//	std::ifstream ifs(filepath);
-//	if (!ifs.is_open())
-//	{
-//		std::cout << "File can't be open or doesn't exist" << std::endl;
-//		std::exit(1);
-//	}
-//	rapidjson::IStreamWrapper isw(ifs);
-//	rapidjson::Document doc;
-//	doc.ParseStream(isw);
-//	assert(doc.IsObject());
-//
-//	Graph new_graph(doc["name"].GetString(), doc["idx"].GetInt());
-//	for (int i = 0; i < doc["points"].Size(); i++)
-//	{
-//		Graph_Point new_point(doc["points"][i]["idx"].GetInt());
-//		if (doc["points"][i]["post_idx"].IsNull())
-//		{
-//			new_point.post_idx = 0;
-//		}
-//		else
-//		{
-//			new_point.post_idx = doc["points"][i]["post_idx"].GetInt();
-//		}
-//		new_graph.addPoint(doc["points"][i]["idx"].GetInt(), new_point);
-//	}
-//	for (int i = 0; i < doc["lines"].Size(); i++)
-//	{
-//		Graph_Line new_line(doc["lines"][i]["idx"].GetInt(),
-//							doc["lines"][i]["length"].GetInt(),
-//		std::pair<int, int>(doc["lines"][i]["points"][0].GetInt(), 
-//							doc["lines"][i]["points"][1].GetInt()));
-//		new_graph.addLine(doc["lines"][i]["idx"].GetInt(), new_line);
-//	}
-//	new_graph.createAdjacencyLists();
-//	return new_graph;
-//}
-
 
 Graph Json_Parser::fromMapLayer0(std::string json_string)
 {
@@ -119,25 +78,6 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 		new_graph.addLine(new_line.points.first, new_line.points.second, new_line);
 	}
 	return new_graph;
-}
-
-
-MapLayer10 Json_Parser::fromMapLayer10(std::string json_string)
-{
-	std::cout << json_string << std::endl;
-	rapidjson::Document doc;
-	doc.Parse(json_string.c_str());
-
-	MapLayer10 new_mapLayer10;
-	new_mapLayer10.idx  = doc["idx"].GetInt();
-	new_mapLayer10.size = { doc["size"][0].GetInt(), doc["size"][1].GetInt() };
-	for (int i = 0; i < doc["coordinates"].Size(); i++)
-	{
-		std::pair<int, int>  point(doc["coordinates"][i]["x"].GetInt(), doc["coordinates"][i]["y"].GetInt());
-		std::pair<int, std::pair<int, int>> full(doc["coordinates"][i]["idx"].GetInt(), point);
-		new_mapLayer10.points.emplace_back(full);
-	}
-	return new_mapLayer10;
 }
 
 
