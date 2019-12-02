@@ -95,7 +95,7 @@ Graph_Line Graph::getLineByTwoPoints(const int& first_idx, const int& second_idx
 	}
 	else
 	{
-		return lines[std::make_pair(second_idx, first_idx)];
+		return Graph_Line(-1, -1, std::make_pair(-1, -1));
 	}
 }
 

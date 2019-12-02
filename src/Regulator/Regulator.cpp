@@ -40,6 +40,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end)
 	return path;
 }
 
+
 int Regulator::nearestMarket(int _lineIdx, int _position) { 
 	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	int min = 0;
