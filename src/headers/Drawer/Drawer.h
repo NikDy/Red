@@ -3,12 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <numeric>
-#include "Line.h"
 #include <condition_variable>
 #include <mutex>
 #include <thread>
 #include <chrono>
 
+#include "Line.h"
+#include "Forces.h"
 #include "Data_manager.h"
 
 class Drawer
@@ -49,6 +50,8 @@ private:
 	bool townsToShapes(std::map<int, std::shared_ptr<Town>>& towns, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
 	bool storagesToShapes(std::map<int, std::shared_ptr<Storage>>& storages, std::vector<sf::Text>& text_lay1_to_draw, std::map<int, sf::Sprite>& posts_to_draw);
 	bool trainsToShapes(std::map<int, Train>&  trains, std::map<int, sf::Sprite>& trains_to_draw);
+	void reforceGraph();
+	void recalcLinesShapes();
 	bool updateDataShapes();
 	
 	bool update_window = true;
@@ -56,7 +59,6 @@ private:
 	std::thread windowThread;
 	void updateShapes();
 	std::mutex update_mutex;
-	//std::mutex window_mutex;
 	std::condition_variable update_check;
 public:
 	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_);
