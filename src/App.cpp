@@ -22,16 +22,15 @@ int main(int argc, char* argv[])
 	{
 		std::cout << i.first.first << " " << i.first.second << std::endl;
 	}
-	auto b = reg.nearestMarket(2, 0);
-	auto c = reg.whereToGo(0, 2, 7);
-	auto d = reg.makeTurn();
 	Drawer drawer(800, 600, "Drawer");
 	drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 20; ++i) {
+		Data_manager::getInstance().makeMove(reg.makeTurn());
 		Data_manager::getInstance().forceTurn();
 		drawer.update(Data_manager::getInstance().getMapLayer1());
 		std::cout << i << std::endl;
 }
+	
 	//drawer.drawAll();
 	//}
 	//else 
