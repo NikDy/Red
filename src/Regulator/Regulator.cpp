@@ -107,6 +107,34 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 	return min;
 }
 
+bool Regulator::checkFuel(Train _train) { //will do it later..
+	return true;
+};
+
+std::vector<int> Regulator:: linesStatus() {	//not correct always, should think about somebody who is just standing on the line/standing on the first/second point of line
+	std::map<int, Train>& trains = Data_manager::getInstance().getMapLayer1().getTrains();
+	int numberOfLines = Data_manager::getInstance().getMapLayer0().getLines().size();
+	std::vector<int> answer;
+	int lineIdx = 0;
+	int speed = 0;
+	for (int i = 0; i < numberOfLines; i++) {
+		answer.push_back(0);
+	}
+	for (auto train : trains) {
+		lineIdx = train.second.getLineIdx();
+		speed = train.second.getSpeed();
+		if (answer[lineIdx] == 0) {
+			answer[lineIdx] = speed;
+		}
+		else {
+			if (!answer[lineIdx] == speed) {
+				answer[lineIdx] = 2;
+			}//else answer will be the same as it was
+		}
+	}
+	return answer;
+}
+
 std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointToGo) { //the shortest way from our position to given point
 	Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(_lineIdx);
 	int speed = 0;
@@ -127,9 +155,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 	else if (_position == line.lenght) { //if we are at the second point of line
 		int point = line.points.second;
 		std::vector<std::pair<int, int>> path = this->findWay(point, pointToGo);
-		std::cout << point << " " << path[1].first << std::endl;
 		line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(point, path[1].first);
-		std::cout << line.idx << std::endl;
 		if (line.points.first == point) {
 			speed = 1;
 		}
