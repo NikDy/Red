@@ -94,8 +94,9 @@ bool Drawer::townsToShapes(std::map<int, std::shared_ptr<Town>>& towns, std::vec
 	for (auto town : towns)
 	{
 		sf::Sprite sprite;
+		auto position = map_to_draw[town.first].getPosition();
 		sprite.setTexture(town_texture);
-		sprite.setPosition(4.f * rad * ((town.first - 1) % grid_size) + 2.3f * rad, 4.f * rad * ((town.first - 1) / grid_size) + 2.3f * rad);
+		sprite.setPosition(position.x + town_texture.getSize().x/4.0, position.y + town_texture.getSize().y / 4.0);
 		posts_to_draw.emplace(town.first, sprite);
 		sf::Text text("Town # " + town.second->name + " product - " + std::to_string(town.second->product), font, 50);
 		text.setFillColor(sf::Color::Black);
@@ -112,8 +113,9 @@ bool Drawer::storagesToShapes(std::map<int, std::shared_ptr<Storage>>& storages,
 	for (auto storage : storages)
 	{
 		sf::Sprite sprite;
+		auto position = map_to_draw[storage.first].getPosition();
 		sprite.setTexture(storage_texture);
-		sprite.setPosition(4.f * rad * ((storage.first - 1) % grid_size) + 2.3f * rad, 4.f * rad * ((storage.first - 1) / grid_size) + 2.3f * rad);
+		sprite.setPosition(position.x + storage_texture.getSize().x / 4.0, position.y + storage_texture.getSize().y / 4.0);
 		posts_to_draw.emplace(storage.first, sprite);
 		sf::Text text("Storage # " + storage.second->name + " armor - " + std::to_string(storage.second->armor), font, 50);
 		text.setFillColor(sf::Color::Black);
@@ -192,8 +194,9 @@ bool Drawer::marketsToShapes(std::map<int, std::shared_ptr<Market>>& markets, st
 	for (auto market : markets)
 	{
 		sf::Sprite sprite;
+		auto position = map_to_draw[market.first].getPosition();
 		sprite.setTexture(market_texture);
-		sprite.setPosition(4.f * rad * ((market.first - 1) % grid_size) + 2.3f * rad, 4.f * rad * ((market.first - 1) / grid_size) + 2.3f * rad);
+		sprite.setPosition(position.x + market_texture.getSize().x/4.0, position.y + market_texture.getSize().y/4.0);
 		posts_to_draw.emplace(market.first, sprite);
 		sf::Text text("Market # " + market.second->name + " product - " + std::to_string(market.second->product), font, 50);
 		text.setFillColor(sf::Color::Black);
@@ -241,21 +244,21 @@ void Drawer::drawAll()
 		{
 			window.draw(shape.second);
 		}
+		for (auto train : trains_to_draw)
+		{
+			window.draw(train.second);
+		}
 		for (auto sprite : posts_to_draw)
 		{
 			window.draw(sprite.second);
 		}
-		for (auto text : text_lay0_to_draw)
+		/*for (auto text : text_lay0_to_draw)
 		{
 			window.draw(text);
-		}
+		}*/
 		for (auto text : text_lay1_to_draw)
 		{
 			window.draw(text);
-		}
-		for (auto train : trains_to_draw)
-		{
-			window.draw(train.second);
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
