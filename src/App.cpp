@@ -5,7 +5,6 @@
 #include "Network_manager.h"
 #include "Data_manager.h"
 #include "Regulator.h"
-#include <Windows.h>
 #include <mutex>
 #include <thread>
 
@@ -17,20 +16,31 @@ int main(int argc, char* argv[])
 		
 	Data_manager::getInstance().login("ni");
 	Regulator reg;
-	auto a = reg.findWay(1, 5);
-	for (auto i : Data_manager::getInstance().getMapLayer0().getLines())
+	//auto a = reg.findWay(1, 5);
+	/*for (auto i : a)
 	{
-		std::cout << i.first.first << " " << i.first.second << std::endl;
-	}
+		std::cout << i.first << " " << i.second << std::endl;
+	}*/
+	//auto b = reg.nearestMarket(2, 0);
+	//auto c = reg.whereToGo(0, 2, 7);
+	//auto d = reg.makeTurn();
 	Drawer drawer(800, 600, "Drawer");
 	drawer.graphToShapes(Data_manager::getInstance().getMapLayer0(), Data_manager::getInstance().getMapLayer1());
-	for (int i = 0; i < 20; ++i) {
+	while(true) {
 		Data_manager::getInstance().makeMove(reg.makeTurn());
 		Data_manager::getInstance().forceTurn();
+		while (Data_manager::getInstance().turn == true);
 		drawer.update(Data_manager::getInstance().getMapLayer1());
-		std::cout << i << std::endl;
 }
-	
+	/*std::map<int, std::pair<int, int>> turn;
+	std::pair<int, int> k(-1, 1);
+	turn.emplace(1, k);
+	for (int i = 0; i < 10; ++i) {
+	Data_manager::getInstance().makeMove(turn);
+	Data_manager::getInstance().forceTurn();
+	while (Data_manager::getInstance().turn == true);
+	drawer.update(Data_manager::getInstance().getMapLayer1());
+	}*/
 	//drawer.drawAll();
 	//}
 	//else 
