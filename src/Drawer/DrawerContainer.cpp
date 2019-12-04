@@ -12,7 +12,7 @@ DrawerContainer::~DrawerContainer()
 }
 
 
-void DrawerContainer::addText(sf::Text& t, sf::Vector2f local_pos)
+void DrawerContainer::addText(sf::Text t, sf::Vector2f local_pos)
 {
 	auto new_text = t;
 	new_text.setPosition(position + local_pos);
@@ -20,7 +20,7 @@ void DrawerContainer::addText(sf::Text& t, sf::Vector2f local_pos)
 }
 
 
-void DrawerContainer::addShape(sf::CircleShape& sh, sf::Vector2f local_pos)
+void DrawerContainer::addShape(sf::CircleShape sh, sf::Vector2f local_pos)
 {
 	auto new_shape = sh;
 	new_shape.setPosition(position + local_pos);
@@ -28,7 +28,7 @@ void DrawerContainer::addShape(sf::CircleShape& sh, sf::Vector2f local_pos)
 }
 
 
-void DrawerContainer::addSprite(sf::Sprite& srt, sf::Vector2f local_pos)
+void DrawerContainer::addSprite(sf::Sprite srt, sf::Vector2f local_pos)
 {
 	auto new_sprite = srt;
 	new_sprite.setPosition(position + local_pos);
@@ -58,15 +58,15 @@ void DrawerContainer::draw(sf::RenderTarget& target, sf::RenderStates states=sf:
 {
 	for (auto i : shape_vector)
 	{
-		target.draw(i);
+		target.draw(i, states);
 	}
 	for (auto i : sprite_vector)
 	{
-		target.draw(i);
+		target.draw(i, states);
 	}
 	for (auto i : text_vector)
 	{
-		target.draw(i);
+		target.draw(i, states);
 	}
 }
 

@@ -20,7 +20,7 @@ class Drawer
 {
 private:
 
-	std::map<int, std::shared_ptr<sf::Drawable>> points;
+	std::map<int, DrawerContainer> points;
 	std::vector<selbaward::Line> lines;
 
 	float w_sizeX = std::stof(Data_manager::getInstance().config["window_W"]);
@@ -44,16 +44,17 @@ private:
 	sf::Texture train_texture;
 
 	int grid_size = 0;
+	float font_size = std::stof(Data_manager::getInstance().config["font_size"]);
+	float outline_thickness = std::stof(Data_manager::getInstance().config["outline_thickness"]);
 	float points_radius = std::stof(Data_manager::getInstance().config["points_radius"]);
 	const float lines_thickness = std::stof(Data_manager::getInstance().config["lines_thickness"]);
 	const float camera_movement_speed = std::stof(Data_manager::getInstance().config["camera_move_speed"]);
 	const float camera_zoom_speed = std::stof(Data_manager::getInstance().config["camera_zoom_speed"]);
 	
 	void reforceGraph();
-	void drawAll();
 	void updateShapes();
 	void buildVisualGraph();
-	void updateData();
+	void updatePosts();
 	
 	bool update_window = true;
 	std::thread updateThread;
@@ -63,7 +64,7 @@ private:
 
 
 
-	Drawer() {};
+	Drawer();
 	~Drawer();
 public:
 	static Drawer& getInstance()
@@ -74,8 +75,6 @@ public:
 	Drawer(Data_manager const&) = delete;
 	Drawer operator=(Drawer const&) = delete;
 
-	void startDraw();
-
-	bool update_on = true;
+	void drawAll();
 };
 

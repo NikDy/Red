@@ -14,6 +14,6 @@ int main(int argc, char* argv[])
 {
 	Data_manager::getInstance().loadConfigFromFile();
 	Data_manager::getInstance().login("nik");
-	Drawer::getInstance().startDraw();
+	Drawer::getInstance().drawAll();
 	return 0;
 }
