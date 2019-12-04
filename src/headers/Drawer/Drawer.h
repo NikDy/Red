@@ -44,6 +44,7 @@ private:
 	sf::Texture train_texture;
 
 	int grid_size = 0;
+	float updateTime = std::stof(Data_manager::getInstance().config["drawer_update_time"]);
 	float font_size = std::stof(Data_manager::getInstance().config["font_size"]);
 	float outline_thickness = std::stof(Data_manager::getInstance().config["outline_thickness"]);
 	float points_radius = std::stof(Data_manager::getInstance().config["points_radius"]);
@@ -55,6 +56,7 @@ private:
 	void updateShapes();
 	void buildVisualGraph();
 	void updatePosts();
+	void updateLines();
 	
 	bool update_window = true;
 	std::thread updateThread;

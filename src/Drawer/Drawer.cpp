@@ -50,7 +50,7 @@ void Drawer::updatePosts()
 		points[pidx].clearSprite();
 		points[pidx].clearText();
 		points[pidx].addSprite(sf::Sprite(market_texture), 
-			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0, -points_radius + market_texture.getSize().y / 4.0));
+			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0f, -points_radius + market_texture.getSize().y / 4.0f));
 		sf::Text text(market.second->name + " : " + std::to_string(market.second->product), font, (unsigned int)(font_size));
 		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
 		text.setFillColor(sf::Color::Black);
@@ -63,7 +63,7 @@ void Drawer::updatePosts()
 		points[pidx].clearSprite();
 		points[pidx].clearText();
 		points[pidx].addSprite(sf::Sprite(storage_texture),
-			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0, -points_radius + market_texture.getSize().y / 4.0));
+			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0f, -points_radius + market_texture.getSize().y / 4.0f));
 		sf::Text text(storage.second->name + " : " + std::to_string(storage.second->armor), font, (unsigned int)(font_size));
 		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
 		text.setFillColor(sf::Color::Black);
@@ -76,7 +76,7 @@ void Drawer::updatePosts()
 		points[pidx].clearSprite();
 		points[pidx].clearText();
 		points[pidx].addSprite(sf::Sprite(town_texture),
-			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0, -points_radius + market_texture.getSize().y / 4.0));
+			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0f, -points_radius + market_texture.getSize().y / 4.0f));
 		sf::Text text(town.second->name + " : " + std::to_string(town.second->armor), font, (unsigned int)(font_size));
 		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
 		text.setFillColor(sf::Color::Black);
@@ -85,21 +85,37 @@ void Drawer::updatePosts()
 }
 
 
-//void Drawer::reforceGraph()
-//{
-//	visual_graph = Forces::recalcForces(visual_graph);
-//	recalcLinesShapes();
-//}
+void Drawer::updateLines()
+{
+	auto graph = Data_manager::getInstance().getMapLayer0();
+	lines.clear();
+	for (auto line : graph.getLines())
+	{
+		selbaward::Line new_line(points[line.second.points.first].position, points[line.second.points.second].position);
+		new_line.setColor(sf::Color::Black);
+		new_line.setThickness(lines_thickness);
+		lines.emplace_back(new_line);
+	}
+}
+
+
+void Drawer::reforceGraph()
+{
+	updateLines();
+	//recalcLinesShapes();
+}
 
 
 void Drawer::drawAll()
 {
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
-	this->updateShapes();
+	updateShapes();
+	sf::Clock clock;
 	while (window.isOpen())
 	{
 		window.clear(w_background_color);
+		updateLines();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -109,10 +125,23 @@ void Drawer::drawAll()
 			}
 		}
 
+		this->reforceGraph();
+		if (clock.getElapsedTime().asMilliseconds() == updateTime)
+		{
+			updateShapes();
+			clock.restart();
+		}
+
+
+		for (auto l : lines)
+		{
+			window.draw(l);
+		}
 		for (auto p : points)
 		{
 			window.draw(p.second);
 		}
+		
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
