@@ -4,9 +4,13 @@
 #include "Graph.h"
 #include "MapLayer1.h"
 #include "Player.h"
+
 #include <condition_variable>
 #include <mutex>
 #include <thread>
+#include <chrono>
+#include <iostream>
+
 
 class Data_manager
 {
@@ -19,6 +23,8 @@ public:
 	Data_manager(Data_manager const&) = delete;
 	Data_manager operator=(Data_manager const&) = delete;
 
+	bool loadConfigFromFile();
+	std::map<std::string, std::string> config;
 
 	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
