@@ -14,25 +14,19 @@ DrawerContainer::~DrawerContainer()
 
 void DrawerContainer::addText(sf::Text t, sf::Vector2f local_pos)
 {
-	auto new_text = t;
-	new_text.setPosition(position + local_pos);
-	text_vector.emplace_back(new_text);
+	text_vector.emplace_back(std::make_pair(t, local_pos));
 }
 
 
 void DrawerContainer::addShape(sf::CircleShape sh, sf::Vector2f local_pos)
 {
-	auto new_shape = sh;
-	new_shape.setPosition(position + local_pos);
-	shape_vector.emplace_back(new_shape);
+	shape_vector.emplace_back(std::make_pair(sh, local_pos));
 }
 
 
 void DrawerContainer::addSprite(sf::Sprite srt, sf::Vector2f local_pos)
 {
-	auto new_sprite = srt;
-	new_sprite.setPosition(position + local_pos);
-	sprite_vector.emplace_back(new_sprite);
+	sprite_vector.emplace_back(std::make_pair(srt, local_pos));
 }
 
 
@@ -58,15 +52,18 @@ void DrawerContainer::draw(sf::RenderTarget& target, sf::RenderStates states=sf:
 {
 	for (auto i : shape_vector)
 	{
-		target.draw(i, states);
+		i.first.setPosition(position + i.second);
+		target.draw(i.first, states);
 	}
 	for (auto i : sprite_vector)
 	{
-		target.draw(i, states);
+		i.first.setPosition(position + i.second);
+		target.draw(i.first, states);
 	}
 	for (auto i : text_vector)
 	{
-		target.draw(i, states);
+		i.first.setPosition(position + i.second);
+		target.draw(i.first, states);
 	}
 }
 

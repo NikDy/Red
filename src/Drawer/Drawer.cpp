@@ -101,8 +101,8 @@ void Drawer::updateLines()
 
 void Drawer::reforceGraph()
 {
+	points = Forces::recalcForces(points);
 	updateLines();
-	//recalcLinesShapes();
 }
 
 

@@ -8,9 +8,9 @@
 class DrawerContainer : public sf::Drawable
 {
 private:
-	std::vector<sf::Text> text_vector;
-	std::vector<sf::CircleShape> shape_vector;
-	std::vector<sf::Sprite> sprite_vector;
+	std::vector<std::pair<sf::Text, sf::Vector2f>> text_vector;
+	std::vector<std::pair<sf::CircleShape, sf::Vector2f>> shape_vector;
+	std::vector<std::pair<sf::Sprite, sf::Vector2f>> sprite_vector;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 

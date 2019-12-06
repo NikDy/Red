@@ -1,20 +1,23 @@
 #pragma once
+#include <cmath>
+
+
 #include "Drawer.h"
+#include "DrawerContainer.h"
+
 
 
 class Forces
 {
 public:
 
-	static std::map<int, sf::CircleShape> recalcForces(const std::map<int, sf::CircleShape>& current_points);
+	static std::map<int, DrawerContainer> recalcForces(std::map<int, DrawerContainer>& current_points);
+
 	Forces();
 	~Forces();
 private:
-	
-	static float AttractionForce(float range, float length);
-	static float RepulsionForce(float range);
 
-	typedef sf::Vector2f force;
-	//typedef std::pair<float, float> force; //force vector x, y
+	static float range(sf::Vector2f, sf::Vector2f);
+	static float delta(float, float);
 };
 
