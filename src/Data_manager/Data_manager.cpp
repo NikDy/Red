@@ -1,21 +1,7 @@
 #include "Data_manager.h"
+#include <chrono>
 
 
-
-
-bool Data_manager::loadConfigFromFile()
-{
-	std::ifstream cfg_file("config.cfg");
-	if (!cfg_file.is_open()) return false;
-	std::string arg;
-	std::string val;
-	std::string eql;
-	while (cfg_file >> arg >> eql >> val)
-	{
-		config[arg] = val;
-	}
-	return true;
-}
 
 
 bool Data_manager::login(std::string name, std::string password, std::string game, int num_turns, int num_players)

@@ -7,12 +7,10 @@
 #include "Regulator.h"
 #include <mutex>
 #include <thread>
-#include "Forces.h"
 
 
-int main()
+int main(int argc, char* argv[])
 {
-<<<<<<< HEAD
 	//if (argc == 2)
 	//{
 		
@@ -49,15 +47,5 @@ int main()
 	//{
 	//	std::cout << "Usage: Graph_drawer <path_to_graph.json>" << std::endl;
 	//}
-=======
-	//float range = 3;
-	//float angle = -2.35619;
-	//
-	//Forces::rangeAngleToVector(range, angle);
-
-	Data_manager::getInstance().loadConfigFromFile();
-	Data_manager::getInstance().login("nik");
-	Drawer::getInstance().drawAll();
->>>>>>> Task3_drawer_fix
 	return 0;
 }
