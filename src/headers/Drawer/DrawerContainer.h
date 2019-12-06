@@ -30,7 +30,4 @@ public:
 	void clearText();
 	void clearShape();
 	void clearSprite();
-
-
-	//std::vector<sf::Drawable&> getAllDrawable();
 };

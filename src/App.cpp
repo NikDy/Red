@@ -13,11 +13,6 @@
 
 int main()
 {
-	//float range = 3;
-	//float angle = -2.35619;
-	//
-	//Forces::rangeAngleToVector(range, angle);
-
 	Data_manager::getInstance().loadConfigFromFile();
 	Data_manager::getInstance().login("nik");
 	Drawer::getInstance().drawAll();
