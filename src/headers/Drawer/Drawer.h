@@ -60,6 +60,12 @@ private:
 	void updateShapes();
 	std::mutex update_mutex;
 	std::condition_variable update_check;
+
+
+
+	Drawer();
+	~Drawer();
+
 public:
 	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_, sf::Color w_background_color_, sf::Color w_shapes_color_);
 	Drawer(float w_sizeX_, float w_sizeY_, std::string w_name_);
