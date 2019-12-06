@@ -65,7 +65,6 @@ private:
 	std::condition_variable update_check;
 
 
-
 	Drawer();
 	~Drawer();
 public:
