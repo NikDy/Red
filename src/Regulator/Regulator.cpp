@@ -215,19 +215,14 @@ std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 	std::map<int, Train>& trains = _player.getTrains();
 	std::map<int, std::shared_ptr<Market>>& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	std::map<int, std::pair<int, int>> turn;
-	int lineIdx = 0;
-	int position = 0;
-	int speed = 0;
-	int goods = 0;
-	int goods_cap = 0;
 
 	for (auto train : trains) {
-		lineIdx = train.second.getLineIdx();
-		position = train.second.getPosition();
-		speed = train.second.getSpeed();
+		int lineIdx = train.second.getLineIdx();
+		int position = train.second.getPosition();
+		int speed = train.second.getSpeed();
 		Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(lineIdx);
-		goods = train.second.getGoods();
-		goods_cap = train.second.getGoodsCapacity();
+		int goods = train.second.getGoods();
+		int goods_cap = train.second.getGoodsCapacity();
 		std::vector<std::pair<int, int>> path;
 		std::pair<int, int> speedNLine;
 		if (goods == 0) {
