@@ -1,46 +1,6 @@
 #include "Regulator.h"
 
 
-std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end)
-{
-	auto& Graph = Data_manager::getInstance().getMapLayer0();
-	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::less<std::pair<int, int>>> frontier;
-	frontier.emplace(std::pair<int, int>(Graph.getPoints()[begin].idx, 0));
-	std::unordered_map<int, int> came_from;
-	came_from[begin] = begin;
-	std::unordered_map<int, int> cost_so_far;
-	cost_so_far[begin] = 0;
-
-	while (!frontier.empty())
-	{
-		auto current = frontier.top().first;
-		frontier.pop();
-		if(current == end)
-			break;
-		for (auto& next : Graph.getPoints()[current].adjacency_list)
-		{
-			int new_cost = cost_so_far[current] + Graph.getLineByTwoPoints(current, next).lenght;
-			if (!cost_so_far.count(next) || new_cost < cost_so_far[next])
-			{
-				cost_so_far[next] = new_cost;
-				came_from[next] = current;
-				frontier.emplace(std::pair<int, int>(next, new_cost));
-			}
-		}
-	}
-
-	std::vector<std::pair<int, int>> path;
-	auto current = end;
-	path.push_back(std::make_pair(current, cost_so_far[current]));
-	while (current != begin) {
-		current = came_from[current];
-		path.push_back(std::make_pair(current, cost_so_far[current]));
-	}
-	std::reverse(path.begin(), path.end());
-	return path;
-}
-
-
 int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of nearst market from our position on the map
 	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	int min = 0;
@@ -61,11 +21,11 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 	for (auto market : markets) {
 		Market _market = *market.second;
 		if (!case3) { //if we are at some point
-			std::vector<std::pair<int, int>> path = this->findWay(_point, _market.point_idx);
+			std::vector<std::pair<int, int>> path = RoutePlaner::findWay(_point, _market.point_idx);
 			lengthToMarket = path[path.size() - 1].second;
 		}
 		else { //if we are inside the line
-			std::vector<std::pair<int, int>> pathFromFirstPoint = this->findWay(line.points.first, _market.point_idx);
+			std::vector<std::pair<int, int>> pathFromFirstPoint = RoutePlaner::findWay(line.points.first, _market.point_idx);
 			int lengthFromFirstPoint = 0; //length from position through the first point of line
 			if (pathFromFirstPoint.size() == 1) { //this means that the first point of line is our destination
 				lengthFromFirstPoint = _position;
@@ -78,7 +38,7 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 					lengthFromFirstPoint = pathFromFirstPoint[pathFromFirstPoint.size() - 1].second + _position;
 				}
 			}
-			std::vector<std::pair<int, int>> pathFromSecondPoint = this->findWay(line.points.second, _market.point_idx);
+			std::vector<std::pair<int, int>> pathFromSecondPoint = RoutePlaner::findWay(line.points.second, _market.point_idx);
 			int lengthFromSecondPoint = 0;
 			if (pathFromSecondPoint.size() == 1) { //this means that the second point of line is our destination
 				lengthFromSecondPoint = line.lenght - _position;
@@ -135,13 +95,14 @@ std::vector<int> Regulator:: linesStatus() {	//not correct always, should think 
 	return answer;
 }
 
+
 std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointToGo) { //the shortest way from our position to given point
 	Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(_lineIdx);
 	int speed = 0;
 	int lineToGo = 0;
 	if (_position == 0) { //if we are at first point of line
 		int point = line.points.first;
-		std::vector<std::pair<int, int>> path = this->findWay(point, pointToGo);
+		std::vector<std::pair<int, int>> path = RoutePlaner::findWay(point, pointToGo);
 		line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(point, path[1].first);
 		if (line.points.first == point) {
 			speed = 1;
@@ -154,7 +115,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 	}
 	else if (_position == line.lenght) { //if we are at the second point of line
 		int point = line.points.second;
-		std::vector<std::pair<int, int>> path = this->findWay(point, pointToGo);
+		std::vector<std::pair<int, int>> path = RoutePlaner::findWay(point, pointToGo);
 		line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(point, path[1].first);
 		if (line.points.first == point) {
 			speed = 1;
@@ -166,7 +127,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 		return std::make_pair(lineToGo, speed);
 	}
 	else { //if we are inside line
-		std::vector<std::pair<int, int>> pathFromFirstPoint = this->findWay(line.points.first, pointToGo);
+		std::vector<std::pair<int, int>> pathFromFirstPoint = RoutePlaner::findWay(line.points.first, pointToGo);
 		int lengthFromFirstPoint = 0; //length from position through the first point of line
 		int koef1 = 1;
 		if (pathFromFirstPoint.size() == 1) { //this means that the first point of line is our destination
@@ -182,7 +143,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 			}
 		}
 		//all the same with second point
-		std::vector<std::pair<int, int>> pathFromSecondPoint = this->findWay(line.points.second, pointToGo);
+		std::vector<std::pair<int, int>> pathFromSecondPoint = RoutePlaner::findWay(line.points.second, pointToGo);
 		int lengthFromSecondPoint = 0;
 		int koef2 = 1;
 		if (pathFromSecondPoint.size() == 1) { //this means that the second point of line is our destination
@@ -208,6 +169,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 	}
 
 }
+
 
 std::map<int, std::pair<int, int>> Regulator::makeTurn() { 
 	Player& _player = Data_manager::getInstance().getPlayer();
