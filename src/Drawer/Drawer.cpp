@@ -78,11 +78,16 @@ void Drawer::updatePosts()
 		points[pidx].clearSprite();
 		points[pidx].clearText();
 		points[pidx].addSprite(sf::Sprite(town_texture),
-			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0f, -points_radius + market_texture.getSize().y / 4.0f));
-		sf::Text text(town.second->name + " : " + std::to_string(town.second->armor) + " : " + std::to_string(town.second->product), font, (unsigned int)(font_size));
-		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
-		text.setFillColor(sf::Color::Black);
-		points[pidx].addText(text, sf::Vector2f(0, -points_radius - font_size));
+		sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0f, -points_radius + market_texture.getSize().y / 4.0f));
+		sf::Text text1(town.second->name + " : " + std::to_string(town.second->armor) + " : " + std::to_string(town.second->product),
+			font, (unsigned int)(font_size));
+		text1.setOrigin(text1.getLocalBounds().width / 2.f, text1.getLocalBounds().height / 2.f);
+		text1.setFillColor(sf::Color::Black);
+		points[pidx].addText(text1, sf::Vector2f(0, -points_radius - font_size));
+		sf::Text text2("pop : " + std::to_string(town.second->population), font, (unsigned int)(font_size));
+		text2.setOrigin(text2.getLocalBounds().width / 2.f, text2.getLocalBounds().height / 2.f);
+		text2.setFillColor(sf::Color::Black);
+		points[pidx].addText(text2, sf::Vector2f(0, -points_radius - 2 * font_size));
 	}
 }
 
@@ -131,7 +136,6 @@ void Drawer::draw()
 
 void Drawer::drawAll()
 {
-	//std::lock_guard<std::mutex> guard(lock);
 	std::unique_lock<std::mutex> locker(lock);
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
