@@ -70,6 +70,17 @@ const std::string& Train::getPlayerIdx() const
 	return player_idx;
 }
 
+bool Train::addEvent(Event_game event_)
+{
+	events.push_back(event_);
+	return true;
+}
+
+std::vector<Event_game>& Train::getEvents()
+{
+	return events;
+}
+
 std::shared_ptr<Game_object> Train::getObjectPtr()
 {
 	return std::make_shared<Train>(*this);

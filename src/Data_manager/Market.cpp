@@ -3,6 +3,17 @@
 
 
 
+std::vector<Event_game>& Market::getEvents()
+{
+	return events;
+}
+
+bool Market::addEvent(Event_game event_)
+{
+	events.push_back(event_);
+	return true;
+}
+
 const std::type_info & Market::getObjectType()
 {
 	return typeid(*this);
