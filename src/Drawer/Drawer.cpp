@@ -13,6 +13,7 @@ Drawer::Drawer()
 
 Drawer::~Drawer()
 {
+	windowThread.join();
 }
 
 
@@ -20,6 +21,7 @@ void Drawer::updateShapes()
 {
 	if (points.empty()) buildVisualGraph();
 	updatePosts();
+	updateTrains();
 }
 
 
@@ -77,10 +79,26 @@ void Drawer::updatePosts()
 		points[pidx].clearText();
 		points[pidx].addSprite(sf::Sprite(town_texture),
 			sf::Vector2f(-points_radius + market_texture.getSize().x / 4.0f, -points_radius + market_texture.getSize().y / 4.0f));
-		sf::Text text(town.second->name + " : " + std::to_string(town.second->armor), font, (unsigned int)(font_size));
+		sf::Text text(town.second->name + " : " + std::to_string(town.second->armor) + " : " + std::to_string(town.second->product), font, (unsigned int)(font_size));
 		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().height / 2.f);
 		text.setFillColor(sf::Color::Black);
 		points[pidx].addText(text, sf::Vector2f(0, -points_radius - font_size));
+	}
+}
+
+void Drawer::updateTrains()
+{
+	auto graph_info = Data_manager::getInstance().getMapLayer1();
+	auto graph = Data_manager::getInstance().getMapLayer0();
+	for (auto train : graph_info.getTrains())
+	{
+		Graph_Line line = graph.getLineByIdx(train.second.getLineIdx());
+		auto start_pos = points[line.points.first].position;
+		auto end_pos = points[line.points.second].position;
+		int pidx = train.second.getIdx();
+		trains[pidx].clearSprite();
+		trains[pidx].addSprite(sf::Sprite(train_texture),
+			sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x/2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
 	}
 }
 
@@ -106,9 +124,15 @@ void Drawer::reforceGraph()
 }
 
 
+void Drawer::draw()
+{
+		windowThread = std::thread(&Drawer::drawAll, this);
+}
+
 void Drawer::drawAll()
 {
-	std::lock_guard<std::mutex> guard(lock);
+	//std::lock_guard<std::mutex> guard(lock);
+	std::unique_lock<std::mutex> locker(lock);
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();
@@ -127,7 +151,7 @@ void Drawer::drawAll()
 		}
 
 		this->reforceGraph();
-		if (clock.getElapsedTime().asMilliseconds() == updateTime)
+		if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 		{
 			updateShapes();
 			clock.restart();
@@ -141,6 +165,10 @@ void Drawer::drawAll()
 		for (auto p : points)
 		{
 			window.draw(p.second);
+		}
+		for (auto t : trains)
+		{
+			window.draw(t.second);
 		}
 		
 

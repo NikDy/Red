@@ -15,7 +15,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end)
 	{
 		auto current = frontier.top().first;
 		frontier.pop();
-		if (current == end)
+		if(current == end)
 			break;
 		for (auto& next : Graph.getPoints()[current].adjacency_list)
 		{
@@ -49,10 +49,10 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 	int _point = 0;
 	bool case3 = false; // the case if we are inside the line
 	if (_position == 0) {
-		_point = line.points.first;
+		 _point = line.points.first;
 	}
 	else if (_position == line.lenght) {
-		_point = line.points.first;
+		 _point = line.points.first;
 	}
 	else {
 		case3 = true;
@@ -97,7 +97,7 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 			else {
 				lengthToMarket = lengthFromFirstPoint;
 			}
-
+			
 		}
 		if (lengthToMarket < minLength) {
 			minLength = lengthToMarket;
@@ -107,13 +107,11 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 	return min;
 }
 
-
 bool Regulator::checkFuel(Train _train) { //will do it later..
 	return true;
 };
 
-
-std::vector<int> Regulator::linesStatus() {	//not correct always, should think about somebody who is just standing on the line/standing on the first/second point of line
+std::vector<int> Regulator:: linesStatus() {	//not correct always, should think about somebody who is just standing on the line/standing on the first/second point of line
 	std::map<int, Train>& trains = Data_manager::getInstance().getMapLayer1().getTrains();
 	int numberOfLines = Data_manager::getInstance().getMapLayer0().getLines().size();
 	std::vector<int> answer;
@@ -188,7 +186,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 		int lengthFromSecondPoint = 0;
 		int koef2 = 1;
 		if (pathFromSecondPoint.size() == 1) { //this means that the second point of line is our destination
-			lengthFromSecondPoint = line.lenght - _position;
+			lengthFromSecondPoint =line.lenght-_position;
 		}
 		else {
 			if (pathFromSecondPoint[1].first == line.points.first) {
@@ -200,10 +198,10 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 			}
 		}
 		if (lengthFromFirstPoint <= lengthFromSecondPoint) {
-			speed = -1 * koef1;
+			speed = -1*koef1;
 		}
 		else {
-			speed = 1 * koef2;
+			speed = 1*koef2;
 		}
 		lineToGo = line.idx;
 		return std::make_pair(lineToGo, speed);
@@ -211,7 +209,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 
 }
 
-std::map<int, std::pair<int, int>> Regulator::makeTurn() {
+std::map<int, std::pair<int, int>> Regulator::makeTurn() { 
 	Player& _player = Data_manager::getInstance().getPlayer();
 
 	std::map<int, Train>& trains = _player.getTrains();
@@ -236,7 +234,7 @@ std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 			speedNLine = this->whereToGo(position, lineIdx, this->nearestMarket(lineIdx, position));
 		}
 		else {
-			speedNLine = this->whereToGo(position, lineIdx, _player.getHome().post_idx);
+			speedNLine = this->whereToGo(position, lineIdx, _player.getHome().idx);
 		}
 		std::pair<int, int> trainNSpeed(speedNLine.second, train.first);
 		turn.emplace(speedNLine.first, trainNSpeed);

@@ -69,7 +69,7 @@ Data_manager::~Data_manager()
 
 bool Data_manager::forceTurn()
 {
-	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	while (turn != false);
 	std::lock_guard<std::mutex> locker(update_mutex);
 	if (!net.Action(5, std::pair<std::string, std::string>("", ""))) return false;
 	turn = true;

@@ -21,6 +21,7 @@ class Drawer
 private:
 
 	std::map<int, DrawerContainer> points;
+	std::map<int, DrawerContainer> trains;
 	std::vector<selbaward::Line> lines;
 
 	float w_sizeX = std::stof(Data_manager::getInstance().config["window_W"]);
@@ -56,6 +57,7 @@ private:
 	void updateShapes();
 	void buildVisualGraph();
 	void updatePosts();
+	void updateTrains();
 	void updateLines();
 	
 	bool update_window = true;
@@ -77,7 +79,7 @@ public:
 	}
 	Drawer(Data_manager const&) = delete;
 	Drawer operator=(Drawer const&) = delete;
-
+	void draw();
 	void drawAll();
 };
 
