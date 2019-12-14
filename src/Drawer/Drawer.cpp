@@ -108,6 +108,7 @@ void Drawer::reforceGraph()
 
 void Drawer::drawAll()
 {
+	std::lock_guard<std::mutex> guard(lock);
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();

@@ -68,6 +68,7 @@ private:
 
 	Drawer();
 	~Drawer();
+	std::mutex lock;
 public:
 	static Drawer& getInstance()
 	{

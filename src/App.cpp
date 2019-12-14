@@ -14,7 +14,8 @@
 int main()
 {
 	Data_manager::getInstance().loadConfigFromFile();
-	Data_manager::getInstance().login("nik");
+	auto username = Data_manager::getInstance().config["name"];
+	Data_manager::getInstance().login(username);
 	Drawer::getInstance().drawAll();
 	return 0;
 }
