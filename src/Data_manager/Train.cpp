@@ -1,8 +1,6 @@
 #include "Train.h"
 
 
-
-
 Train::Train(int idx_, int line_idx_, const std::string& player_idx_, int position_, int speed_)
 {
 	idx = idx_;
