@@ -49,7 +49,7 @@ void TrainDriver::setRoute(Route _route) {
 	route = _route;
 }
 
-void TrainDriver::foundSpeedNLine(TrainDriver driver) { //to found speedToSet
+void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 	std::cout << "I'm inside foundSpeedNLine" << std::endl;
 	Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(idx);
 	int curLineIdx = train.getLineIdx();
@@ -59,6 +59,9 @@ void TrainDriver::foundSpeedNLine(TrainDriver driver) { //to found speedToSet
 	int position = train.getPosition();
 	//std::cout << "Train Position is " << position << std::endl;
 	//std::cout << "Driver id is: " << driver.getIdx() << std::endl;
+	std::cout << "Route before foundSpeedNLine" << std::endl;
+	driver.getRoute().showRoute();
+
 	if (position == 0 || position == curLine.lenght) {
 		if (driver.getRoute().onePoint()) {
 			std::cout << "Only one point in route" << std::endl;
@@ -66,13 +69,13 @@ void TrainDriver::foundSpeedNLine(TrainDriver driver) { //to found speedToSet
 			setStatus(true);
 			return;
 		}
-		driver.getRoute().showRoute();
+		//driver.getRoute().showRoute();
 		int firstPoint = driver.getRoute().pathTop();//first point of carrent route
 		std::cout << "i'm after pathTop() " << std::endl;
 		std::cout << "first point of the route is " << firstPoint << std::endl;
 		driver.getRoute().pathPop();
 		std::cout << "i'm after pathPop() "  << std::endl;
-		driver.getRoute().showRoute();
+		//driver.getRoute().showRoute();
 		int secondPoint = driver.getRoute().pathTop();//second point of current route
 		std::cout << "second point of the route is " << secondPoint << std::endl;
 
@@ -85,4 +88,7 @@ void TrainDriver::foundSpeedNLine(TrainDriver driver) { //to found speedToSet
 			setSpeed(-1);
 		}
 	}
+	std::cout << "Route before foundSpeedNLine" << std::endl;
+	driver.getRoute().showRoute();
+
 }

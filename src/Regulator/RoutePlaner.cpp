@@ -128,7 +128,7 @@ void RoutePlaner::buildRoutes() {
 	std::cout << "I'm inside buildRoutes" << std::endl;
 	Regulator  reg;
 	//auto _drivers = getInstance().getDrivers();
-	for (auto driver : getInstance().getDrivers()) {
+	for (auto& driver : getInstance().getDrivers()) {
 		if (driver.second.getStatus()) {
 			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 			//std::cout << "Train idx is " <<train.getIdx()<< std::endl;
@@ -157,9 +157,7 @@ void RoutePlaner::buildRoutes() {
 			}
 			driver.second.setStatus(false);
 			driver.second.setRoute(route);
-			//std::cout << "Show first point of driver road: " << driver.second.getRoute().pathTop()<<std::endl;
-			driver.second.foundSpeedNLine(driver.second);
-			std::cout << "his speed and line are (inside routeBuilder) " << driver.second.getSpeed() << " and " << driver.second.getLineToGo() << std::endl;
+			//std::cout << "Show first point of driver road: " << driver.second.getRoute().pathTop()<<std::endl;			
 		}
 	}
 

@@ -16,7 +16,7 @@ void Route::buildPathQueue(std::vector<std::pair<int, int>> points_n_weigths)
 		path_seq.push_back(point->first);
 		route_lenght += point->second;
 	}
-	for (auto point = points_n_weigths.rbegin(); point != points_n_weigths.rend(); point++)
+	for (auto point = points_n_weigths.rbegin()+1; point != points_n_weigths.rend(); point++)
 	{
 		path_seq.push_back(point->first);
 		route_lenght += point->second;
