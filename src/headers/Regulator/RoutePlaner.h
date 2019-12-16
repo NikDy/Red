@@ -17,15 +17,16 @@ public:
 	}
 	RoutePlaner(RoutePlaner const&) = delete;
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
-	
+	std::map<int, TrainDriver>& getDrivers();
 	Route buildNewMarketRoute(int begin, Train&);
 	Route buildNewStorageRoute(int begin, Train&);
 	
 	void buildRoutes();
 	void addDriver(int _idx, TrainDriver _trainDriver);
-	std::map<int, TrainDriver> drivers; //int- driver's idx; bool- driver's status (true in town, false on road)
+	
 
 private:
+	std::map<int,TrainDriver> drivers; //int- driver's idx; true in town, false on road
 	RoutePlaner();
 	~RoutePlaner();
 

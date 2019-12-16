@@ -57,6 +57,10 @@ Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 
 	return route;
 }
 
+std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
+	return drivers;
+}
+
 Route RoutePlaner::buildNewStorageRoute(int begin, Train&) { //for one storage without checking fuel and capasity
 	auto& storages = Data_manager::getInstance().getMapLayer1().getStorages();
 	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
@@ -123,7 +127,8 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 void RoutePlaner::buildRoutes() {
 	std::cout << "I'm inside buildRoutes" << std::endl;
 	Regulator  reg;
-	for (auto driver : drivers) {
+	//auto _drivers = getInstance().getDrivers();
+	for (auto driver : getInstance().getDrivers()) {
 		if (driver.second.getStatus()) {
 			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 			//std::cout << "Train idx is " <<train.getIdx()<< std::endl;

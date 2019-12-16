@@ -27,11 +27,11 @@ std::map<int, std::pair<int, int>> Decision:: makeTurn() {
 	std::cout << "I'm inside MakeTurn" << std::endl;
 	RoutePlaner::getInstance().buildRoutes();
 	std::cout << "I'm after buildRoutes" << std::endl;
-	auto drivers = RoutePlaner::getInstance().drivers;
+	//auto drivers = RoutePlaner::getInstance().getDrivers();
 
 	std::map<int, std::pair<int, int>> turn;
 	std::cout << "I'm before last cycle in Decision makeTurn" << std::endl;
-	for (auto driver : drivers) {
+	for (auto driver : RoutePlaner::getInstance().getDrivers()) {
 		std::cout << "I'm inside last cycle in Decision makeTurn" << std::endl;
 		std::cout << "driver idx is " <<driver.second.getIdx() << std::endl;
 		std::cout << "his speed and line are " << driver.second.getSpeed()<<" and "<< driver.second.getLineToGo()<< std::endl;
