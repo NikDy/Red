@@ -41,9 +41,8 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end)
 int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 {
 	int lenght = 0;
-	for (auto point : way)
-	{
-		lenght += point.second;
+	if (way.size() != 1) {
+		lenght = (*way.rbegin()).second;
 	}
 	return lenght;
 }
@@ -92,20 +91,31 @@ bool Regulator::storageOrMarket() { //true if market, false if storage
 		std::cout << "Inside storage cycle. storage point idx is " << _storage.point_idx << std::endl;
 		std::vector<std::pair<int, int>> pathToStorage = findWay(town.point_idx, _storage.point_idx);
 		lengthToStorage = wayLength(pathToStorage);
-		for (auto market : markets) {
-			Market _market = *market.second;
-			std::vector<std::pair<int, int>> pathToMarket = findWay(town.point_idx, _market.point_idx);
-			lengthToMarket = wayLength(pathToMarket);
-			wholePath = lengthToMarket * 4 + lengthToStorage * 2;
-			int turnCount = 0;
-			int necessaryProdacts = 0;
-			populationInTownThroughRoad = (populationInTownBeforeRoad + (int)(wholePath / 30)) % town.population_capacity;
-			difProducts = productsInTown + _market.product - necessaryProdacts;
-			int plusProducts = _market.product - (lengthToMarket * 2 * populationInTownThroughRoad);//нужно посчитать отдельно кол-во возможно съеденной еды (todo) пока так
+		std::cout << " market: " << _storage.point_idx << " lengthToMarket: " << lengthToStorage << std::endl;
+		wholePath = lengthToStorage * 2;
+		int turnCount = 1;
+		int necessaryProdacts = 0;
+		populationInTownThroughRoad = populationInTownBeforeRoad;
+		for (turnCount; turnCount < wholePath; turnCount++) {
+			necessaryProdacts += populationInTownThroughRoad;
+			std::cout << turnCount << " necessaryProdacts are" << necessaryProdacts << std::endl;
+			if ((turnCount % 30 == 0) && (turnCount % 60 != 0)) {
+				populationInTownThroughRoad++;
+				std::cout << "inside plus 1" << std::endl;
 
-			if (difProducts > 0 && plusProducts > 0) {
-				return false;
 			}
+			if (turnCount % 60 == 0) {
+				populationInTownThroughRoad += 2;
+				std::cout << "inside plus 2" << std::endl;
+
+			}
+		}
+		difProducts = productsInTown  - necessaryProdacts;
+		std::cout << "necessary products are " << necessaryProdacts << std::endl;
+		std::cout << "dif products are " << difProducts << std::endl;
+
+		if (difProducts > 0) {
+			return false;
 		}
 	}
 	return true;

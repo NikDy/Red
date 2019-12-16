@@ -66,6 +66,7 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 		if (driver.getRoute().onePoint()) {
 			std::cout << "Only one point in route" << std::endl;
 			driver.getRoute().pathPop();
+			setSpeed(0);
 			setStatus(true);
 			return;
 		}

@@ -18,8 +18,8 @@ public:
 	RoutePlaner(RoutePlaner const&) = delete;
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 	std::map<int, TrainDriver>& getDrivers();
-	Route buildNewMarketRoute(int begin, Train&);
-	Route buildNewStorageRoute(int begin, Train&);
+	Route buildNewMarketRoute(int begin, Train& train);
+	Route buildNewStorageRoute(int begin, Train& train);
 	
 	void buildRoutes();
 	void addDriver(int _idx, TrainDriver _trainDriver);

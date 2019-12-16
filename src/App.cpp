@@ -23,8 +23,8 @@ int main()
 	dec.Insertion();
 	
 	/*Drawer::getInstance().draw();*/
-	for (int i = 1; i < 10; i++) {
-			std::cout << i << std::endl;
+	while(true) {
+			
 			Data_manager::getInstance().makeMove(dec.makeTurn());
 			Data_manager::getInstance().forceTurn();
 			while (Data_manager::getInstance().turn != false);

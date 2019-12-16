@@ -12,7 +12,7 @@ private:
 	const int server_port = 443;
 	const char* server_adress = "wgforge-srv.wargaming.net";
 
-	
+
 
 
 	std::list<std::shared_ptr<Game_object>> response_list;
