@@ -12,6 +12,8 @@ public:
 	void buildPathQueue(std::vector<std::pair<int, int>>);
 	int pathTop();
 	void pathPop();
+	bool onePoint();
+	bool isEmpty();
 
 private:
 	std::vector<int> path_seq;  //points of current route

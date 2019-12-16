@@ -1,4 +1,5 @@
 #include "Route.h"
+#include <iostream>
 
 Route::Route()
 {
@@ -20,14 +21,37 @@ void Route::buildPathQueue(std::vector<std::pair<int, int>> points_n_weigths)
 		path_seq.push_back(point->first);
 		route_lenght += point->second;
 	}
+
 }
 
 int Route::pathTop()
 {
+	std::cout << "i'm inside pathTop() " << std::endl;
+	std::cout << "path seq begin is " << *path_seq.begin()<< std::endl;
+
+
 	return *path_seq.begin();
 }
 
 void Route::pathPop()
 {
 	path_seq.erase(path_seq.begin());
+}
+
+bool Route::onePoint() {
+	if (path_seq.size() == 1) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Route::isEmpty() {
+	if (path_seq.size() == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }

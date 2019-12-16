@@ -1,8 +1,6 @@
 #include "MapLayer1.h"
 
 
-
-
 std::map<int, Train>& MapLayer1::getTrains()
 {
 	return trains;
@@ -95,4 +93,12 @@ bool MapLayer1::addStorage(std::shared_ptr<Game_object> post)
 {
 	std::shared_ptr<Storage> storage_ = std::dynamic_pointer_cast<Storage, Game_object>(post);
 	return storages.emplace(storage_->point_idx, storage_).second;
+}
+
+Train MapLayer1::getTrainByIdx(const int& idx) {
+	for (auto train : trains) {
+		if (train.second.getIdx() == idx) {
+			return train.second;
+		}
+	}
 }
