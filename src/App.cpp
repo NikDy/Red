@@ -27,6 +27,7 @@ int main()
 			std::cout << i << std::endl;
 			Data_manager::getInstance().makeMove(dec.makeTurn());
 			Data_manager::getInstance().forceTurn();
+			while (Data_manager::getInstance().turn != false);
 	}
 
 	return 0;
