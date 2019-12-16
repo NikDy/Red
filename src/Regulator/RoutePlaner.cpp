@@ -4,7 +4,7 @@
 
 
 Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 market road without checking fuel and capacity
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	auto town = Data_manager::getInstance().getPlayer().getTown();
 	Regulator reg;
 	std::cout << "First point idx of route is " << begin << std::endl;
@@ -47,7 +47,7 @@ Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 
 
 		if (productsFromMarket>maxProducts) {
 			maxProducts = productsFromMarket;
-			max = _market.point_idx;
+			max = _market->point_idx;
 		}
 	}
 	std::cout << "Outside market cycle. The best market poin idx is " << max << std::endl;
@@ -98,7 +98,7 @@ Route RoutePlaner::buildNewStorageRoute(int begin, Train&) { //for one storage w
 			}
 			difProducts = productsInTown + _market.product - necessaryProdacts;
 			plusProducts = _market.product - (lengthToMarket * 2 *populationInTownThroughRoad);//нужно посчитать отдельно кол-во возможно съеденной еды (todo) пока так
-			if (difProducts > 0&&plusProducts>0) {
+			if (difProducts > 0 && plusProducts > 0) {
 				canWeGo = true;
 				break;
 			}
