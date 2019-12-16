@@ -5,18 +5,18 @@
 class TrainDriver {
 public:
 
-	int getIdx();
+	int& getIdx();
 	void setIdx(int _idx);
-	int getSpeed();
+	int& getSpeed();
 	void setSpeed(int _speed);
-	Route getRoute();
+	Route& getRoute();
 	void setRoute(Route _route);
-	int getLineToGo();
+	int& getLineToGo();
 	void setLineToGo(int _lineToGo);
 	bool getStatus();
 	void setStatus(bool _status);
 
-	void foundSpeedNLine(); //to found speedToSet
+	void foundSpeedNLine(TrainDriver driver); //to found speedToSet
 	bool checkSituation(Route _route); //check situation on the road
 	Route makeNewRoute(int firstPoint, int lastPoin); //if the situation is bad, driver makes new route with first and last point from an old route
 

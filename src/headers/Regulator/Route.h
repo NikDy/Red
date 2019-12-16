@@ -14,6 +14,7 @@ public:
 	void pathPop();
 	bool onePoint();
 	bool isEmpty();
+	void showRoute();
 
 private:
 	std::vector<int> path_seq;  //points of current route

@@ -22,28 +22,28 @@ Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 
 		std::cout << "Inside market cycle. storage point idx is " << _market.point_idx << std::endl;
 		std::vector<std::pair<int, int>> path = reg.findWay(begin, _market.point_idx);
 		lengthToMarket =reg.wayLength(path);
-		std::cout << "lengthToMarket Is " << lengthToMarket << std::endl;
+		//std::cout << "lengthToMarket Is " << lengthToMarket << std::endl;
 		int turnCount = 1;
 		int necessaryProdacts = populationInTownBeforeRoad;
 		populationInTownThroughRoad = populationInTownBeforeRoad;
-		std::cout << "population througt " << populationInTownThroughRoad << std::endl;
+		//std::cout << "population througt " << populationInTownThroughRoad << std::endl;
 		for (turnCount; turnCount < 2*lengthToMarket ; turnCount++) {
 			necessaryProdacts += populationInTownThroughRoad;
-			std::cout << turnCount << " necessaryProdacts are" << necessaryProdacts << std::endl;
+			//std::cout << turnCount << " necessaryProdacts are" << necessaryProdacts << std::endl;
 			if ((turnCount % 30 == 0) && (turnCount % 60 != 0)) {
 				populationInTownThroughRoad++;
-				std::cout << "inside plus 1" << std::endl;
+				//std::cout << "inside plus 1" << std::endl;
 			}
 			if (turnCount % 60 == 0) {
 				populationInTownThroughRoad += 2;
-				std::cout << "inside plus 2" << std::endl;
+				//std::cout << "inside plus 2" << std::endl;
 
 			}
 		}
-		std::cout << "products in markt are " << _market.product << std::endl;
-		std::cout << "necessary products are " << necessaryProdacts << std::endl;
+		//std::cout << "products in markt are " << _market.product << std::endl;
+		//std::cout << "necessary products are " << necessaryProdacts << std::endl;
 		productsFromMarket = _market.product - necessaryProdacts;
-		std::cout << "products from Market are " << productsFromMarket << std::endl;
+		//std::cout << "products from Market are " << productsFromMarket << std::endl;
 
 		if (productsFromMarket>maxProducts) {
 			maxProducts = productsFromMarket;
@@ -126,15 +126,15 @@ void RoutePlaner::buildRoutes() {
 	for (auto driver : drivers) {
 		if (driver.second.getStatus()) {
 			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			std::cout << "Train idx is " <<train.getIdx()<< std::endl;
+			//std::cout << "Train idx is " <<train.getIdx()<< std::endl;
 			int point = 0;
 			int lineIdx = train.getLineIdx();
-			std::cout << "Current line idx is " << train.getLineIdx() << std::endl;
+			//std::cout << "Current line idx is " << train.getLineIdx() << std::endl;
 			int position = train.getPosition();
-			std::cout << "Current Position is " << train.getPosition() << std::endl;
+			//std::cout << "Current Position is " << train.getPosition() << std::endl;
 			Route route;
 			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(lineIdx);
-			std::cout << "Current Line length is " << line.lenght << std::endl;
+			//std::cout << "Current Line length is " << line.lenght << std::endl;
 			if (position == line.lenght) {
 				point = line.points.second;
 			}
@@ -144,7 +144,7 @@ void RoutePlaner::buildRoutes() {
 			if (reg.storageOrMarket()) {
 				std::cout << "I'm inside MarketRoadBuilder" << std::endl;
 				route=buildNewMarketRoute(point, train);
-				std::cout << "first point of road is " <<route.pathTop() <<std::endl;
+				//std::cout << "first point of road is " <<route.pathTop() <<std::endl;
 			}
 			else {
 				std::cout << "I'm inside StorageRoadBuilder" << std::endl;
@@ -152,6 +152,9 @@ void RoutePlaner::buildRoutes() {
 			}
 			driver.second.setStatus(false);
 			driver.second.setRoute(route);
+			//std::cout << "Show first point of driver road: " << driver.second.getRoute().pathTop()<<std::endl;
+			driver.second.foundSpeedNLine(driver.second);
+			std::cout << "his speed and line are (inside routeBuilder) " << driver.second.getSpeed() << " and " << driver.second.getLineToGo() << std::endl;
 		}
 	}
 
