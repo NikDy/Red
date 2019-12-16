@@ -47,7 +47,7 @@ Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 
 
 		if (productsFromMarket>maxProducts) {
 			maxProducts = productsFromMarket;
-			max = _market->point_idx;
+			max = _market.point_idx;
 		}
 	}
 	std::cout << "Outside market cycle. The best market poin idx is " << max << std::endl;
