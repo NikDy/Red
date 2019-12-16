@@ -2,18 +2,19 @@
 
 
 
-//Route RoutePlaner::buildNewMarketRoute(int begin, Train& train)
-//{
-//	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-//	auto town = Data_manager::getInstance().getPlayer().getTown();
-//	int way_length = 0;
-//	int turns_before_population_decrease = town.product / ((town.population + (int)(way_length 
-//		/ std::stof(Data_manager::getInstance().config["average_population_increase_period"]))) % town.population_capacity);
-//	for (auto market : markets)
-//	{
-//		market.second->point_idx;
-//	}
-//}
+Route RoutePlaner::buildNewMarketRoute(int begin, Train& train)
+{
+	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+	int way_length = 0;
+	int turns_before_population_decrease = town.product / ((town.population + (int)(way_length 
+		/ std::stof(Data_manager::getInstance().config["average_population_increase_period"]))) % town.population_capacity);
+	for (auto market : markets)
+
+	{
+		market.second->point_idx;
+	}
+}
 
 
 std::vector<std::pair<int, int>> RoutePlaner::findWay(int begin, int end)
@@ -59,6 +60,7 @@ std::vector<std::pair<int, int>> RoutePlaner::findWay(int begin, int end)
 RoutePlaner::~RoutePlaner()
 {
 }
+
 
 int RoutePlaner::wayLength(std::vector<std::pair<int, int>> way)
 {
