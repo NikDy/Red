@@ -99,20 +99,11 @@ bool Regulator::storageOrMarket() { //true if market, false if storage
 			wholePath = lengthToMarket * 4 + lengthToStorage * 2;
 			int turnCount = 0;
 			int necessaryProdacts = 0;
-			populationInTownThroughRoad = populationInTownBeforeRoad;
-			for (turnCount; turnCount < wholePath; turnCount++) {
-				necessaryProdacts += populationInTownThroughRoad;
-				if ((turnCount % 30 == 0) && (turnCount % 60 != 0)) {
-					populationInTownThroughRoad++;
-				}
-				if (turnCount % 60 == 0) {
-					populationInTownThroughRoad += 2;
-				}
-			}
+			populationInTownThroughRoad = (populationInTownBeforeRoad + (int)(wholePath / 30)) % town.population_capacity;
 			difProducts = productsInTown + _market.product - necessaryProdacts;
 			int plusProducts = _market.product - (lengthToMarket * 2 * populationInTownThroughRoad);//нужно посчитать отдельно кол-во возможно съеденной еды (todo) пока так
 
-			if (difProducts > 0&&plusProducts>0) {
+			if (difProducts > 0 && plusProducts > 0) {
 				return false;
 			}
 		}

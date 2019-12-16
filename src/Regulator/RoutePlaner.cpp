@@ -4,7 +4,7 @@
 
 
 Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 market road without checking fuel and capacity
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	auto town = Data_manager::getInstance().getPlayer().getTown();
 	Regulator reg;
 	std::cout << "First point idx of route is " << begin << std::endl;
@@ -18,36 +18,24 @@ Route RoutePlaner::buildNewMarketRoute(int begin, Train&) { //now is only for 1 
 	int lengthToMarket = 0;
 
 	for (auto market : markets) {
-		Market _market = *market.second;
-		std::cout << "Inside market cycle. storage point idx is " << _market.point_idx << std::endl;
-		std::vector<std::pair<int, int>> path = reg.findWay(begin, _market.point_idx);
-		lengthToMarket =reg.wayLength(path);
+		auto _market = market.second;
+		std::cout << "Inside market cycle. storage point idx is " << _market->point_idx << std::endl;
+		std::vector<std::pair<int, int>> path = reg.findWay(begin, _market->point_idx);
+		lengthToMarket = Regulator::wayLength(path);
 		std::cout << "lengthToMarket Is " << lengthToMarket << std::endl;
 		int turnCount = 1;
 		int necessaryProdacts = populationInTownBeforeRoad;
 		populationInTownThroughRoad = populationInTownBeforeRoad;
 		std::cout << "population througt " << populationInTownThroughRoad << std::endl;
-		for (turnCount; turnCount < 2*lengthToMarket ; turnCount++) {
-			necessaryProdacts += populationInTownThroughRoad;
-			std::cout << turnCount << " necessaryProdacts are" << necessaryProdacts << std::endl;
-			if ((turnCount % 30 == 0) && (turnCount % 60 != 0)) {
-				populationInTownThroughRoad++;
-				std::cout << "inside plus 1" << std::endl;
-			}
-			if (turnCount % 60 == 0) {
-				populationInTownThroughRoad += 2;
-				std::cout << "inside plus 2" << std::endl;
-
-			}
-		}
-		std::cout << "products in markt are " << _market.product << std::endl;
+		necessaryProdacts += populationInTownThroughRoad + (int)(2 * lengthToMarket / 30);
+		std::cout << "products in markt are " << _market->product << std::endl;
 		std::cout << "necessary products are " << necessaryProdacts << std::endl;
-		productsFromMarket = _market.product - necessaryProdacts;
+		productsFromMarket = _market->product - necessaryProdacts;
 		std::cout << "products from Market are " << productsFromMarket << std::endl;
 
 		if (productsFromMarket>maxProducts) {
 			maxProducts = productsFromMarket;
-			max = _market.point_idx;
+			max = _market->point_idx;
 		}
 	}
 	std::cout << "Outside market cycle. The best market poin idx is " << max << std::endl;
@@ -98,7 +86,7 @@ Route RoutePlaner::buildNewStorageRoute(int begin, Train&) { //for one storage w
 			}
 			difProducts = productsInTown + _market.product - necessaryProdacts;
 			plusProducts = _market.product - (lengthToMarket * 2 *populationInTownThroughRoad);//нужно посчитать отдельно кол-во возможно съеденной еды (todo) пока так
-			if (difProducts > 0&&plusProducts>0) {
+			if (difProducts > 0 && plusProducts > 0) {
 				canWeGo = true;
 				break;
 			}
