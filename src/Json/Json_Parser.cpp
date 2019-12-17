@@ -159,7 +159,9 @@ Town Json_Parser::addTown(const rapidjson::Value& doc)
 	}
 	town_map.armor_capacity = doc["armor_capacity"].GetInt();
 	if(doc.HasMember("level")) town_map.level = doc["level"].GetInt();
-	if (doc.HasMember("next_level_price")) town_map.next_level_price = doc["next_level_price"].GetInt();
+	if (doc.HasMember("next_level_price")) 
+		if (!doc["next_level_price"].IsNull())
+			town_map.next_level_price = doc["next_level_price"].GetInt();
 	town_map.player_idx = doc["player_idx"].GetString();
 	town_map.point_idx = doc["point_idx"].GetInt();
 	town_map.population = doc["population"].GetInt();
@@ -224,7 +226,9 @@ Train Json_Parser::addTrain(const rapidjson::Value & doc)
 	new_train.goods_capacity = doc["goods_capacity"].GetInt();
 	new_train.goods_type = NULL;
 	if(doc.HasMember("level")) new_train.level = doc["level"].GetInt();
-	if(doc.HasMember("next_level_price")) new_train.next_level_price = doc["next_level_price"].GetInt();
+	if(doc.HasMember("next_level_price")) 
+		if(!doc["next_level_price"].IsNull())
+			new_train.next_level_price = doc["next_level_price"].GetInt();
 	if(doc.HasMember("cooldown")) new_train.cooldown = doc["cooldown"].GetInt();
 
 	return new_train;
