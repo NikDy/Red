@@ -13,7 +13,7 @@ public:
 	std::vector<int> linesStatus(); //return status of all lines on the map, which tell us what is going on inside this line(0-nobody inside, 1-everybody in positive direction,-1 - everybody in negative direction, 2-all mixed
 	bool storageOrMarket(); //true if market, false if storage 
 	std::map<int, std::pair<int, int>> makeTurn();
-	std::vector<std::pair<int, int>> findWay(int begin, int end);
+	std::vector<std::pair<int, int>> findWay(int begin, int end, int type = 0);
 	static int wayLength(std::vector<std::pair<int, int>>);
 
 

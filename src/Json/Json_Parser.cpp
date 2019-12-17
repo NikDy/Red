@@ -254,3 +254,28 @@ std::string Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>
 	writer.EndObject();
 	return str.GetString();
 }
+
+
+std::string Json_Parser::toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains)
+{
+	rapidjson::StringBuffer str;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(str);
+
+	writer.StartObject();
+	writer.Key(posts.first.c_str());
+	writer.StartArray();
+	for (auto p : posts.second)
+	{
+		writer.Int(p);
+	}
+	writer.EndArray();
+	writer.Key(trains.first.c_str());
+	writer.StartArray();
+	for (auto p : trains.second)
+	{
+		writer.Int(p);
+	}
+	writer.EndArray();
+	writer.EndObject();
+	return str.GetString();
+}

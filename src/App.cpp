@@ -22,12 +22,12 @@ int main()
 	Data_manager::getInstance().login(username);
 	dec.Insertion();
 	
-	/*Drawer::getInstance().draw();*/
+	Drawer::getInstance().draw();
 	while(true) {
-			
-			Data_manager::getInstance().makeMove(dec.makeTurn());
-			Data_manager::getInstance().forceTurn();
-			while (Data_manager::getInstance().turn != false);
+		Data_manager::getInstance().tryUpdateInGame();
+		Data_manager::getInstance().makeMove(dec.makeTurn());
+		Data_manager::getInstance().forceTurn();
+		while (Data_manager::getInstance().turn != false);
 	}
 
 	return 0;

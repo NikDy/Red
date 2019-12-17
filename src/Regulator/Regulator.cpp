@@ -1,8 +1,9 @@
 #include "Regulator.h"
 
-std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end)
+std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type)
 {
 	auto& Graph = Data_manager::getInstance().getMapLayer0();
+	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::less<std::pair<int, int>>> frontier;
 	frontier.emplace(std::pair<int, int>(Graph.getPoints()[begin].idx, 0));
 	std::unordered_map<int, int> came_from;
@@ -14,11 +15,23 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end)
 	{
 		auto current = frontier.top().first;
 		frontier.pop();
-		if (current == end)
-			break;
+		//if (current == end)
+			//break;
 		for (auto& next : Graph.getPoints()[current].adjacency_list)
 		{
 			int new_cost = cost_so_far[current] + Graph.getLineByTwoPoints(current, next).lenght;
+			if(type == 1) {
+				bool checkMarket = false;
+				for (auto& market : markets) {
+					if (next == market.second->point_idx) {
+						checkMarket = true;
+						break;
+					}
+				}
+				if (checkMarket) {
+					continue;
+				}
+			}
 			if (!cost_so_far.count(next) || new_cost < cost_so_far[next])
 			{
 				cost_so_far[next] = new_cost;
@@ -89,7 +102,7 @@ bool Regulator::storageOrMarket() { //true if market, false if storage
 	for (auto storage : storages) {
 		Storage _storage = *storage.second;
 		std::cout << "Inside storage cycle. storage point idx is " << _storage.point_idx << std::endl;
-		std::vector<std::pair<int, int>> pathToStorage = findWay(town.point_idx, _storage.point_idx);
+		std::vector<std::pair<int, int>> pathToStorage = findWay(town.point_idx, _storage.point_idx, 1);
 		lengthToStorage = wayLength(pathToStorage);
 		std::cout << " market: " << _storage.point_idx << " lengthToMarket: " << lengthToStorage << std::endl;
 		wholePath = lengthToStorage * 2;

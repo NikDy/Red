@@ -20,7 +20,8 @@ public:
 	std::map<int, TrainDriver>& getDrivers();
 	Route buildNewMarketRoute(int begin, Train& train);
 	Route buildNewStorageRoute(int begin, Train& train);
-	
+	std::vector<std::pair<int, int>> bestWayToMarket(int begin, Train& train);
+	bool storageOrMarket(int begin, Train& train);
 	void buildRoutes();
 	void addDriver(int _idx, TrainDriver _trainDriver);
 	

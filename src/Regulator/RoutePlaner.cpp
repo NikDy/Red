@@ -21,7 +21,7 @@ Route RoutePlaner::buildNewMarketRoute(int begin, Train& train) { //now is only 
 		Market _market = *market.second;
 		std::cout << "Inside market cycle. storage point idx is " << _market.point_idx << std::endl;
 		std::vector<std::pair<int, int>> path = reg.findWay(begin, _market.point_idx);
-		lengthToMarket =reg.wayLength(path);
+		lengthToMarket = reg.wayLength(path);
 		std::cout << "lengthToMarket Is " << lengthToMarket << std::endl;
 		int turnCount = 1;
 		int necessaryProdacts = populationInTownBeforeRoad;
@@ -99,7 +99,7 @@ Route RoutePlaner::buildNewStorageRoute(int begin, Train& train) { //for one sto
 	for (auto storage : storages) {
 		std::cout << "I'm in storage cycle buildStorageRoute" << std::endl;
 		Storage _storage = *storage.second;
-		std::vector<std::pair<int, int>> pathToStorage = reg.findWay(begin, _storage.point_idx);
+		std::vector<std::pair<int, int>> pathToStorage = reg.findWay(begin, _storage.point_idx, 1);
 		lengthToStorage = reg.wayLength(pathToStorage);
 		std::cout << " storage: " << _storage.point_idx << " lengthToStorage: " << lengthToStorage << std::endl;
 		wholePath = lengthToStorage * 2;
@@ -128,7 +128,7 @@ Route RoutePlaner::buildNewStorageRoute(int begin, Train& train) { //for one sto
 		}
 	}
 	std::cout << "Outside storage cycle. The best storage point idx is " << max << std::endl;
-	std::vector<std::pair<int, int>> minPath = reg.findWay(begin, max);
+	std::vector<std::pair<int, int>> minPath = reg.findWay(begin, max, 1);
 	Route route;
 	route.buildPathQueue(minPath);
 	return route;
@@ -163,7 +163,7 @@ void RoutePlaner::buildRoutes() {
 			else {
 				point = line.points.first;
 			}
-			if (reg.storageOrMarket()) {
+			if (storageOrMarket(point, train)) {
 				std::cout << "I'm inside MarketRoadBuilder" << std::endl;
 				std::cout << "point to start idx is " <<point<< std::endl;
 				route=buildNewMarketRoute(point, train);
@@ -191,4 +191,123 @@ RoutePlaner::RoutePlaner() {
 RoutePlaner::~RoutePlaner(){
 
 
+}
+
+
+std::vector<std::pair<int, int>> RoutePlaner::bestWayToMarket(int begin, Train& train) { //now is only for 1 market road without checking fuel and capacity
+	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+	Regulator reg;
+	std::cout << "First point idx of route is " << begin << std::endl;
+
+	int productsInTown = town.product;
+	int populationInTownBeforeRoad = town.population;
+	int populationInTownThroughRoad;
+	int max = 0;
+	int maxProducts = 0; //max amount of products we can bring to home minus eaten products
+	int productsFromMarket = 0;
+	int lengthToMarket = 0;
+
+	for (auto market : markets) {
+		Market _market = *market.second;
+		std::cout << "Inside market cycle. storage point idx is " << _market.point_idx << std::endl;
+		std::vector<std::pair<int, int>> path = reg.findWay(begin, _market.point_idx);
+		lengthToMarket = reg.wayLength(path);
+		std::cout << "lengthToMarket Is " << lengthToMarket << std::endl;
+		int turnCount = 1;
+		int necessaryProdacts = populationInTownBeforeRoad;
+		populationInTownThroughRoad = populationInTownBeforeRoad;
+		std::cout << "population througt " << populationInTownThroughRoad << std::endl;
+		for (turnCount; turnCount < 2 * lengthToMarket; turnCount++) {
+			necessaryProdacts += populationInTownThroughRoad;
+			std::cout << turnCount << " necessaryProdacts are" << necessaryProdacts << std::endl;
+			if ((turnCount % 30 == 0) && (turnCount % 60 != 0)) {
+				populationInTownThroughRoad++;
+				std::cout << "inside plus 1" << std::endl;
+			}
+			if (turnCount % 60 == 0) {
+				populationInTownThroughRoad += 2;
+				std::cout << "inside plus 2" << std::endl;
+
+			}
+		}
+		std::cout << "products in markt are " << _market.product << std::endl;
+		std::cout << "necessary products are " << necessaryProdacts << std::endl;
+		int actualProducts = 0;
+
+		if (_market.product_capacity <= _market.product + lengthToMarket) { //checking market capacity
+			actualProducts = _market.product_capacity;
+		}
+		else {
+			actualProducts = _market.product + lengthToMarket;
+		}
+
+		if (actualProducts > train.goods_capacity) {
+			actualProducts = train.goods_capacity;
+		}
+
+
+		productsFromMarket = actualProducts - necessaryProdacts;
+		std::cout << "products from Market are " << productsFromMarket << std::endl;
+
+		if (productsFromMarket>maxProducts) {
+			maxProducts = productsFromMarket;
+			max = _market.point_idx;
+		}
+	}
+	std::cout << "Outside market cycle. The best market poin idx is " << max << std::endl;
+	std::vector<std::pair<int, int>> minPath = reg.findWay(begin, max);
+	return minPath;
+}
+
+bool RoutePlaner::storageOrMarket(int begin, Train& train) { //true if market, false if storage 
+	Regulator reg;
+	std::cout << "I'm inside storageOrMarket" << std::endl;
+	auto& storages = Data_manager::getInstance().getMapLayer1().getStorages();
+	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+	std::cout << "Town point idx " << town.point_idx << std::endl;
+	int productsInTown = town.product;
+	std::cout << "productsInTown " << town.product << std::endl;
+	int populationInTownBeforeRoad = town.population;
+	std::cout << "populationInTownBeforeRoad " << town.population << std::endl;
+	int populationInTownThroughRoad = 0;
+	int difProducts = 0; //dif between eaten products? and products we can bring
+	int lengthToStorage = 0;
+	int lengthToMarket = 0;
+	int wholePath = 0;
+	std::vector<std::pair<int, int>> pathToMarket = bestWayToMarket(begin, train);
+	for (auto storage : storages) {
+		Storage _storage = *storage.second;
+		std::cout << "Inside storage cycle. storage point idx is " << _storage.point_idx << std::endl;
+		std::vector<std::pair<int, int>> pathToStorage = reg.findWay(town.point_idx, _storage.point_idx, 1);
+		lengthToStorage = reg.wayLength(pathToStorage) + reg.wayLength(pathToMarket);
+		std::cout << " market: " << _storage.point_idx << " lengthToMarket: " << lengthToStorage << std::endl;
+		wholePath = lengthToStorage * 2;
+		int turnCount = 1;
+		int necessaryProdacts = 0;
+		populationInTownThroughRoad = populationInTownBeforeRoad;
+		for (turnCount; turnCount < wholePath; turnCount++) {
+			necessaryProdacts += populationInTownThroughRoad;
+			std::cout << turnCount << " necessaryProdacts are" << necessaryProdacts << std::endl;
+			if ((turnCount % 30 == 0) && (turnCount % 60 != 0)) {
+				populationInTownThroughRoad++;
+				std::cout << "inside plus 1" << std::endl;
+
+			}
+			if (turnCount % 60 == 0) {
+				populationInTownThroughRoad += 2;
+				std::cout << "inside plus 2" << std::endl;
+
+			}
+		}
+		difProducts = productsInTown - necessaryProdacts;
+		std::cout << "necessary products are " << necessaryProdacts << std::endl;
+		std::cout << "dif products are " << difProducts << std::endl;
+
+		if (difProducts > 0) {
+			return false;
+		}
+	}
+	return true;
 }

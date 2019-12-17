@@ -23,18 +23,6 @@ public:
 	const std::type_info& getObjectType();
 	std::shared_ptr<Game_object> getObjectPtr();
 	std::shared_ptr<Post> getPostPtr();
-	/*bool setArmor(int armor_);
-	bool setArmorCapacity(int armor_capacity);
-	bool setLevel(int level_);
-	bool setNextLevelPrice(int next_level_capacity_);
-	bool setPlayerIdx(const std::string& player_idx_);
-	bool setPointIdx(int point_idx_);
-	bool setPopulation(int population_);
-	bool setPopulationCapacity(int population_capacity_);
-	bool setProduct(int product_);
-	bool setProductCapacity(int product_capacity_);
-	bool setTrainCooldown(int train_cooldown_);*/
-	~Town();
 
 	int armor = 0;
 	int armor_capacity = 0;
@@ -47,6 +35,18 @@ public:
 	int product = 0;
 	int product_capacity = 0;
 	int train_cooldown = 0;
+	/*bool setArmor(int armor_);
+	bool setArmorCapacity(int armor_capacity);
+	bool setLevel(int level_);
+	bool setNextLevelPrice(int next_level_capacity_);
+	bool setPlayerIdx(const std::string& player_idx_);
+	bool setPointIdx(int point_idx_);
+	bool setPopulation(int population_);
+	bool setPopulationCapacity(int population_capacity_);
+	bool setProduct(int product_);
+	bool setProductCapacity(int product_capacity_);
+	bool setTrainCooldown(int train_cooldown_);*/
+	~Town();
 private:
 	std::vector<Event_game> events = std::vector<Event_game>();
 };

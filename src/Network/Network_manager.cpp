@@ -168,6 +168,18 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 	return true;
 }
 
+bool Network_manager::ActionToUpdate(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains)
+{
+	int action_code = 4;
+
+	auto json_string = Json_Parser::toJsonWithArray(posts, trains);
+	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	if (!trySend(message)) return false;
+	auto response = receiveJsonString();
+	std::cout << response << std::endl;
+	return true;
+}
+
 
 
 

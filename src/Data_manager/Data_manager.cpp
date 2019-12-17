@@ -42,6 +42,28 @@ bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 	return true;
 }
 
+bool Data_manager::tryUpdateInGame()
+{
+	int armor_in_towm = player->getTown().armor;
+	std::vector<int> trains;
+	std::vector<int> posts;
+	for (auto train : player->getTrains()) {
+		if (train.second.next_level_price <= armor_in_towm && train.second.next_level_price != 0) {
+			trains.push_back(train.first);
+			armor_in_towm -= train.second.next_level_price;
+		}
+	}
+	if (player->getTown().next_level_price <= armor_in_towm && player->getTown().next_level_price != 0) {
+		posts.push_back(player->getTown().idx);
+	}
+	if (posts.size() != 0 || trains.size() != 0) {
+		auto postsToSend = std::make_pair("posts", posts);
+		auto trainsToSend = std::make_pair("trains", trains);
+		net.ActionToUpdate(postsToSend, trainsToSend);
+	}
+	return true;
+}
+
 Graph& Data_manager::getMapLayer0()
 {
 
