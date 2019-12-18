@@ -22,7 +22,7 @@ int main()
 	Data_manager::getInstance().login(username);
 	dec.Insertion();
 	
-	Drawer::getInstance().draw();
+	//Drawer::getInstance().draw();
 	while(true) {
 		Data_manager::getInstance().tryUpdateInGame();
 		Data_manager::getInstance().makeMove(dec.makeTurn());
