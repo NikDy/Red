@@ -113,7 +113,7 @@ bool Regulator::checkFuel(Train _train) { //will do it later..
 
 std::vector<int> Regulator:: linesStatus() {	//not correct always, should think about somebody who is just standing on the line/standing on the first/second point of line
 	std::map<int, Train>& trains = Data_manager::getInstance().getMapLayer1().getTrains();
-	int numberOfLines = Data_manager::getInstance().getMapLayer0().getLines().size();
+	auto numberOfLines = Data_manager::getInstance().getMapLayer0().getLines().size();
 	std::vector<int> answer;
 	int lineIdx = 0;
 	int speed = 0;

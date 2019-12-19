@@ -19,9 +19,9 @@ public:
 	std::shared_ptr<Post> getPostPtr();
 	~Storage();
 
-	int armor;
-	int armor_capacity;
-	int replenishment;
+	int armor = 0;
+	int armor_capacity = 0;
+	int replenishment = 0;
 	int point_idx = 0;
 private:
 	std::vector<Event_game> events = std::vector<Event_game>();
