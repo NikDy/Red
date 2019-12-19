@@ -23,10 +23,12 @@ int main()
 	dec.Insertion();
 	
 	Drawer::getInstance().draw();
+	//Sleep(2000);
 	while(true) {
 		Data_manager::getInstance().tryUpdateInGame();
 		Data_manager::getInstance().makeMove(dec.makeTurn());
 		Data_manager::getInstance().forceTurn();
+		while (Data_manager::getInstance().turn != false);
 		//Sleep(500);
 	}
 

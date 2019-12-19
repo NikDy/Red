@@ -154,8 +154,8 @@ void Drawer::drawAll()
 			}
 		}
 
-		if (Data_manager::getInstance().turn == false) {
 			this->reforceGraph();
+		if (Data_manager::getInstance().turn == false) {
 			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 			{
 				updateShapes();

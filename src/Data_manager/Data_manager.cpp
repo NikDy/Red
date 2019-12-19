@@ -29,7 +29,7 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	map_layer_1 = getMapLayer1FromServer();
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
-	//updateThread = std::thread(&Data_manager::updateGame, this);
+	updateThread = std::thread(&Data_manager::updateGame, this);
 	return true;
 }
 
@@ -52,7 +52,7 @@ bool Data_manager::tryUpdateInGame()
 			if (train.second.next_level_price == 0) count++;
 		}
 		if (player->getTown().next_level_price == 0) count++;
-		if (count == (player->getTrains().size() + 1)) stopUpdate = true;
+		if(count == (player->getTrains().size() +1)) stopUpdate = true;
 		for (auto train : player->getTrains()) {
 			if (train.second.next_level_price <= armor_in_towm && train.second.next_level_price != 0) {
 				trains.push_back(train.first);
@@ -98,15 +98,15 @@ Data_manager::~Data_manager()
 
 bool Data_manager::forceTurn()
 {
-	//std::unique_lock<std::mutex> locker(update_mutex);
+	std::unique_lock<std::mutex> locker(update_mutex);
 	if (!net.Action(5, std::pair<std::string, std::string>("", ""))) return false;
 
 	turn = true;
-	//update_check.notify_one();
-	map_layer_1 = getMapLayer1FromServer();
+	update_check.notify_one();
+	/*map_layer_1 = getMapLayer1FromServer();
 	player = getPlayerFromServer();
 	updateRefuges();
-	turn = false;
+	turn = false;*/
 
 	return true;
 }

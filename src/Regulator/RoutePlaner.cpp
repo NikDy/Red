@@ -415,7 +415,7 @@ std::vector<std::pair<int, int>> RoutePlaner::StorageToMarket(int begin, Train& 
 		int turnCount = 1;
 		populationInTownThroughRoad = populationInTownBeforeRoad;
 
-		necessaryProdacts = needProducts(lengthPath, populationInTownThroughRoad) + 30; //just for fun. Need more products
+		necessaryProdacts = needProducts(lengthPath, populationInTownThroughRoad) + populationInTownThroughRoad * 10; //populationInTownThroughRoad * 10 just for fun. Need more products
 		int actualProducts = 0;
 
 		if (_market.product_capacity <= _market.product + lengthToMarket * _market.replenishment) {
