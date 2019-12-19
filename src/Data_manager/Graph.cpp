@@ -104,7 +104,9 @@ Graph_Line Graph::getLineByIdx(const int& idx) {
 		if (line.second.idx == idx) {
 			return line.second;
 		}
+		else return Graph_Line(-1, -1, std::make_pair(-1, -1));
 	}
+	return Graph_Line(-1, -1, std::make_pair(-1, -1));
 }
 
 Graph::~Graph()
