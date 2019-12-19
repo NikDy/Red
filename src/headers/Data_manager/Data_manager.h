@@ -36,6 +36,10 @@ public:
 	~Data_manager();
 	bool forceTurn();
 	bool turn = false;
+
+	bool stopUpdate = false;
+	int count_Refuges = 0;
+	int last_tick_Refuges = 0;
 private:
 	Data_manager() {};
 
@@ -52,6 +56,7 @@ private:
 	std::shared_ptr<Player> getPlayerFromServer();
 	std::thread updateThread;
 	void updateGame();
+	void updateRefuges();
 	std::mutex update_mutex;
 	std::condition_variable update_check;
 };

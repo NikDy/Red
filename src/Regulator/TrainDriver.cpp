@@ -62,8 +62,19 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 	std::cout << "Route before foundSpeedNLine" << std::endl;
 	driver.getRoute().showRoute();
 
-	if (position == 0 || position == curLine.lenght) {
+	if (driver.getRoute().onePoint()) {
+		if (position == 1 && driver.getSpeed() == -1) {
+			setStatus(true);
+			driver.getRoute().pathPop();
+		}
+		if (curLine.lenght - position == 1 && driver.getSpeed() == 1) {
+			setStatus(true);
+			driver.getRoute().pathPop();
+		}
+	}
+	else if (position == 0 || position == curLine.lenght) {
 		//driver.getRoute().showRoute();
+		std::cout << "uuuuuuuuuuu" << std::endl;
 		int firstPoint = driver.getRoute().pathTop();//first point of carrent route
 		std::cout << "i'm after pathTop() " << std::endl;
 		std::cout << "first point of the route is " << firstPoint << std::endl;
@@ -81,8 +92,14 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 		else {
 			setSpeed(-1);
 		}
+		if (driver.getRoute().onePoint()) {
+			if (line.lenght == 1) {
+				setStatus(true);
+				driver.getRoute().pathPop();
+			}
+		}
 	}
-	else if (driver.getRoute().onePoint()){
+	/*else if (driver.getRoute().onePoint()) {
 		if (position == 1 && driver.getSpeed() == -1) {
 			setStatus(true);
 			driver.getRoute().pathPop();
@@ -93,6 +110,10 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 		}
 
 	}
+	/*if (driver.getRoute().onePoint()) {
+		setStatus(true);
+		driver.getRoute().pathPop();
+	}*/
 	std::cout << "Route before foundSpeedNLine" << std::endl;
 	driver.getRoute().showRoute();
 

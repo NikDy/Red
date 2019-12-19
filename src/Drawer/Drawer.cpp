@@ -154,13 +154,14 @@ void Drawer::drawAll()
 			}
 		}
 
-		this->reforceGraph();
-		if (clock.getElapsedTime().asMilliseconds() >= updateTime && Data_manager::getInstance().turn == false)
-		{
-			updateShapes();
-			clock.restart();
+		if (Data_manager::getInstance().turn == false) {
+			this->reforceGraph();
+			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
+			{
+				updateShapes();
+				clock.restart();
+			}
 		}
-
 
 		for (auto l : lines)
 		{

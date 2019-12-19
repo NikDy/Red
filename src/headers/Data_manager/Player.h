@@ -18,7 +18,7 @@ public:
 	void setHome(Graph_Point home_);
 	Graph_Point getHome();
 	void setTown(Town town_);
-	Town getTown();
+	Town& getTown();
 	bool getInGame();
 	void setInGame(bool in_game_);
 	void setName(const std::string& name_);

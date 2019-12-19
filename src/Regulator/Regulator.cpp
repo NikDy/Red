@@ -4,6 +4,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type
 {
 	auto& Graph = Data_manager::getInstance().getMapLayer0();
 	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto& storages = Data_manager::getInstance().getMapLayer1().getStorages();
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::less<std::pair<int, int>>> frontier;
 	frontier.emplace(std::pair<int, int>(Graph.getPoints()[begin].idx, 0));
 	std::unordered_map<int, int> came_from;
@@ -29,6 +30,18 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type
 					}
 				}
 				if (checkMarket) {
+					continue;
+				} 
+			} 
+			else if (type == 2) {
+				bool checkStorage = false;
+				for (auto& storage : storages) {
+					if (next == storage.second->point_idx) {
+						checkStorage = true;
+						break;
+					}
+				}
+				if (checkStorage) {
 					continue;
 				}
 			}

@@ -1,5 +1,7 @@
 #include "Route.h"
 #include <iostream>
+#include "Graph_Line.h"
+#include "Data_manager.h"
 
 Route::Route()
 {
@@ -16,11 +18,7 @@ void Route::buildPathQueue(std::vector<std::pair<int, int>> points_n_weigths)
 		path_seq.push_back(point->first);
 		route_lenght += point->second;
 	}
-	for (auto point = points_n_weigths.rbegin()+1; point != points_n_weigths.rend(); point++)
-	{
-		path_seq.push_back(point->first);
-		route_lenght += point->second;
-	}
+
 
 }
 
@@ -47,6 +45,22 @@ void Route::pathPop()
 bool Route::onePoint() {
 	if (path_seq.size() == 1) {
 		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Route::twoPoint() {
+	if (path_seq.size() == 2) {
+		int firstPoint = path_seq[0];
+		int secondPoint = path_seq[1];
+		Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(firstPoint, secondPoint);
+		if (line.lenght == 1)
+		{
+			return true;
+		}
+		return false;
 	}
 	else {
 		return false;
