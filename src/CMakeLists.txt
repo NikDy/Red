@@ -13,6 +13,8 @@ set(SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/App.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Drawer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Line.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/DrawerContainer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Forces.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Json/Json_Parser.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Network/Network_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Data_manager.cpp
