@@ -17,7 +17,7 @@ MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 	doc.Parse(json_string.c_str());
 
 	MapLayer1 new_mapLayer1 = MapLayer1(doc["idx"].GetInt());
-	for (int i = 0; i < doc["posts"].Size(); i++)
+	for (int i = 0; i < (int)doc["posts"].Size(); i++)
 	{
 		const rapidjson::Value& post_json = doc["posts"][i];
 		if (doc["posts"][i]["type"].GetInt() == int(PostCode::MARKET)) 
@@ -40,7 +40,7 @@ MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 							   doc["ratings"][str]["name"].GetString(),
 							   doc["ratings"][str]["rating"].GetInt());
 	new_mapLayer1.addRaiting(new_rating.idx, new_rating);
-	for (int i = 0; i < doc["trains"].Size(); i++)
+	for (int i = 0; i < (int)doc["trains"].Size(); i++)
 	{
 		new_mapLayer1.addTrain(doc["trains"][i]["idx"].GetInt(), addTrain(doc["trains"][i]));
 	}
@@ -56,7 +56,7 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 	doc.Parse(json_string.c_str());
 
 	Graph new_graph(doc["name"].GetString(), doc["idx"].GetInt());
-	for (int i = 0; i < doc["points"].Size(); i++)
+	for (int i = 0; i < (int)doc["points"].Size(); i++)
 	{
 		Graph_Point new_point(doc["points"][i]["idx"].GetInt());
 		if (doc["points"][i]["post_idx"].IsNull())
@@ -69,7 +69,7 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 		}
 		new_graph.addPoint(doc["points"][i]["idx"].GetInt(), new_point);
 	}
-	for (int i = 0; i < doc["lines"].Size(); i++)
+	for (int i = 0; i < (int)doc["lines"].Size(); i++)
 	{
 		Graph_Line new_line(doc["lines"][i]["idx"].GetInt(),
 			doc["lines"][i]["length"].GetInt(),
@@ -99,7 +99,7 @@ Player Json_Parser::fromPlayer(std::string json_string)
 	
 	new_player.setTown(player_town);
 
-	for (int i = 0; i < doc["trains"].Size(); i++)
+	for (int i = 0; i < (int)doc["trains"].Size(); i++)
 	{
 		Train new_train = addTrain(doc["trains"][i]);
 			
@@ -153,7 +153,7 @@ Town Json_Parser::addTown(const rapidjson::Value& doc)
 	town_map.armor = doc["armor"].GetInt();
 	if (doc.HasMember("events"))
 	{
-		for (int i = 0; i < doc["events"].Size(); ++i) {
+		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
 			town_map.addEvent(addEvent(doc["events"][i]));
 		}
 	}
@@ -181,7 +181,7 @@ Storage Json_Parser::addStorage(const rapidjson::Value& doc)
 	storage_map.armor_capacity = doc["armor_capacity"].GetInt();
 	if (doc.HasMember("events"))
 	{
-		for (int i = 0; i < doc["events"].Size(); ++i) {
+		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
 			storage_map.addEvent(addEvent(doc["events"][i]));
 		}
 	}
@@ -196,7 +196,7 @@ Market Json_Parser::addMarket(const rapidjson::Value& doc)
 	market_map.replenishment = doc["replenishment"].GetInt();
 	if (doc.HasMember("events"))
 	{
-		for (int i = 0; i < doc["events"].Size(); ++i) {
+		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
 			market_map.addEvent(addEvent(doc["events"][i]));
 		}
 	}
@@ -218,7 +218,7 @@ Train Json_Parser::addTrain(const rapidjson::Value & doc)
 	//new_train.fuel_consumption =	doc["fuel_consumption"].GetInt();
 	if (doc.HasMember("events"))
 	{
-		for (int i = 0; i < doc["events"].Size(); ++i) {
+		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
 			new_train.addEvent(addEvent(doc["events"][i]));
 		}
 	}

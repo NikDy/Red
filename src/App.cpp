@@ -1,15 +1,11 @@
 #include "Drawer.h"
-#include "Json_Parser.h"
-#include <string>
-#include <iostream>
-#include "Network_manager.h"
 #include "Data_manager.h"
 #include "Decision.h"
-#include "RoutePlaner.h"
-#include <Windows.h>
-#include <mutex>
-#include <thread>
-#include "Forces.h"
+
+#include <string>
+#include <iostream>
+
+
 
 
 int main()
