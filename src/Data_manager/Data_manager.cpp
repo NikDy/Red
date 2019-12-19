@@ -103,10 +103,6 @@ bool Data_manager::forceTurn()
 
 	turn = true;
 	update_check.notify_one();
-	/*map_layer_1 = getMapLayer1FromServer();
-	player = getPlayerFromServer();
-	updateRefuges();
-	turn = false;*/
 
 	return true;
 }

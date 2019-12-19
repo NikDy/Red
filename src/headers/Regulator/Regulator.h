@@ -18,8 +18,8 @@ public:
 
 
 	//idk if we will ned them after new logic
-	int nearestMarket(int _lineIdx, int _position);
-	std::pair<int, int> whereToGo(int _position, int _lineIdx, int pointToGo); //return speed and lineIdx, where to go
+	//int nearestMarket(int _lineIdx, int _position);
+	//std::pair<int, int> whereToGo(int _position, int _lineIdx, int pointToGo); //return speed and lineIdx, where to go
 
 	Regulator();
 	~Regulator();

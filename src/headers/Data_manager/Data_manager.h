@@ -29,12 +29,14 @@ public:
 	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
 	bool tryUpdateInGame();
+	bool forceTurn();
+
 	Graph& getMapLayer0();
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
+
 	bool update_on = true;
 	~Data_manager();
-	bool forceTurn();
 	bool turn = false;
 
 	bool stopUpdate = false;

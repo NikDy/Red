@@ -38,11 +38,9 @@ public:
 	Json_Parser();
 	~Json_Parser();
 
-	//static Graph createGraph(std::string filepath);
 	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
 	static Player fromPlayer(std::string json_string);
-	//static bool updateMapLayer1(std::string json_string, std::shared_ptr<MapLayer1>);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
 	static std::string toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains);
 };

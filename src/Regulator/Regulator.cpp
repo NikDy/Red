@@ -73,7 +73,7 @@ int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 	return lenght;
 }
 
-std::vector<int> Regulator::linesStatus() {	//not correct always, should think about somebody who is just standing on the line/standing on the first/second point of line
+/*std::vector<int> Regulator::linesStatus() {	//not correct always, should think about somebody who is just standing on the line/standing on the first/second point of line
 	std::map<int, Train>& trains = Data_manager::getInstance().getMapLayer1().getTrains();
 	int numberOfLines = Data_manager::getInstance().getMapLayer0().getLines().size();
 	std::vector<int> answer;
@@ -145,9 +145,9 @@ bool Regulator::storageOrMarket() { //true if market, false if storage
 		}
 	}
 	return true;
-}
+}*/
 
-std::map<int, std::pair<int, int>> Regulator::makeTurn() {
+/*std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 	Player& _player = Data_manager::getInstance().getPlayer();
 
 	std::map<int, Train>& trains = _player.getTrains();
@@ -173,7 +173,7 @@ std::map<int, std::pair<int, int>> Regulator::makeTurn() {
 		turn.emplace(speedNLine.first, trainNSpeed);
 	}
 	return turn;
-}
+}*/
 
 Regulator::Regulator()
 {
@@ -193,7 +193,7 @@ Regulator::~Regulator()
 
 
 //idk if we will need them after
-int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of nearst market from our position on the map
+/*int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of nearst market from our position on the map
 	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	int min = 0;
 	int minLength = 10000000; //min length to the market
@@ -257,9 +257,9 @@ int Regulator::nearestMarket(int _lineIdx, int _position) { //return an idx of n
 		}
 	}
 	return min;
-}
+}*/
 
-std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointToGo) { //the shortest way from our position to given point
+/*std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointToGo) { //the shortest way from our position to given point
 	Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(_lineIdx);
 	int speed = 0;
 	int lineToGo = 0;
@@ -331,7 +331,7 @@ std::pair<int, int> Regulator::whereToGo(int _position, int _lineIdx, int pointT
 		return std::make_pair(lineToGo, speed);
 	}
 
-}
+}*/
 
 
 

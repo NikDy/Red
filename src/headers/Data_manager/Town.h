@@ -11,12 +11,7 @@ class Town: public Post
 public:
 	Town(int idx_, int type_, const std::string& name_) : Post(idx_, type_, name_) {};
 	Town() {};
-	/*int getIdx() const;
-	void setIdx(int idx_);
-	void setType(int type_);
-	int getType() const;
-	void setName(std::string& name_);
-	const std::string& getName() const;*/
+
 	std::vector<Event_game>& getEvents();
 	bool addEvent(Event_game event_);
 
@@ -35,17 +30,6 @@ public:
 	int product = 0;
 	int product_capacity = 0;
 	int train_cooldown = 0;
-	/*bool setArmor(int armor_);
-	bool setArmorCapacity(int armor_capacity);
-	bool setLevel(int level_);
-	bool setNextLevelPrice(int next_level_capacity_);
-	bool setPlayerIdx(const std::string& player_idx_);
-	bool setPointIdx(int point_idx_);
-	bool setPopulation(int population_);
-	bool setPopulationCapacity(int population_capacity_);
-	bool setProduct(int product_);
-	bool setProductCapacity(int product_capacity_);
-	bool setTrainCooldown(int train_cooldown_);*/
 	~Town();
 private:
 	std::vector<Event_game> events = std::vector<Event_game>();

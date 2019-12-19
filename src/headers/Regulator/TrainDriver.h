@@ -17,8 +17,8 @@ public:
 	void setStatus(bool _status);
 
 	void foundSpeedNLine(TrainDriver& driver); //to found speedToSet
-	bool checkSituation(Route _route); //check situation on the road
-	Route makeNewRoute(int firstPoint, int lastPoin); //if the situation is bad, driver makes new route with first and last point from an old route
+	//bool checkSituation(Route _route); //check situation on the road
+	//Route makeNewRoute(int firstPoint, int lastPoin); //if the situation is bad, driver makes new route with first and last point from an old route
 
 	TrainDriver(int _idx);
 	~TrainDriver();

@@ -50,17 +50,13 @@ void TrainDriver::setRoute(Route _route) {
 }
 
 void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
-	std::cout << "I'm inside foundSpeedNLine" << std::endl;
 	Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(idx);
 	int curLineIdx = train.getLineIdx();
-	//std::cout << "Cur Line Idx is " <<curLineIdx<< std::endl;
 
 	Graph_Line curLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(curLineIdx);
 	int position = train.getPosition();
-	//std::cout << "Train Position is " << position << std::endl;
-	//std::cout << "Driver id is: " << driver.getIdx() << std::endl;
-	std::cout << "Route before foundSpeedNLine" << std::endl;
-	driver.getRoute().showRoute();
+
+	//driver.getRoute().showRoute();
 
 	if (driver.getRoute().onePoint()) {
 		if (position == 1 && driver.getSpeed() == -1) {
@@ -73,16 +69,9 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 		}
 	}
 	else if (position == 0 || position == curLine.lenght) {
-		//driver.getRoute().showRoute();
-		std::cout << "uuuuuuuuuuu" << std::endl;
 		int firstPoint = driver.getRoute().pathTop();//first point of carrent route
-		std::cout << "i'm after pathTop() " << std::endl;
-		std::cout << "first point of the route is " << firstPoint << std::endl;
 		driver.getRoute().pathPop();
-		std::cout << "i'm after pathPop() "  << std::endl;
-		//driver.getRoute().showRoute();
 		int secondPoint = driver.getRoute().pathTop();//second point of current route
-		std::cout << "second point of the route is " << secondPoint << std::endl;
 
 		Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(firstPoint, secondPoint);
 		setLineToGo(line.idx);
@@ -99,22 +88,6 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 			}
 		}
 	}
-	/*else if (driver.getRoute().onePoint()) {
-		if (position == 1 && driver.getSpeed() == -1) {
-			setStatus(true);
-			driver.getRoute().pathPop();
-		}
-		if (curLine.lenght - position == 1 && driver.getSpeed() == 1) {
-			setStatus(true);
-			driver.getRoute().pathPop();
-		}
-
-	}
-	/*if (driver.getRoute().onePoint()) {
-		setStatus(true);
-		driver.getRoute().pathPop();
-	}*/
-	std::cout << "Route before foundSpeedNLine" << std::endl;
-	driver.getRoute().showRoute();
+	//driver.getRoute().showRoute();
 
 }
