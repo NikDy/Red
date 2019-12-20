@@ -3,8 +3,6 @@ project(Red)
 
 set(COMPILER "Visual Studio 16")
 
-execute_process(COMMAND conan remote add sfml:bincrafters https://api.bintray.com/conan/bincrafters/public-conan)
-execute_process(COMMAND conan install ./src -if ./build --build missing)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
