@@ -40,7 +40,7 @@ void Player::setTown(Town town_)
 	town = town_;
 }
 
-Town Player::getTown()
+Town& Player::getTown()
 {
 	return town;
 }

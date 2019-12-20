@@ -1,6 +1,17 @@
 #include "Town.h"
 
 
+std::vector<Event_game>& Town::getEvents()
+{
+	return events;
+}
+
+bool Town::addEvent(Event_game event_)
+{
+	events.push_back(event_);
+	return true;
+}
+
 const std::type_info & Town::getObjectType()
 {
 	return typeid(*this);
