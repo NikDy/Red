@@ -10,6 +10,7 @@ public:
 	int lenght = 0;
 	std::pair<int, int> points = std::pair<int, int>(0, 0);
 
+	Graph_Line();
 	Graph_Line(int idx_, int lenght_, std::pair<int, int> points_);
 	std::shared_ptr<Game_object> getObjectPtr();
 	const std::type_info& getObjectType();

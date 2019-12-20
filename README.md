@@ -12,11 +12,12 @@ cmake --build <build> --config Release
 
 copy all from res to build/bin
 ```
-
+visual studio 2019 build tools may be required
+https://visualstudio.microsoft.com/ru/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16
 
 
 ```
-usage: Graph_drawer <username>
+usage run Red.exe in build/bin
 ```
 ```
 contols:

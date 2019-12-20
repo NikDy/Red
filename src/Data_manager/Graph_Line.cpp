@@ -17,6 +17,11 @@ Graph_Line::Graph_Line(int idx_, int lenght_, std::pair<int, int> points_)
 	points = points_;
 }
 
+Graph_Line::Graph_Line()
+{
+
+}
+
 Graph_Line::~Graph_Line()
 {
 

@@ -109,6 +109,7 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
+	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{
 		if (key_value_pairs[0].second == "0")
@@ -121,8 +122,53 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 			response_list.push_back(result);
 		}
 	}
+	else if (action_code == 6)
+	{
+		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
+		response_list.push_back(result);
+	}
+	else if (action_code == 3)
+	{
+		//std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
+		//response_list.push_back(result);
+	}
 	return true;
 }
+
+
+bool Network_manager::Action(int action_code, std::pair<std::string, std::string> key_value_pair)
+{
+	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pair});
+	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	if (!trySend(message)) return false;
+	auto response = receiveJsonString();
+	std::cout << response << std::endl;
+	if (action_code == 10)
+	{
+		if (key_value_pair.second == "0")
+		{
+			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer0(response).getObjectPtr();
+			response_list.push_back(result);
+		}
+		else if (key_value_pair.second == "1") {
+			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
+			response_list.push_back(result);
+		}
+	} 
+	else if (action_code == 6) 
+	{
+		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
+		response_list.push_back(result);
+	}
+	else if (action_code == 3)
+	{
+		//std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
+		//response_list.push_back(result);
+	}
+	return true;
+}
+
+
 
 
 bool Network_manager::Logout()
