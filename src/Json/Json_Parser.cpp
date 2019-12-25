@@ -13,6 +13,7 @@ Json_Parser::~Json_Parser()
 
 MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 {
+	std::cout << json_string;
 	rapidjson::Document doc;
 	doc.Parse(json_string.c_str());
 
@@ -162,7 +163,8 @@ Town Json_Parser::addTown(const rapidjson::Value& doc)
 	if (doc.HasMember("next_level_price")) 
 		if (!doc["next_level_price"].IsNull())
 			town_map.next_level_price = doc["next_level_price"].GetInt();
-	town_map.player_idx = doc["player_idx"].GetString();
+	if(!doc["player_idx"].IsNull()) town_map.player_idx = doc["player_idx"].GetString();
+	else town_map.player_idx = "Null";
 	town_map.point_idx = doc["point_idx"].GetInt();
 	town_map.population = doc["population"].GetInt();
 	town_map.population_capacity = doc["population_capacity"].GetInt();

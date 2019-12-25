@@ -29,8 +29,16 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	map_layer_1 = getMapLayer1FromServer();
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
+	//////////////
+
+	//////////////
 	updateThread = std::thread(&Data_manager::updateGame, this);
 	return true;
+}
+
+void Data_manager::logout()
+{
+	net.Logout();
 }
 
 bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
@@ -98,7 +106,7 @@ Data_manager::~Data_manager()
 
 bool Data_manager::forceTurn()
 {
-	std::unique_lock<std::mutex> locker(update_mutex);
+	std::lock_guard<std::mutex> locker(update_mutex);
 	if (!net.Action(5, std::pair<std::string, std::string>("", ""))) return false;
 
 	turn = true;
@@ -141,7 +149,7 @@ std::vector<std::pair<std::string, std::string>> Data_manager::setMoveData(std::
 
 std::shared_ptr<Graph> Data_manager::getMapLayer0FromServer()
 {
-	net.Action(10, std::pair<std::string, std::string>("layer", "0"));
+	net.Action(10, std::make_pair("layer", "0"));
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	return std::dynamic_pointer_cast<Graph, Game_object>(list_objects.back());
 }
@@ -149,29 +157,37 @@ std::shared_ptr<Graph> Data_manager::getMapLayer0FromServer()
 
 std::shared_ptr<MapLayer1> Data_manager::getMapLayer1FromServer()
 {
-	net.Action(10, std::pair<std::string, std::string>("layer", "1"));
+	net.Action(10, std::make_pair("layer", "1"));
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	return std::dynamic_pointer_cast<MapLayer1, Game_object>(list_objects.back());
+	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer1, Game_object>(list_objects.back());
+	else return NULL;
 }
 
 
 std::shared_ptr<Player> Data_manager::getPlayerFromServer()
 {
-	net.Action(6, std::pair<std::string, std::string>("", ""));
+	net.Action(6, std::make_pair("", ""));
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	return std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
+	if (!list_objects.empty()) return std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
+	else return NULL;
 }
+
 
 void Data_manager::updateGame()
 {
-	while (update_on) 
+	sf::Clock clock;
+	while (true) 
 	{
-		std::unique_lock<std::mutex> locker(update_mutex);
-		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn); });
-		map_layer_1 = getMapLayer1FromServer();
-		player = getPlayerFromServer();
-		updateRefuges();
-		turn = false;
+		if (clock.getElapsedTime().asMilliseconds() >= 10000)
+		{
+			std::lock_guard<std::mutex> locker(update_mutex);
+			auto new_map_layer_1 = getMapLayer1FromServer();
+			if(new_map_layer_1 != NULL) map_layer_1 = new_map_layer_1;
+			auto new_player = getPlayerFromServer();
+			if (new_player != NULL) player = new_player;
+			updateRefuges();
+			clock.restart();
+		}
 	}
 }
 

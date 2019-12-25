@@ -90,17 +90,13 @@ std::string Network_manager::receiveJsonString()
 
 bool Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
 {
-	
-
 	auto json_string = Json_Parser::toJson(login_data);
-
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
 	if(!trySend(message)) return false;
 	auto response = receiveJsonString();
 	std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 	response_list.push_back(result);
 	return true;
-
 }
 
 
@@ -144,6 +140,7 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
+	if (response == "") return false;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{
@@ -194,5 +191,6 @@ bool Network_manager::Logout()
 
 	if (socket.send(message.c_str(), message.length()) != sf::Socket::Done)
 		return false;
+	std::cout << "Logged out";
 	return true;
 }

@@ -27,6 +27,7 @@ public:
 	std::map<std::string, std::string> config;
 
 	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
+	void logout();
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
 	bool tryUpdateInGame();
 	bool forceTurn();
@@ -42,6 +43,8 @@ public:
 	bool stopUpdate = false;
 	int count_Refuges = 0;
 	int last_tick_Refuges = 0;
+
+	std::mutex update_mutex;
 private:
 	Data_manager() {};
 
@@ -59,7 +62,6 @@ private:
 	std::thread updateThread;
 	void updateGame();
 	void updateRefuges();
-	std::mutex update_mutex;
 	std::condition_variable update_check;
 };
 

@@ -19,6 +19,7 @@ Drawer::~Drawer()
 
 void Drawer::updateShapes()
 {
+	std::lock_guard<std::mutex> locker(Data_manager::getInstance().update_mutex);
 	if (points.empty()) buildVisualGraph();
 	updatePosts();
 	updateTrains();
@@ -136,7 +137,6 @@ void Drawer::draw()
 
 void Drawer::drawAll()
 {
-	std::unique_lock<std::mutex> locker(lock);
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();
@@ -150,6 +150,7 @@ void Drawer::drawAll()
 		{
 			if (event.type == sf::Event::Closed)
 			{
+				Data_manager::getInstance().logout();
 				window.close();
 			}
 		}

@@ -63,14 +63,12 @@ private:
 	bool update_window = true;
 	std::thread updateThread;
 	std::thread windowThread;
-	std::mutex update_mutex;
 	std::condition_variable update_check;
 
 
 
 	Drawer();
 	~Drawer();
-	std::mutex lock;
 public:
 	static Drawer& getInstance()
 	{

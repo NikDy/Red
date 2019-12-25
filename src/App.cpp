@@ -15,16 +15,21 @@ int main()
 	
 	Data_manager::getInstance().loadConfigFromFile();
 	auto username = Data_manager::getInstance().config["name"];
-	Data_manager::getInstance().login(username);
+	Data_manager::getInstance().login(username, "", Data_manager::getInstance().config["game_name"], -1, 1);
 	dec.Insertion();
 	
 	Drawer::getInstance().draw();
 
+
+	sf::Clock cl;
 	while(true) {
-		Data_manager::getInstance().tryUpdateInGame();
-		Data_manager::getInstance().makeMove(dec.makeTurn());
-		Data_manager::getInstance().forceTurn();
-		while (Data_manager::getInstance().turn != false);
+		if (cl.getElapsedTime().asSeconds() >= 10)
+		{
+			Data_manager::getInstance().tryUpdateInGame();
+			Data_manager::getInstance().makeMove(dec.makeTurn());
+			Data_manager::getInstance().forceTurn();
+			cl.restart();
+		}
 	}
 
 	return 0;
