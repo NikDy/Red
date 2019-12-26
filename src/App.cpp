@@ -21,14 +21,12 @@ int main()
 	Drawer::getInstance().draw();
 
 
-	sf::Clock cl;
 	while(true) {
-		if (cl.getElapsedTime().asSeconds() >= 10)
+		if (Data_manager::getInstance().turn == false)
 		{
-			Data_manager::getInstance().tryUpdateInGame();
+			//Data_manager::getInstance().tryUpdateInGame();
 			Data_manager::getInstance().makeMove(dec.makeTurn());
 			Data_manager::getInstance().forceTurn();
-			cl.restart();
 		}
 	}
 

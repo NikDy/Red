@@ -26,7 +26,7 @@ public:
 	bool loadConfigFromFile();
 	std::map<std::string, std::string> config;
 
-	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
+	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = -1);
 	void logout();
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
 	bool tryUpdateInGame();

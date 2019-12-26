@@ -27,9 +27,14 @@ std::map<int, std::pair<int, int>> Decision:: makeTurn() {
 
 	std::map<int, std::pair<int, int>> turn;
 	for (auto& driver : RoutePlaner::getInstance().getDrivers()) {
+		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+		if (train.cooldown != 0) 
+		{ 
+			driver.second.setStatus(true);
+			continue;
+		}
 		driver.second.foundSpeedNLine(driver.second);
-		
-		turn.emplace(driver.second.getLineToGo(), std::make_pair(driver.second.getSpeed(), driver.second.getIdx()));
+		turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
 		
 	}
 	return turn;

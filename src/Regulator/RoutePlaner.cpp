@@ -116,6 +116,7 @@ void RoutePlaner::buildRoutes() {
 	for (auto& driver : getInstance().getDrivers()) {
 		if (driver.second.getStatus()) {
 			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+			if (train.cooldown != 0) continue;
 			int point = 0;
 			int lineIdx = train.getLineIdx();
 			int position = train.getPosition();

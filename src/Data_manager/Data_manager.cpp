@@ -43,8 +43,12 @@ void Data_manager::logout()
 
 bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 {
+	int i = 0;
 	for (auto train : turn) {
-		net.Action(3, setMoveData(std::to_string(train.first), std::to_string(train.second.first), std::to_string(train.second.second)));
+		if (i == 0) {
+			net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
+			i++;
+		}
 	}
 	return true;
 }
@@ -107,7 +111,7 @@ Data_manager::~Data_manager()
 bool Data_manager::forceTurn()
 {
 	std::lock_guard<std::mutex> locker(update_mutex);
-	if (!net.Action(5, std::pair<std::string, std::string>("", ""))) return false;
+	while (!net.Action(5, std::pair<std::string, std::string>("", "")));
 
 	turn = true;
 	update_check.notify_one();
@@ -131,7 +135,7 @@ void Data_manager::setLoginData(std::string name, std::string password, std::str
 	{
 		login_data.emplace_back(std::pair<std::string, std::string>("", std::to_string(num_turns)));
 	}
-	if (num_players != 1)
+	if (num_players != -1)
 	{
 		login_data.emplace_back(std::pair<std::string, std::string>("", std::to_string(num_players)));
 	}
@@ -176,18 +180,14 @@ std::shared_ptr<Player> Data_manager::getPlayerFromServer()
 void Data_manager::updateGame()
 {
 	sf::Clock clock;
-	while (true) 
+	while (update_on) 
 	{
-		if (clock.getElapsedTime().asMilliseconds() >= 10000)
-		{
-			std::lock_guard<std::mutex> locker(update_mutex);
-			auto new_map_layer_1 = getMapLayer1FromServer();
-			if(new_map_layer_1 != NULL) map_layer_1 = new_map_layer_1;
-			auto new_player = getPlayerFromServer();
-			if (new_player != NULL) player = new_player;
-			updateRefuges();
-			clock.restart();
-		}
+		std::unique_lock<std::mutex> locker(update_mutex);
+		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn); });
+		map_layer_1 = getMapLayer1FromServer();
+		player = getPlayerFromServer();
+		updateRefuges();
+		turn = false;
 	}
 }
 

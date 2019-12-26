@@ -84,6 +84,9 @@ std::string Network_manager::receiveJsonString()
 		}
 		return jsonString;
 	}
+	else {
+		return "None";
+	}
 	return "";
 }
 
@@ -107,6 +110,7 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
+	if (response == "None") return false;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{
@@ -140,7 +144,7 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
-	if (response == "") return false;
+	if (response == "None") return false;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{

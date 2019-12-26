@@ -13,7 +13,7 @@ Json_Parser::~Json_Parser()
 
 MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 {
-	std::cout << json_string;
+	//std::cout << json_string;
 	rapidjson::Document doc;
 	doc.Parse(json_string.c_str());
 
