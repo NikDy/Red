@@ -13,6 +13,10 @@
 #include "Player.h"
 #include "MapLayer1.h"
 
+#include <iostream>
+#include <cctype>
+#include <string>
+
 class Json_Parser
 {
 private:
@@ -36,6 +40,7 @@ public:
 	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
 	static Player fromPlayer(std::string json_string);
+	//static bool updateMapLayer1(std::string json_string, std::shared_ptr<MapLayer1>);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
 };
 
