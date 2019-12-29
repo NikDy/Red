@@ -101,4 +101,5 @@ Train MapLayer1::getTrainByIdx(const int& idx) {
 			return train.second;
 		}
 	}
+	return Train(-1, -1, "", -1, -2);
 }
