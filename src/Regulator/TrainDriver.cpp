@@ -4,7 +4,6 @@ TrainDriver::TrainDriver(int _idx) {
 	idx = _idx;
 }
 
-
 TrainDriver::~TrainDriver() {
 
 }
@@ -58,36 +57,47 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 
 	//driver.getRoute().showRoute();
 
-	if (driver.getRoute().onePoint()) {
-		if (position == 1 && driver.getSpeed() == -1) {
-			setStatus(true);
-			driver.getRoute().pathPop();
-		}
-		if (curLine.lenght - position == 1 && driver.getSpeed() == 1) {
-			setStatus(true);
-			driver.getRoute().pathPop();
-		}
-	}
-	else if (position == 0 || position == curLine.lenght) {
-		int firstPoint = driver.getRoute().pathTop();//first point of carrent route
-		driver.getRoute().pathPop();
-		int secondPoint = driver.getRoute().pathTop();//second point of current route
-
-		Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(firstPoint, secondPoint);
-		setLineToGo(line.idx);
-		if (firstPoint == line.points.first) {
-			setSpeed(1);
-		}
-		else {
-			setSpeed(-1);
-		}
+	if (isNextLineInRouteAvailable(driver.getRoute()))
+	{
 		if (driver.getRoute().onePoint()) {
-			if (line.lenght == 1) {
+			if (position == 1 && driver.getSpeed() == -1) {
+				setStatus(true);
+				driver.getRoute().pathPop();
+			}
+			if (curLine.lenght - position == 1 && driver.getSpeed() == 1) {
 				setStatus(true);
 				driver.getRoute().pathPop();
 			}
 		}
+		else if (position == 0 || position == curLine.lenght) {
+			int firstPoint = driver.getRoute().pathTop();//first point of carrent route
+			driver.getRoute().pathPop();
+			int secondPoint = driver.getRoute().pathTop();//second point of current route
+
+			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(firstPoint, secondPoint);
+			setLineToGo(line.idx);
+			setSpeed(Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(firstPoint, secondPoint));
+			if (driver.getRoute().onePoint()) {
+				if (line.lenght == 1) {
+					setStatus(true);
+					driver.getRoute().pathPop();
+				}
+			}
+		}
 	}
 	//driver.getRoute().showRoute();
+}
 
+
+bool TrainDriver::isNextLineInRouteAvailable(Route route)
+{
+	auto& trains = Data_manager::getInstance().getMapLayer1().getTrains();
+	auto& map_layer_0 = Data_manager::getInstance().getMapLayer0();
+	auto line_to_check = map_layer_0.getLineByTwoPoints(route.path_seq[0], route.path_seq[1]);
+
+	for (auto train : trains)
+	{
+		if (train.second.getLineIdx() == line_to_check.idx) return false;
+	}
+	return true;
 }

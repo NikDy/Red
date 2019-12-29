@@ -99,6 +99,15 @@ Graph_Line Graph::getLineByTwoPoints(const int& first_idx, const int& second_idx
 	}
 }
 
+
+int Graph::getLineDirectionByTwoPoints(int first, int second)
+{
+	auto line = getLineByTwoPoints(first, second);
+	if (line.points.first == first) return 1;
+	else return -1;
+}
+
+
 Graph_Line Graph::getLineByIdx(const int& idx) {
 	for (auto line : lines) {
 		if (line.second.idx == idx) {
@@ -107,6 +116,9 @@ Graph_Line Graph::getLineByIdx(const int& idx) {
 	}
 	return Graph_Line(-1, -1, std::make_pair(-1, -1));
 }
+
+
+
 
 Graph::~Graph()
 {

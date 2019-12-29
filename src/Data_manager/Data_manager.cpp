@@ -41,17 +41,19 @@ void Data_manager::logout()
 	net.Logout();
 }
 
+
 bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 {
-	int i = 0;
+	for (auto train : map_layer_1->getTrains())
+	{
+		if (train.second.cooldown != 0) std::cout << "collision!" << std::endl;
+	}
 	for (auto train : turn) {
-		if (i == 0) {
-			net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
-			i++;
-		}
+		net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
 	}
 	return true;
 }
+
 
 bool Data_manager::tryUpdateInGame()
 {

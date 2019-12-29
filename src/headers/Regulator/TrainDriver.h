@@ -31,4 +31,6 @@ private:
 	int lineToGo = 0;//idx of line where we need to go
 	int status = true;
 
+
+	bool isNextLineInRouteAvailable(Route);
 };
