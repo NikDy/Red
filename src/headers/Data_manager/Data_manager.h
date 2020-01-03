@@ -33,6 +33,7 @@ public:
 	bool forceTurn();
 
 	Graph& getMapLayer0();
+	Graph& getMapLayer01();
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
 
@@ -52,6 +53,7 @@ private:
 	std::shared_ptr<Player> player = nullptr;
 	std::shared_ptr<MapLayer1> map_layer_1 = nullptr;
 	std::shared_ptr<Graph> map_layer_0 = nullptr;
+	std::shared_ptr<Graph> map_layer_01 = nullptr;
 	Network_manager net;
 	std::vector<std::pair<std::string, std::string>> login_data;
 	void setLoginData(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
@@ -63,5 +65,6 @@ private:
 	void updateGame();
 	void updateRefuges();
 	std::condition_variable update_check;
+	void markPoints();
 };
 

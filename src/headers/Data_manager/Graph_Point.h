@@ -6,7 +6,8 @@
 class Graph_Point : public Game_object
 {
 public:
-
+	bool pointBusy = false;
+	int trainBusy = 0;
 	int idx = 0;
 	int post_idx = 0;
 	std::list<int> adjacency_list;

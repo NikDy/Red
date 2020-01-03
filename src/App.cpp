@@ -19,15 +19,17 @@ int main()
 	dec.Insertion();
 	
 	Drawer::getInstance().draw();
-
+	int i = 0;
 
 	while(true) {
-		if (Data_manager::getInstance().turn == false)
-		{
+		++i;
+		if (i == 18 || i == 22) {
+			std::cout << "lol" << std::endl;
+		}
 			//Data_manager::getInstance().tryUpdateInGame();
 			Data_manager::getInstance().makeMove(dec.makeTurn());
 			Data_manager::getInstance().forceTurn();
-		}
+			while (Data_manager::getInstance().turn != false);
 	}
 
 	return 0;

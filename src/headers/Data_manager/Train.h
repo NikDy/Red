@@ -48,8 +48,8 @@ public:
 	bool longway = false;
 	bool inMarket = false;
 	bool inStorage = false;
-private:
 	int idx = 0;
+private:
 	std::string player_idx = "";
 	std::vector<Event_game> events = std::vector<Event_game>();
 };

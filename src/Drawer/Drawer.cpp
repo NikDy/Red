@@ -28,13 +28,17 @@ void Drawer::updateShapes()
 
 void Drawer::buildVisualGraph()
 {
-	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto graph = Data_manager::getInstance().getMapLayer01();
 	for (auto i : graph.getPoints())
 	{
 		sf::Vector2f position((float)(std::rand() % (int)w_sizeX), (float)(std::rand() % (int)w_sizeY));
 		DrawerContainer new_point = DrawerContainer(position);
 		sf::CircleShape point_shape(points_radius);
+		
 		point_shape.setFillColor(w_points_color);
+		if (i.first == 88) {
+			point_shape.setFillColor(sf::Color::Black);
+		}
 		point_shape.setOutlineColor(w_outline_color);
 		point_shape.setOutlineThickness(outline_thickness);
 		new_point.addShape(point_shape, sf::Vector2f(-points_radius, -points_radius));
@@ -111,7 +115,7 @@ void Drawer::updateTrains()
 
 void Drawer::updateLines()
 {
-	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto graph = Data_manager::getInstance().getMapLayer01();
 	lines.clear();
 	for (auto line : graph.getLines())
 	{
@@ -154,8 +158,7 @@ void Drawer::drawAll()
 				window.close();
 			}
 		}
-
-			this->reforceGraph();
+		this->reforceGraph();
 		if (Data_manager::getInstance().turn == false) {
 			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 			{

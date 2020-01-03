@@ -29,6 +29,8 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	map_layer_1 = getMapLayer1FromServer();
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
+	this->map_layer_01 = this->map_layer_0;
+	this->map_layer_01->createAdjacencyLists();
 	//////////////
 
 	//////////////
@@ -49,7 +51,9 @@ bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 		if (train.second.cooldown != 0) std::cout << "collision!" << std::endl;
 	}
 	for (auto train : turn) {
-		net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
+		if (train.second.first != 0) {
+			net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
+		}
 	}
 	return true;
 }
@@ -91,6 +95,11 @@ Graph& Data_manager::getMapLayer0()
 	return *this->map_layer_0;
 }
 
+Graph & Data_manager::getMapLayer01()
+{
+	return *this->map_layer_01;
+}
+
 MapLayer1& Data_manager::getMapLayer1()
 {
 	return *this->map_layer_1;
@@ -113,9 +122,9 @@ Data_manager::~Data_manager()
 bool Data_manager::forceTurn()
 {
 	std::lock_guard<std::mutex> locker(update_mutex);
+	turn = true;
 	while (!net.Action(5, std::pair<std::string, std::string>("", "")));
 
-	turn = true;
 	update_check.notify_one();
 
 	return true;
@@ -185,9 +194,12 @@ void Data_manager::updateGame()
 	while (update_on) 
 	{
 		std::unique_lock<std::mutex> locker(update_mutex);
-		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn); });
+		update_check.wait_for(locker, std::chrono::seconds(60), [&]() {return (this->turn); });
 		map_layer_1 = getMapLayer1FromServer();
+		map_layer_0 = getMapLayer0FromServer();
+		this->map_layer_0->createAdjacencyLists();
 		player = getPlayerFromServer();
+		markPoints();
 		updateRefuges();
 		turn = false;
 	}
@@ -202,4 +214,23 @@ void Data_manager::updateRefuges()
 			count_Refuges = event_.value;
 		}
 	}
+}
+
+void Data_manager::markPoints()
+{
+	auto& points = map_layer_0->getPoints();
+	auto& trains = map_layer_1->getTrains();
+	for (auto& train : trains) {
+		Graph_Line line = map_layer_0->getLineByIdx(train.second.line_idx);
+			if (line.points.second != player->getHome().idx) {
+				points[line.points.second].pointBusy = true;
+				points[line.points.second].trainBusy = train.first;
+				//std::cout << "     " << line.points.second << "     " << std::endl;
+				points[line.points.first].pointBusy = true;
+				points[line.points.first].trainBusy = train.first;
+				//std::cout << "     " << line.points.second << "     " << std::endl;
+			}
+
+	}
+	std::cout << std::endl;
 }

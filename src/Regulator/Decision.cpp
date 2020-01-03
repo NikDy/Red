@@ -30,10 +30,11 @@ std::map<int, std::pair<int, int>> Decision:: makeTurn() {
 		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 		if (train.cooldown != 0) 
 		{ 
+			driver.second.getRoute().path_seq.clear();
 			driver.second.setStatus(true);
 			continue;
 		}
-		driver.second.foundSpeedNLine(driver.second);
+		if (driver.second.foundSpeedNLine(driver.second) == false) continue;
 		turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
 		
 	}

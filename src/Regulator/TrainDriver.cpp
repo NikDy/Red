@@ -40,6 +40,8 @@ void TrainDriver::setStatus(bool _status) {
 	status = _status;
 }
 
+
+
 Route& TrainDriver::getRoute() {
 	return route;
 }
@@ -48,17 +50,15 @@ void TrainDriver::setRoute(Route _route) {
 	route = _route;
 }
 
-void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
+bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 	Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(idx);
 	int curLineIdx = train.getLineIdx();
-
+	auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 	Graph_Line curLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(curLineIdx);
 	int position = train.getPosition();
 
 	//driver.getRoute().showRoute();
-
-	if (isNextLineInRouteAvailable(driver.getRoute()))
-	{
+	if (driver.getRoute().path_seq.size() == 0) return false;
 		if (driver.getRoute().onePoint()) {
 			if (position == 1 && driver.getSpeed() == -1) {
 				setStatus(true);
@@ -76,6 +76,11 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 
 			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(firstPoint, secondPoint);
 			setLineToGo(line.idx);
+			if (points[secondPoint].pointBusy == true && points[secondPoint].trainBusy != idx) {
+				driver.getRoute().path_seq.clear();
+				setStatus(true);
+				return false;
+			}
 			setSpeed(Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(firstPoint, secondPoint));
 			if (driver.getRoute().onePoint()) {
 				if (line.lenght == 1) {
@@ -84,20 +89,20 @@ void TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 				}
 			}
 		}
-	}
+		return true;
 	//driver.getRoute().showRoute();
 }
 
 
 bool TrainDriver::isNextLineInRouteAvailable(Route route)
 {
-	auto& trains = Data_manager::getInstance().getMapLayer1().getTrains();
+	/*auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 	auto& map_layer_0 = Data_manager::getInstance().getMapLayer0();
 	auto line_to_check = map_layer_0.getLineByTwoPoints(route.path_seq[0], route.path_seq[1]);
 
 	for (auto train : trains)
 	{
 		if (train.second.getLineIdx() == line_to_check.idx) return false;
-	}
+	}*/
 	return true;
 }

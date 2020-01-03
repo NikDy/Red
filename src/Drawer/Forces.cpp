@@ -4,7 +4,7 @@
 std::map<int, DrawerContainer> Forces::recalcForces(std::map<int, DrawerContainer>& current_points)
 {
 	
-	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto graph = Data_manager::getInstance().getMapLayer01();
 	std::map<int, DrawerContainer> new_points;
 	for (auto point : current_points)
 	{
