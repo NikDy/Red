@@ -95,44 +95,14 @@ Player Json_Parser::fromPlayer(std::string json_string)
 									doc["home"]["post_idx"].GetInt()));
 
 	Town player_town = addTown(doc["town"]);
-		/*Town(doc["town"]["idx"].GetInt(),
-									doc["town"]["type"].GetInt(),
-									doc["town"]["name"].GetString());
-	player_town.armor =				doc["town"]["armor"].GetInt();
-	player_town.armor_capacity =	doc["town"]["armor_capacity"].GetInt();
-	player_town.level =				doc["town"]["level"].GetInt();
-	player_town.next_level_price =  doc["town"]["next_level_price"].GetInt();
-	player_town.player_idx =		doc["town"]["player_idx"].GetString();
-	player_town.point_idx =			doc["town"]["point_idx"].GetInt();
-	player_town.population =		doc["town"]["population"].GetInt();
-	player_town.population_capacity = doc["town"]["population_capacity"].GetInt();
-	player_town.product =			doc["town"]["product"].GetInt();
-	player_town.product_capacity =  doc["town"]["product_capacity"].GetInt();
-	player_town.train_cooldown =    doc["town"]["train_cooldown"].GetInt();
-	player_town.type =				doc["town"]["type"].GetInt();*/
+
 	
 	new_player.setTown(player_town);
 
 	for (int i = 0; i < (int)doc["trains"].Size(); i++)
 	{
 		Train new_train = addTrain(doc["trains"][i]);
-			/*Train(doc["trains"][i]["idx"].GetInt(),
-								doc["trains"][i]["line_idx"].GetInt(),
-								doc["trains"][i]["player_idx"].GetString(),
-								doc["trains"][i]["position"].GetInt(),
-								doc["trains"][i]["speed"].GetInt());
-		//new_train.fuel = 		doc["trains"][i]["fuel"].GetInt();
-		//new_train.fuel_capacity =		doc["trains"][i]["fuel_cpacity"].GetInt();
-		//new_train.fuel_consumption =	doc["trains"][i]["fuel_consumption"].GetInt();
-		new_train.goods =				doc["trains"][i]["goods"].GetInt();
-		new_train.goods_capacity =		doc["trains"][i]["goods_capacity"].GetInt();
-		new_train.goods_type = 0;
-		new_train.level =				doc["trains"][i]["level"].GetInt();
-		new_train.next_level_price	=	doc["trains"][i]["next_level_price"].GetInt();
-		new_train.cooldown =			doc["trains"][i]["cooldown"].GetInt();
-
-		*/
-		//event
+			
 		new_player.addTrain(new_train.getIdx(), new_train);
 	}
 
@@ -150,15 +120,48 @@ bool Json_Parser::is_number(const std::string& s)
 		s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
 }
 
+Event_game Json_Parser::addEvent(const rapidjson::Value & doc)
+{
+	Event_game event_;
+	event_.tick = doc["tick"].GetInt();
+	event_.type = doc["type"].GetInt();
+	switch (event_.type)
+	{
+		case (int)EVENT_TYPE::TRAIN_COLLISION:
+			event_.value = event_.type = doc["train"].GetInt();
+			break;
+		case (int)EVENT_TYPE::REFUGEES_ARRIVAL:
+			event_.value = event_.type = doc["refugees_number"].GetInt();
+			break;
+		case (int)EVENT_TYPE::HIJACKERS_ASSAULT:
+			event_.value = event_.type = doc["hijackers_power"].GetInt();
+			break;
+		case (int)EVENT_TYPE::PARASITES_ASSAULT:
+			event_.value = event_.type = doc["parasites_power"].GetInt();
+			break;
+	default:
+		break;
+	}
+	return event_;
+}
+
 Town Json_Parser::addTown(const rapidjson::Value& doc)
 {
 	Town town_map = Town(doc["idx"].GetInt(),
 		doc["type"].GetInt(),
 		doc["name"].GetString());
 	town_map.armor = doc["armor"].GetInt();
+	if (doc.HasMember("events"))
+	{
+		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
+			town_map.addEvent(addEvent(doc["events"][i]));
+		}
+	}
 	town_map.armor_capacity = doc["armor_capacity"].GetInt();
 	if(doc.HasMember("level")) town_map.level = doc["level"].GetInt();
-	if (doc.HasMember("next_level_price")) town_map.next_level_price = doc["next_level_price"].GetInt();
+	if (doc.HasMember("next_level_price")) 
+		if (!doc["next_level_price"].IsNull())
+			town_map.next_level_price = doc["next_level_price"].GetInt();
 	town_map.player_idx = doc["player_idx"].GetString();
 	town_map.point_idx = doc["point_idx"].GetInt();
 	town_map.population = doc["population"].GetInt();
@@ -179,7 +182,7 @@ Storage Json_Parser::addStorage(const rapidjson::Value& doc)
 	if (doc.HasMember("events"))
 	{
 		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
-			//storage.addEvent();
+			storage_map.addEvent(addEvent(doc["events"][i]));
 		}
 	}
 	storage_map.point_idx = doc["point_idx"].GetInt();
@@ -194,7 +197,7 @@ Market Json_Parser::addMarket(const rapidjson::Value& doc)
 	if (doc.HasMember("events"))
 	{
 		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
-			//storage.addEvent();
+			market_map.addEvent(addEvent(doc["events"][i]));
 		}
 	}
 	market_map.point_idx = doc["point_idx"].GetInt();
@@ -213,11 +216,19 @@ Train Json_Parser::addTrain(const rapidjson::Value & doc)
 	//new_train.fuel = 		doc["fuel"].GetInt();
 	//new_train.fuel_capacity =		doc["fuel_cpacity"].GetInt();
 	//new_train.fuel_consumption =	doc["fuel_consumption"].GetInt();
+	if (doc.HasMember("events"))
+	{
+		for (int i = 0; i < (int)doc["events"].Size(); ++i) {
+			new_train.addEvent(addEvent(doc["events"][i]));
+		}
+	}
 	new_train.goods = doc["goods"].GetInt();
 	new_train.goods_capacity = doc["goods_capacity"].GetInt();
 	new_train.goods_type = NULL;
 	if(doc.HasMember("level")) new_train.level = doc["level"].GetInt();
-	if(doc.HasMember("next_level_price")) new_train.next_level_price = doc["next_level_price"].GetInt();
+	if(doc.HasMember("next_level_price")) 
+		if(!doc["next_level_price"].IsNull())
+			new_train.next_level_price = doc["next_level_price"].GetInt();
 	if(doc.HasMember("cooldown")) new_train.cooldown = doc["cooldown"].GetInt();
 
 	return new_train;
@@ -244,6 +255,31 @@ std::string Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>
 			writer.String(p.second.c_str());
 		}
 	}
+	writer.EndObject();
+	return str.GetString();
+}
+
+
+std::string Json_Parser::toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains)
+{
+	rapidjson::StringBuffer str;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(str);
+
+	writer.StartObject();
+	writer.Key(posts.first.c_str());
+	writer.StartArray();
+	for (auto p : posts.second)
+	{
+		writer.Int(p);
+	}
+	writer.EndArray();
+	writer.Key(trains.first.c_str());
+	writer.StartArray();
+	for (auto p : trains.second)
+	{
+		writer.Int(p);
+	}
+	writer.EndArray();
 	writer.EndObject();
 	return str.GetString();
 }

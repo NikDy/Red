@@ -44,6 +44,10 @@ public:
 	int next_level_price = 0;
 	int position = 0;
 	int speed = 0;
+
+	bool longway = false;
+	bool inMarket = false;
+	bool inStorage = false;
 private:
 	int idx = 0;
 	std::string player_idx = "";

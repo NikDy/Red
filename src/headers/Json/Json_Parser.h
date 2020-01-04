@@ -12,6 +12,7 @@
 #include "Graph.h"
 #include "Player.h"
 #include "MapLayer1.h"
+#include "Event_game.h"
 
 #include <iostream>
 #include <cctype>
@@ -25,6 +26,7 @@ private:
 	static Market addMarket(const rapidjson::Value& doc);
 	static Train addTrain(const rapidjson::Value& doc);
 	static bool is_number(const std::string& s);
+	static Event_game addEvent(const rapidjson::Value& doc);
 	enum class PostCode
 	{
 		TOWN = 1,
@@ -36,11 +38,10 @@ public:
 	Json_Parser();
 	~Json_Parser();
 
-	//static Graph createGraph(std::string filepath);
 	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
 	static Player fromPlayer(std::string json_string);
-	//static bool updateMapLayer1(std::string json_string, std::shared_ptr<MapLayer1>);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
+	static std::string toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains);
 };
 

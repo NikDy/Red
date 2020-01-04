@@ -13,7 +13,6 @@ private:
 	std::vector<std::pair<sf::Sprite, sf::Vector2f>> sprite_vector;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-
 public:
 	DrawerContainer() {};
 	DrawerContainer(sf::Vector2f pos);

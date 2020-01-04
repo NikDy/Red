@@ -35,9 +35,38 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 
 bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 {
-	std::lock_guard<std::mutex> locker(update_mutex);
 	for (auto train : turn) {
 		net.Action(3, setMoveData(std::to_string(train.first), std::to_string(train.second.first), std::to_string(train.second.second)));
+	}
+	return true;
+}
+
+bool Data_manager::tryUpdateInGame()
+{
+	if (stopUpdate == false) {
+		int armor_in_towm = player->getTown().armor;
+		std::vector<int> trains;
+		std::vector<int> posts;
+		int count = 0;
+		for (auto train : player->getTrains()) {
+			if (train.second.next_level_price == 0) count++;
+		}
+		if (player->getTown().next_level_price == 0) count++;
+		if(count == (player->getTrains().size() +1)) stopUpdate = true;
+		for (auto train : player->getTrains()) {
+			if (train.second.next_level_price <= armor_in_towm && train.second.next_level_price != 0) {
+				trains.push_back(train.first);
+				armor_in_towm -= train.second.next_level_price;
+			}
+		}
+		if (player->getTown().next_level_price <= armor_in_towm && player->getTown().next_level_price != 0) {
+			posts.push_back(player->getTown().idx);
+		}
+		if (posts.size() != 0 || trains.size() != 0) {
+			auto postsToSend = std::make_pair("posts", posts);
+			auto trainsToSend = std::make_pair("trains", trains);
+			net.ActionToUpdate(postsToSend, trainsToSend);
+		}
 	}
 	return true;
 }
@@ -69,9 +98,9 @@ Data_manager::~Data_manager()
 
 bool Data_manager::forceTurn()
 {
-	while (turn != false);
-	std::lock_guard<std::mutex> locker(update_mutex);
+	std::unique_lock<std::mutex> locker(update_mutex);
 	if (!net.Action(5, std::pair<std::string, std::string>("", ""))) return false;
+
 	turn = true;
 	update_check.notify_one();
 
@@ -141,6 +170,18 @@ void Data_manager::updateGame()
 		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn); });
 		map_layer_1 = getMapLayer1FromServer();
 		player = getPlayerFromServer();
+		updateRefuges();
 		turn = false;
+	}
+}
+
+void Data_manager::updateRefuges()
+{
+	Town town = player->getTown();
+	for (auto& event_ : town.getEvents()) {
+		if (event_.type == int(EVENT_TYPE::REFUGEES_ARRIVAL)) {
+			last_tick_Refuges = 0;
+			count_Refuges = event_.value;
+		}
 	}
 }

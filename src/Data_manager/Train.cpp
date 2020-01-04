@@ -1,8 +1,6 @@
 #include "Train.h"
 
 
-
-
 Train::Train(int idx_, int line_idx_, const std::string& player_idx_, int position_, int speed_)
 {
 	idx = idx_;
@@ -68,6 +66,17 @@ int Train::getGoodsCapacity() const {
 const std::string& Train::getPlayerIdx() const
 {
 	return player_idx;
+}
+
+bool Train::addEvent(Event_game event_)
+{
+	events.push_back(event_);
+	return true;
+}
+
+std::vector<Event_game>& Train::getEvents()
+{
+	return events;
 }
 
 std::shared_ptr<Game_object> Train::getObjectPtr()

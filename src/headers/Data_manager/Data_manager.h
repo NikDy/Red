@@ -28,13 +28,20 @@ public:
 
 	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
+	bool tryUpdateInGame();
+	bool forceTurn();
+
 	Graph& getMapLayer0();
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
+
 	bool update_on = true;
 	~Data_manager();
-	bool forceTurn();
 	bool turn = false;
+
+	bool stopUpdate = false;
+	int count_Refuges = 0;
+	int last_tick_Refuges = 0;
 private:
 	Data_manager() {};
 
@@ -51,6 +58,7 @@ private:
 	std::shared_ptr<Player> getPlayerFromServer();
 	std::thread updateThread;
 	void updateGame();
+	void updateRefuges();
 	std::mutex update_mutex;
 	std::condition_variable update_check;
 };
