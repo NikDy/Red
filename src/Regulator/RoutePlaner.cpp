@@ -147,8 +147,8 @@ void RoutePlaner::buildRoutes() {
 			way = bestWayToMarket(point, train);
 			auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 			if (way.size() == 0) continue;
-			points[way[1].first].pointBusy = true;
-			points[way[1].first].trainBusy = train.idx;
+			points[way[1].first].trains.push_back(train);
+
 			route.buildPathQueue(way);
 			
 			driver.second.setStatus(false);

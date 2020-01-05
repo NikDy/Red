@@ -19,11 +19,12 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type
 		frontier.pop();
 		for (auto& next : Graph.getPoints()[current].adjacency_list)
 		{
-			if (points[next].pointBusy == true && current == begin) {
-				//std::cout << "     " << next << "     " << std::endl;
+			Graph_Line line = Graph.getLineByTwoPoints(current, next);
+			int speed = Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(current, next);
+			if (current == begin && (points[next].trains.size() != 0 || checkLine(line, speed) == false)) {
 				continue;
 			}
-			int new_cost = cost_so_far[current] + Graph.getLineByTwoPoints(current, next).lenght;
+			int new_cost = cost_so_far[current] + line.lenght;
 			if(type == 1) {
 				bool checkMarket = false;
 				for (auto& market : markets) {
@@ -79,6 +80,18 @@ int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 	}
 	return lenght;
 }
+
+bool Regulator::checkLine(Graph_Line line, int speed)
+{
+	for (auto tr : line.trains) {
+		if (tr.speed != speed) {
+			return false;
+		}
+	}
+	return true;
+}
+
+
 
 
 Regulator::Regulator()

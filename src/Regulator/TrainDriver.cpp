@@ -54,11 +54,17 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 	Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(idx);
 	int curLineIdx = train.getLineIdx();
 	auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
+	auto& lines = Data_manager::getInstance().getMapLayer0().getLines();
 	Graph_Line curLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(curLineIdx);
 	int position = train.getPosition();
 
 	//driver.getRoute().showRoute();
-	if (driver.getRoute().path_seq.size() == 0) return false;
+	
+	if (driver.getRoute().path_seq.size() == 0) {
+		setStatus(true);
+		return false;
+	}
+
 		if (driver.getRoute().onePoint()) {
 			if (position == 1 && driver.getSpeed() == -1) {
 				setStatus(true);
@@ -76,16 +82,55 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 
 			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(firstPoint, secondPoint);
 			setLineToGo(line.idx);
-			if (points[secondPoint].pointBusy == true && points[secondPoint].trainBusy != idx) {
+			
+			setSpeed(Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(firstPoint, secondPoint));
+			if (isNextLineInRouteAvailable(line, getSpeed()) == false || points[secondPoint].trains.size() != 1) {
 				driver.getRoute().path_seq.clear();
 				setStatus(true);
 				return false;
+			} 
+			else {
+				lines[line.points].trains.push_back(train);
+				points[secondPoint].trains.push_back(train);
 			}
-			setSpeed(Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(firstPoint, secondPoint));
 			if (driver.getRoute().onePoint()) {
 				if (line.lenght == 1) {
 					setStatus(true);
 					driver.getRoute().pathPop();
+				}
+			}
+		}
+		else {
+			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(getLineToGo());
+			if (!checkLine(line, train)) {
+				setSpeed(getSpeed()*-1);
+				int point;
+				if (driver.getRoute().pathTop() == line.points.first) {
+					point = line.points.second;
+				}
+				else {
+					point = line.points.first;
+				}
+				driver.getRoute().path_seq.clear();
+				driver.getRoute().path_seq.push_back(point);
+			}
+			else if (getSpeed() == 0) {
+				if (points[driver.getRoute().pathTop()].idx == line.points.first) {
+					setSpeed(-1);
+				}
+				else {
+					setSpeed(1);
+				}
+			}
+			else if (!checkPoint(points[driver.getRoute().pathTop()], train)) {
+					setSpeed(0);
+			}
+			else {
+				if (points[driver.getRoute().pathTop()].idx == line.points.first) {
+					setSpeed(-1);
+				}
+				else {
+					setSpeed(1);
 				}
 			}
 		}
@@ -94,15 +139,34 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 }
 
 
-bool TrainDriver::isNextLineInRouteAvailable(Route route)
+bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, int speed)
 {
-	/*auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
-	auto& map_layer_0 = Data_manager::getInstance().getMapLayer0();
-	auto line_to_check = map_layer_0.getLineByTwoPoints(route.path_seq[0], route.path_seq[1]);
+	for (auto tr : line.trains) {
+		if (tr.speed != speed) {
+			return false;
+		}
+	}
+	return true;
+}
 
-	for (auto train : trains)
-	{
-		if (train.second.getLineIdx() == line_to_check.idx) return false;
-	}*/
+bool TrainDriver::checkLine(Graph_Line line, Train train)
+{
+	for (auto tr : line.trains) {
+		if (tr.idx != train.idx) {
+			if (tr.speed != train.speed) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool TrainDriver::checkPoint(Graph_Point point, Train train)
+{
+	for (auto tr : point.trains) {
+		if (tr.idx != train.idx) {
+			return false;
+		}
+	}
 	return true;
 }

@@ -51,7 +51,7 @@ bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 		if (train.second.cooldown != 0) std::cout << "collision!" << std::endl;
 	}
 	for (auto train : turn) {
-		if (train.second.first != 0) {
+		if (train.second.second != 0) {
 			net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
 		}
 	}
@@ -218,19 +218,28 @@ void Data_manager::updateRefuges()
 
 void Data_manager::markPoints()
 {
+	auto& lines = map_layer_0->getLines();
 	auto& points = map_layer_0->getPoints();
 	auto& trains = map_layer_1->getTrains();
 	for (auto& train : trains) {
 		Graph_Line line = map_layer_0->getLineByIdx(train.second.line_idx);
-			if (line.points.second != player->getHome().idx) {
+		if (train.second.position != 0 && train.second.position != line.lenght) {
+			lines[line.points].trains.push_back(train.second);
+		}
+		if (train.second.speed == 1) {
+			if ( line.points.second != player->getHome().idx) {
 				points[line.points.second].pointBusy = true;
 				points[line.points.second].trainBusy = train.first;
-				//std::cout << "     " << line.points.second << "     " << std::endl;
+				points[line.points.second].trains.push_back(train.second);
+			}
+		}
+		else if (train.second.speed == -1) {
+			if ( line.points.first != player->getHome().idx) {
 				points[line.points.first].pointBusy = true;
 				points[line.points.first].trainBusy = train.first;
-				//std::cout << "     " << line.points.second << "     " << std::endl;
+				points[line.points.first].trains.push_back(train.second);
 			}
+		}
 
 	}
-	std::cout << std::endl;
 }

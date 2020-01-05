@@ -16,7 +16,7 @@ public:
 	std::vector<std::pair<int, int>> findWay(int begin, int end, int type = 0);
 	static int wayLength(std::vector<std::pair<int, int>>);
 
-
+	bool checkLine(Graph_Line line, int speed);
 	//idk if we will ned them after new logic
 	//int nearestMarket(int _lineIdx, int _position);
 	//std::pair<int, int> whereToGo(int _position, int _lineIdx, int pointToGo); //return speed and lineIdx, where to go

@@ -23,7 +23,7 @@ int main()
 
 	while(true) {
 		++i;
-		if (i == 18 || i == 22) {
+		if (i == 2 || i == 22) {
 			std::cout << "lol" << std::endl;
 		}
 			//Data_manager::getInstance().tryUpdateInGame();

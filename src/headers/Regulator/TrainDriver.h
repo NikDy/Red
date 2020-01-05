@@ -32,5 +32,7 @@ private:
 	int status = true;
 
 
-	bool isNextLineInRouteAvailable(Route);
+	bool isNextLineInRouteAvailable(Graph_Line line, int speed);
+	bool checkLine(Graph_Line line, Train train);
+	bool checkPoint(Graph_Point point, Train train);
 };
