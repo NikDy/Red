@@ -227,14 +227,14 @@ void Data_manager::markPoints()
 			lines[line.points].trains.push_back(train.second);
 		}
 		if (train.second.speed == 1) {
-			if ( line.points.second != player->getHome().idx) {
+			if (line.lenght - train.second.position <= 2 && line.points.second != player->getHome().idx) {
 				points[line.points.second].pointBusy = true;
 				points[line.points.second].trainBusy = train.first;
 				points[line.points.second].trains.push_back(train.second);
 			}
 		}
 		else if (train.second.speed == -1) {
-			if ( line.points.first != player->getHome().idx) {
+			if (train.second.position <= 2 && line.points.first != player->getHome().idx) {
 				points[line.points.first].pointBusy = true;
 				points[line.points.first].trainBusy = train.first;
 				points[line.points.first].trains.push_back(train.second);

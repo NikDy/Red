@@ -102,28 +102,37 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 		}
 		else {
 			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(getLineToGo());
-			if (!checkLine(line, train)) {
-				setSpeed(getSpeed()*-1);
+			if (!checkPoint(points[driver.getRoute().pathTop()], train)) {
+				setSpeed(0);
+				auto& trains = points[driver.getRoute().pathTop()].trains;
+				auto it = std::find_if(trains.begin(), trains.end(), [&](const Train & tr) {
+					if (tr.idx == train.idx)
+						return true;
+					return false;
+				});
+				if(it != trains.end()) trains.erase(it);
+			}
+			else if (!checkLine(line, train)) {
 				int point;
 				if (driver.getRoute().pathTop() == line.points.first) {
 					point = line.points.second;
+					setSpeed(1);
+
 				}
 				else {
 					point = line.points.first;
-				}
-				driver.getRoute().path_seq.clear();
-				driver.getRoute().path_seq.push_back(point);
-			}
-			else if (getSpeed() == 0) {
-				if (points[driver.getRoute().pathTop()].idx == line.points.first) {
 					setSpeed(-1);
 				}
-				else {
-					setSpeed(1);
-				}
-			}
-			else if (!checkPoint(points[driver.getRoute().pathTop()], train)) {
-					setSpeed(0);
+				auto& trains = points[driver.getRoute().pathTop()].trains;
+				auto it = std::find_if(trains.begin(), trains.end(), [&](const Train & tr) {
+					if (tr.idx == train.idx)
+						return true;
+					return false;
+				});
+				if (it != trains.end()) trains.erase(it);
+				points[point].trains.push_back(train);
+				driver.getRoute().path_seq.clear();
+				driver.getRoute().path_seq.push_back(point);
 			}
 			else {
 				if (points[driver.getRoute().pathTop()].idx == line.points.first) {

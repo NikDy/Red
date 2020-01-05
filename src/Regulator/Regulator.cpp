@@ -87,6 +87,10 @@ bool Regulator::checkLine(Graph_Line line, int speed)
 		if (tr.speed != speed) {
 			return false;
 		}
+		else {
+			if(speed == 1 && tr.position < 3) return false;
+			if(speed == -1 && line.lenght - tr.position < 3) return false;
+		}
 	}
 	return true;
 }
