@@ -26,7 +26,7 @@ public:
 	bool loadConfigFromFile();
 	std::map<std::string, std::string> config;
 
-	bool login(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = -1);
+	bool login(std::string name, std::string password, std::string game, int num_turns, int num_players);
 	void logout();
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
 	bool tryUpdateInGame();
@@ -36,6 +36,9 @@ public:
 	Graph& getMapLayer01();
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
+
+	std::shared_ptr<Games> getGamesFromServer();
+
 
 	bool update_on = true;
 	~Data_manager();
@@ -56,7 +59,7 @@ private:
 	std::shared_ptr<Graph> map_layer_01 = nullptr;
 	Network_manager net;
 	std::vector<std::pair<std::string, std::string>> login_data;
-	void setLoginData(std::string name, std::string password = "", std::string game = "", int num_turns = -1, int num_players = 1);
+	void setLoginData(std::string name, std::string password, std::string game, int num_turns, int num_players);
 	std::vector<std::pair<std::string, std::string>> setMoveData(std::string lineIdx, std::string speed, std::string trainIdx);
 	std::shared_ptr<Graph> getMapLayer0FromServer();
 	std::shared_ptr<MapLayer1> getMapLayer1FromServer();

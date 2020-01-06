@@ -38,6 +38,7 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	return true;
 }
 
+
 void Data_manager::logout()
 {
 	net.Logout();
@@ -136,21 +137,22 @@ void Data_manager::setLoginData(std::string name, std::string password, std::str
 	login_data.emplace_back(std::pair<std::string, std::string>("name", name));
 	if (password != "")
 	{
-		login_data.emplace_back(std::pair<std::string, std::string>("", password));
+		login_data.emplace_back(std::pair<std::string, std::string>("password", password));
 	}
 	if (game != "")
 	{
-		login_data.emplace_back(std::pair<std::string, std::string>("", game));
+		login_data.emplace_back(std::pair<std::string, std::string>("game", game));
 	}
 	if (num_turns != -1)
 	{
-		login_data.emplace_back(std::pair<std::string, std::string>("", std::to_string(num_turns)));
+		login_data.emplace_back(std::pair<std::string, std::string>("num_turns", std::to_string(num_turns)));
 	}
 	if (num_players != -1)
 	{
-		login_data.emplace_back(std::pair<std::string, std::string>("", std::to_string(num_players)));
+		login_data.emplace_back(std::pair<std::string, std::string>("num_players", std::to_string(num_players)));
 	}
 }
+
 
 std::vector<std::pair<std::string, std::string>> Data_manager::setMoveData(std::string lineIdx, std::string speed, std::string trainIdx)
 {
@@ -185,6 +187,13 @@ std::shared_ptr<Player> Data_manager::getPlayerFromServer()
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	if (!list_objects.empty()) return std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
 	else return NULL;
+}
+
+std::shared_ptr<Games> Data_manager::getGamesFromServer()
+{
+	net.Action(7, std::make_pair("", ""));
+	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
+	return std::dynamic_pointer_cast<Games, Game_object>(list_objects.back());
 }
 
 
