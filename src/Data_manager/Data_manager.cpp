@@ -31,9 +31,6 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	this->map_layer_0->createAdjacencyLists();
 	this->map_layer_01 = this->map_layer_0;
 	this->map_layer_01->createAdjacencyLists();
-	//////////////
-
-	//////////////
 	updateThread = std::thread(&Data_manager::updateGame, this);
 	return true;
 }

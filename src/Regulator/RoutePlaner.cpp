@@ -2,8 +2,6 @@
 
 
 
-
-
 std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
 	return drivers;
 }
@@ -12,6 +10,7 @@ std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
 void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 	 drivers.emplace(_idx, _trainDriver);
 }
+
 
 int RoutePlaner::needProducts(int length, int &population)
 {
@@ -27,6 +26,7 @@ int RoutePlaner::needProducts(int length, int &population)
 	}
 	return necessaryProdacts;
 }
+
 
 std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
 {
@@ -110,52 +110,36 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 
 
 void RoutePlaner::buildRoutes() {
-	//std::cout << "I'm inside buildRoutes" << std::endl;
-	//Regulator  reg;
-	
 	for (auto& driver : getInstance().getDrivers()) {
-		if (driver.second.getStatus()) {
-			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			if (train.cooldown != 0) continue;
-			int point = 0;
-			int lineIdx = train.getLineIdx();
-			int position = train.getPosition();
-			Route route;
-			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(lineIdx);
-			if (position == line.lenght) {
-				point = line.points.second;
-			}
-			else {
-				point = line.points.first;
-			} 
+		if (driver.second.onWay) {
+			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+			if (driven_train.cooldown != 0) continue;
+			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx());
+			int route_start_point = getPointIdxByLineAndPosition(line, driven_train.getPosition());
 			// market or storage
-			std::vector<std::pair<int, int>> way = std::vector<std::pair<int, int>>();
-			/*if (train.longway == false) {
-				if (Data_manager::getInstance().stopUpdate == false) {
-					if(train.inMarket == false) way = bestWayToStorage(point, train);
-					if (way.size() == 0) {
-						if(train.inStorage == false) way = bestWayToMarket(point, train);
-					}
-				}
-				else {
-					way = bestWayToMarket(point, train);
-				}
-			}
-			else {
-				way = bestWayToMarket(point, train);
-			}*/
-			way = bestWayToMarket(point, train);
+			std::vector<std::pair<int, int>> way = bestWayToMarket(route_start_point, driven_train);
 			auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 			if (way.size() == 0) continue;
-			points[way[1].first].trains.push_back(train);
-
-			route.buildPathQueue(way);
+			points[way[1].first].trains.push_back(driven_train);
 			
-			driver.second.setStatus(false);
-			driver.second.setRoute(route);		
+			driver.second.onWay = false;
+			driver.second.setRoute(Route(way));		
 		}
 	}
+}
 
+
+int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
+{
+	if (pos == line.lenght) {
+		return line.points.second;
+	}
+	else if (pos == 0) {
+		return line.points.first;
+	}
+	else{
+		return -1;
+	}
 }
 
 

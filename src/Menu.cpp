@@ -31,7 +31,7 @@ void Menu::gameSelect()
 		}
 		else break;
 	}
-	Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, 2);
+	Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, 1);
 	waitUntilStart(game_name);
 }
 

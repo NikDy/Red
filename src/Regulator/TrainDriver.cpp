@@ -32,15 +32,6 @@ void TrainDriver::setLineToGo(int _lineToGo) {
 	lineToGo = _lineToGo;
 }
 
-bool TrainDriver::getStatus() {
-	return status;
-}
-
-void TrainDriver::setStatus(bool _status) {
-	status = _status;
-}
-
-
 
 Route& TrainDriver::getRoute() {
 	return route;
@@ -61,17 +52,17 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 	//driver.getRoute().showRoute();
 	
 	if (driver.getRoute().path_seq.size() == 0) {
-		setStatus(true);
+		onWay = true;
 		return false;
 	}
 
 		if (driver.getRoute().onePoint()) {
 			if (position == 1 && driver.getSpeed() == -1) {
-				setStatus(true);
+				onWay = true;
 				driver.getRoute().pathPop();
 			}
 			if (curLine.lenght - position == 1 && driver.getSpeed() == 1) {
-				setStatus(true);
+				onWay = true;
 				driver.getRoute().pathPop();
 			}
 		}
@@ -86,7 +77,7 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 			setSpeed(Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(firstPoint, secondPoint));
 			if (isNextLineInRouteAvailable(line, getSpeed()) == false || points[secondPoint].trains.size() != 1) {
 				driver.getRoute().path_seq.clear();
-				setStatus(true);
+				onWay = true;
 				return false;
 			} 
 			else {
@@ -95,7 +86,7 @@ bool TrainDriver::foundSpeedNLine(TrainDriver& driver) { //to found speedToSet
 			}
 			if (driver.getRoute().onePoint()) {
 				if (line.lenght == 1) {
-					setStatus(true);
+					onWay = true;
 					driver.getRoute().pathPop();
 				}
 			}

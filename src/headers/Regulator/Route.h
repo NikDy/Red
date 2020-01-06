@@ -7,6 +7,7 @@ class Route
 {
 public:
 	Route();
+	Route(std::vector<std::pair<int, int>>);
 	~Route();
 
 	void buildPathQueue(std::vector<std::pair<int, int>>);

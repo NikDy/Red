@@ -33,6 +33,8 @@ public:
 	std::vector<std::pair<int, int>> StorageToMarket(int begin, Train& train, Town& town);
 
 private:
+	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
+
 	std::map<int,TrainDriver> drivers; //int- driver's idx; true in town, false on road
 	RoutePlaner();
 	~RoutePlaner();
