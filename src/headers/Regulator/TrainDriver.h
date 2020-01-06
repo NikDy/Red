@@ -13,7 +13,8 @@ public:
 	void setRoute(Route _route);
 	int& getLineToGo();
 	void setLineToGo(int _lineToGo);
-
+	void setStatus(bool _status);
+	bool getStatus();
 	bool foundSpeedNLine(); //to found speedToSet
 	//bool checkSituation(Route _route); //check situation on the road
 	//Route makeNewRoute(int firstPoint, int lastPoin); //if the situation is bad, driver makes new route with first and last point from an old route

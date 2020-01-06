@@ -113,40 +113,21 @@ bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
 	//std::cout << "I'm inside buildRoutes" << std::endl;
 	//Regulator  reg;
 		if (driver.second.getStatus()) {
-			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			if (train.cooldown != 0) return false;
-			int point = 0;
-			int lineIdx = train.getLineIdx();
-			int position = train.getPosition();
-			Route route;
-			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(lineIdx);
-			if (position == line.lenght) {
-				point = line.points.second;
-			}
-			else {
-				point = line.points.first;
-			} 
-			// market or storage
-			std::vector<std::pair<int, int>> way = std::vector<std::pair<int, int>>();
-			/*if (train.longway == false) {
-				if (Data_manager::getInstance().stopUpdate == false) {
-					if(train.inMarket == false) way = bestWayToStorage(point, train);
-					if (way.size() == 0) {
-						if(train.inStorage == false) way = bestWayToMarket(point, train);
-					}
-				}
-				else {
-					way = bestWayToMarket(point, train);
-				}
-			}
-			else {
-				way = bestWayToMarket(point, train);
-			}*/
-			way = bestWayToMarket(point, train);
+			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+			if (driven_train.cooldown != 0) return false;
+			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx());
+			int route_start_point = getPointIdxByLineAndPosition(line, driven_train.getPosition());
+			
+			std::vector<std::pair<int, int>> way = bestWayToMarket(route_start_point, driven_train);
 			auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 			if (way.size() == 0) return false;
 			//points[way[1].first].trains.push_back(train);
-
+			
+			driver.second.setStatus(false);
+			driver.second.setRoute(Route(way));
+		}
+		return true;
+}
 
 int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
 {
@@ -156,17 +137,10 @@ int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
 	else if (pos == 0) {
 		return line.points.first;
 	}
-	else{
+	else {
 		return -1;
 	}
-			route.buildPathQueue(way);
-			
-			driver.second.setStatus(false);
-			driver.second.setRoute(route);		
-		}
-		return true;
 }
-
 
 RoutePlaner::RoutePlaner() {
 
