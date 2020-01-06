@@ -23,20 +23,28 @@ void Decision::Insertion() {
 }
 
 std::map<int, std::pair<int, int>> Decision:: makeTurn() {
-	RoutePlaner::getInstance().buildRoutes();
 
 	std::map<int, std::pair<int, int>> turn;
 	for (auto& driver : RoutePlaner::getInstance().getDrivers()) {
 		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-		if (train.cooldown != 0) 
-		{ 
+		if (train.cooldown != 0)
+		{
 			driver.second.getRoute().path_seq.clear();
 			driver.second.setStatus(true);
 			continue;
 		}
-		if (driver.second.foundSpeedNLine(driver.second) == false) continue;
-		turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
-		
+		bool check = false;
+		while (true) {
+			if (RoutePlaner::getInstance().buildRoutes(driver) == false) {
+				check = false;
+				break;
+			}
+			if (driver.second.foundSpeedNLine() == true) {
+				check = true;
+				break;
+			}
+		}
+		if(check = true) turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));	
 	}
 	return turn;
 

@@ -23,7 +23,7 @@ public:
 	std::map<int, TrainDriver>& getDrivers();
 	std::vector<std::pair<int, int>> bestWayToMarket(int begin, Train& train);
 
-	void buildRoutes();
+	bool buildRoutes(std::pair<const int, TrainDriver> &driver);
 
 	void addDriver(int _idx, TrainDriver _trainDriver);
 

@@ -228,16 +228,20 @@ void Data_manager::markPoints()
 		}
 		if (train.second.speed == 1) {
 			if (line.lenght - train.second.position <= 2 && line.points.second != player->getHome().idx) {
-				points[line.points.second].pointBusy = true;
-				points[line.points.second].trainBusy = train.first;
 				points[line.points.second].trains.push_back(train.second);
 			}
 		}
 		else if (train.second.speed == -1) {
 			if (train.second.position <= 2 && line.points.first != player->getHome().idx) {
-				points[line.points.first].pointBusy = true;
-				points[line.points.first].trainBusy = train.first;
 				points[line.points.first].trains.push_back(train.second);
+			}
+		}
+		else if (train.second.speed == 0) {
+			if (train.second.position == 0) {
+				points[line.points.first].trains.push_back(train.second);
+			}
+			else if (train.second.position == line.lenght) {
+				points[line.points.second].trains.push_back(train.second);
 			}
 		}
 

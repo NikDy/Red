@@ -109,14 +109,12 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 }
 
 
-void RoutePlaner::buildRoutes() {
+bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
 	//std::cout << "I'm inside buildRoutes" << std::endl;
 	//Regulator  reg;
-	
-	for (auto& driver : getInstance().getDrivers()) {
 		if (driver.second.getStatus()) {
 			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			if (train.cooldown != 0) continue;
+			if (train.cooldown != 0) return false;
 			int point = 0;
 			int lineIdx = train.getLineIdx();
 			int position = train.getPosition();
@@ -146,16 +144,15 @@ void RoutePlaner::buildRoutes() {
 			}*/
 			way = bestWayToMarket(point, train);
 			auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
-			if (way.size() == 0) continue;
-			points[way[1].first].trains.push_back(train);
+			if (way.size() == 0) return false;
+			//points[way[1].first].trains.push_back(train);
 
 			route.buildPathQueue(way);
 			
 			driver.second.setStatus(false);
 			driver.second.setRoute(route);		
 		}
-	}
-
+		return true;
 }
 
 
