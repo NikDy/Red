@@ -13,6 +13,7 @@
 #include "Player.h"
 #include "MapLayer1.h"
 #include "Event_game.h"
+#include "Games.h"
 
 #include <iostream>
 #include <cctype>
@@ -41,6 +42,7 @@ public:
 	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
 	static Player fromPlayer(std::string json_string);
+	static Games fromGames(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
 	static std::string toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains);
 };

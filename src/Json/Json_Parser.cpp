@@ -113,6 +113,25 @@ Player Json_Parser::fromPlayer(std::string json_string)
 
 
 
+Games Json_Parser::fromGames(std::string json_string)
+{
+	rapidjson::Document doc;
+	doc.Parse(json_string.c_str());
+
+	Games new_games = Games();
+	for (int i = 0; i < (int)doc["games"].Size(); i++)
+	{
+		new_games.addGame(doc["games"][i]["name"].GetString(),
+						  doc["games"][i]["num_players"].GetInt(),
+						  doc["games"][i]["num_turns"].GetInt(),
+						  doc["games"][i]["state"].GetInt());
+	}
+	return new_games;
+}
+
+
+
+
 bool Json_Parser::is_number(const std::string& s)
 {
 	auto first_char = s.begin();

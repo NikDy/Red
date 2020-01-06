@@ -124,6 +124,11 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 			response_list.push_back(result);
 		}
 	}
+	else if (action_code == 7)
+	{
+		std::shared_ptr<Game_object> result = Json_Parser::fromGames(response).getObjectPtr();
+		response_list.push_back(result);
+	}
 	else if (action_code == 6)
 	{
 		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
@@ -159,7 +164,12 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
 			response_list.push_back(result);
 		}
-	} 
+	}
+	else if (action_code == 7)
+	{
+		std::shared_ptr<Game_object> result = Json_Parser::fromGames(response).getObjectPtr();
+		response_list.push_back(result);
+	}
 	else if (action_code == 6) 
 	{
 		//std::cout << response << std::endl;

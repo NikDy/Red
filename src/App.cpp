@@ -1,6 +1,7 @@
 #include "Drawer.h"
 #include "Data_manager.h"
 #include "Decision.h"
+#include "Menu.h"
 
 #include <string>
 #include <iostream>
@@ -14,8 +15,7 @@ int main()
 	Regulator reg;
 	
 	Data_manager::getInstance().loadConfigFromFile();
-	auto username = Data_manager::getInstance().config["name"];
-	Data_manager::getInstance().login(username, "", Data_manager::getInstance().config["game_name"], -1, 1);
+	Menu::getInstance().gameSelect();
 	dec.Insertion();
 	
 	Drawer::getInstance().draw();

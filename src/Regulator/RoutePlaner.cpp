@@ -2,8 +2,6 @@
 
 
 
-
-
 std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
 	return drivers;
 }
@@ -12,6 +10,7 @@ std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
 void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 	 drivers.emplace(_idx, _trainDriver);
 }
+
 
 int RoutePlaner::needProducts(int length, int &population)
 {
@@ -27,6 +26,7 @@ int RoutePlaner::needProducts(int length, int &population)
 	}
 	return necessaryProdacts;
 }
+
 
 std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
 {
@@ -147,6 +147,18 @@ bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
 			if (way.size() == 0) return false;
 			//points[way[1].first].trains.push_back(train);
 
+
+int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
+{
+	if (pos == line.lenght) {
+		return line.points.second;
+	}
+	else if (pos == 0) {
+		return line.points.first;
+	}
+	else{
+		return -1;
+	}
 			route.buildPathQueue(way);
 			
 			driver.second.setStatus(false);
