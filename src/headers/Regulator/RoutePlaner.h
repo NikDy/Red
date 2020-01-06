@@ -7,7 +7,8 @@
 
 #include <unordered_map>
 
-
+typedef std::pair<Market, std::vector<std::pair<int, int>>> wayToMarket;
+typedef std::vector<std::pair<int, int>> routeSeq;
 
 class RoutePlaner
 {
@@ -23,7 +24,7 @@ public:
 	std::map<int, TrainDriver>& getDrivers();
 	std::vector<std::pair<int, int>> bestWayToMarket(int begin, Train& train);
 
-	void buildRoutes();
+	bool buildRoutes(std::pair<const int, TrainDriver> &driver);
 
 	void addDriver(int _idx, TrainDriver _trainDriver);
 
@@ -34,6 +35,8 @@ public:
 
 private:
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
+
+	std::vector<wayToMarket> waysToEveryMarket;
 
 	std::map<int,TrainDriver> drivers; //int- driver's idx; true in town, false on road
 	RoutePlaner();
