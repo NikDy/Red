@@ -30,7 +30,8 @@ std::map<int, std::pair<int, int>> Decision:: makeTurn() {
 		if (train.cooldown != 0)
 		{
 			driver.second.getRoute().path_seq.clear();
-			driver.second.onWay = true;
+			driver.second.setStatus(true);
+			driver.second.goodsType = 0;
 			continue;
 		}
 		bool check = false;

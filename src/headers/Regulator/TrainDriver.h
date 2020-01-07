@@ -19,7 +19,8 @@ public:
 	//bool checkSituation(Route _route); //check situation on the road
 	//Route makeNewRoute(int firstPoint, int lastPoin); //if the situation is bad, driver makes new route with first and last point from an old route
 
-	bool onWay = true;
+	bool waitForOrder = true;
+	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
 
 	TrainDriver(int _idx);
 	~TrainDriver();

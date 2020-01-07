@@ -27,17 +27,18 @@ public:
 
 	void addDriver(int _idx, TrainDriver _trainDriver);
 
-	int needProducts(int length, int &population);
 
 	routeSeq bestWayToMarket(int begin, Train& train);
 	routeSeq bestWayToStorage(int begin, Train& train);
 	routeSeq bestWayToHome(int begin, Train& train);
-	routeSeq StorageToMarket(int begin, Train& train, Town& town);
+
 
 private:
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
 
-	std::vector<wayToMarket> waysToEveryMarket;
+	routeSeq wayToMostActualPost(int begin, TrainDriver& train);
+
+	
 
 	std::map<int,TrainDriver> drivers; //int- driver's idx; true in town, false on road
 	RoutePlaner();
