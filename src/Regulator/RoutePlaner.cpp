@@ -178,13 +178,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 	int bestStock = 10000000;
 	for (auto market : Data_manager::getInstance().getMapLayer1().getMarkets()) {
 		if (begin == market.second->point_idx) continue;
-		routeSeq way;
-		if (train.inMarket == false) {
-			way = reg.findWay(begin, market.second->point_idx);
-		}
-		else {
-			way = reg.findWay(begin, market.second->point_idx, 2);
-		}
+		routeSeq way = reg.findWay(begin, market.second->point_idx, 2);;
 		if (way.size() == 0) continue;
 		int safe_product_capacity =
 				std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) * 
