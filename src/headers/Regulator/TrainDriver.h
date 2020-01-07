@@ -36,7 +36,7 @@ private:
 
 
 	bool isNextLineInRouteAvailable(Graph_Line line, int speed);
-	bool checkLine(Graph_Line line, Train train);
-	bool checkPoint(Graph_Point point, Train train);
+	bool checkLine(Graph_Line line, Train& train);
+	bool checkPoint(Graph_Point point, Train& train);
 	bool checkAndSetRout();
 };

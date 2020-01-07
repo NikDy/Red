@@ -132,7 +132,7 @@ bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, int speed)
 	return true;
 }
 
-bool TrainDriver::checkLine(Graph_Line line, Train train)
+bool TrainDriver::checkLine(Graph_Line line, Train& train)
 {
 	for (auto tr : line.trains) {
 		if (tr.idx != train.idx) {
@@ -156,7 +156,7 @@ bool TrainDriver::checkLine(Graph_Line line, Train train)
 	return true;
 }
 
-bool TrainDriver::checkPoint(Graph_Point point, Train train)
+bool TrainDriver::checkPoint(Graph_Point point, Train& train)
 {
 	for (auto tr : point.trains) {
 		if (tr.idx != train.idx) {
