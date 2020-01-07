@@ -110,24 +110,31 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 
 
 bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
-	//std::cout << "I'm inside buildRoutes" << std::endl;
-	//Regulator  reg;
-		if (driver.second.getStatus()) {
-			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			if (driven_train.cooldown != 0) return false;
-			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx());
-			int route_start_point = getPointIdxByLineAndPosition(line, driven_train.getPosition());
-			
-			std::vector<std::pair<int, int>> way = bestWayToMarket(route_start_point, driven_train);
-			auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
-			if (way.size() == 0) return false;
-			//points[way[1].first].trains.push_back(train);
-			
-			driver.second.setStatus(false);
-			driver.second.setRoute(Route(way));
+	if (driver.second.getStatus()) {
+		Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+		if (driven_train.cooldown != 0){
+			std::cout << "Train: " << driven_train.idx << "collided" << std::endl;
+			return false;
 		}
-		return true;
+		int route_start_point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx()),
+								driven_train.getPosition());
+		
+		routeSeq way;
+		if (driven_train.goods == driven_train.goods_capacity) {
+			way = bestWayToHome(route_start_point, driven_train);
+		}
+		else if (driven_train.goods < driven_train.goods_capacity)
+		{
+			way = bestWayToMarket(route_start_point, driven_train);
+		}
+		if (way.size() == 0) return false;
+		
+		driver.second.setStatus(false);
+		driver.second.setRoute(Route(way));
+	}
+	return true;
 }
+
 
 int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
 {
@@ -153,32 +160,45 @@ RoutePlaner::~RoutePlaner(){
 }
 
 
-std::vector<std::pair<int, int>> RoutePlaner::bestWayToMarket(int start, Train& train) {
-	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-	auto town = Data_manager::getInstance().getPlayer().getTown();
+routeSeq RoutePlaner::bestWayToHome(int begin, Train& train)
+{
 	Regulator reg;
-	for (auto market : markets)
-	{
-		waysToEveryMarket.emplace_back(std::make_pair(*market.second, reg.findWay(start, market.second->point_idx, 1)));
-	}
-
-	std::pair<routeSeq, int> bestWay;
-	bestWay.second = sizeof(int);
-	for (auto way : waysToEveryMarket)
-	{
-		int safe_product_capacity =
-			std::min((town.population + (2 * reg.wayLength(way.second)) / 25), town.population_capacity) * 
-			2 * reg.wayLength(way.second) + 2 * reg.wayLength(way.second);
-		int possible_to_take = std::min(way.first.product, train.goods_capacity);
-		if (safe_product_capacity - possible_to_take < bestWay.second)
-		{
-			bestWay.first = way.second;
-			bestWay.second = safe_product_capacity - possible_to_take;
-		}
-	}
-	return bestWay.first;
+	train.inMarket = false;
+	train.longway = false;
+	return reg.findWay(begin, Data_manager::getInstance().getPlayer().getTown().point_idx);
 }
 
+
+routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+	Regulator reg;
+
+	int maxProducts = 0;
+	routeSeq bestWay = routeSeq();
+	int bestStock = 10000000;
+	for (auto market : Data_manager::getInstance().getMapLayer1().getMarkets()) {
+		if (begin == market.second->point_idx) continue;
+		routeSeq way;
+		if (train.inMarket == false) {
+			way = reg.findWay(begin, market.second->point_idx);
+		}
+		else {
+			way = reg.findWay(begin, market.second->point_idx, 2);
+		}
+		if (way.size() == 0) continue;
+		int safe_product_capacity =
+				std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) * 
+				2 * reg.wayLength(way) + 2 * reg.wayLength(way);
+		int possible_to_take = std::min(market.second->product, train.goods_capacity);
+		if (safe_product_capacity - possible_to_take < bestStock)
+		{
+			bestWay = way;
+			bestStock = safe_product_capacity - possible_to_take;
+		}
+	}
+
+	return bestWay;
+}
 
 
 std::vector<std::pair<int, int>> RoutePlaner::StorageToMarket(int begin, Train& train, Town& town) {

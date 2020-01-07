@@ -75,6 +75,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type
 int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 {
 	int lenght = 0;
+	if (way.size() == 0) return 0;
 	if (way.size() != 1) {
 		lenght = (*way.rbegin()).second;
 	}

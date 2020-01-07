@@ -22,7 +22,6 @@ public:
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 
 	std::map<int, TrainDriver>& getDrivers();
-	std::vector<std::pair<int, int>> bestWayToMarket(int begin, Train& train);
 
 	bool buildRoutes(std::pair<const int, TrainDriver> &driver);
 
@@ -30,8 +29,10 @@ public:
 
 	int needProducts(int length, int &population);
 
-	std::vector<std::pair<int, int>> bestWayToStorage(int begin, Train& train);
-	std::vector<std::pair<int, int>> StorageToMarket(int begin, Train& train, Town& town);
+	routeSeq bestWayToMarket(int begin, Train& train);
+	routeSeq bestWayToStorage(int begin, Train& train);
+	routeSeq bestWayToHome(int begin, Train& train);
+	routeSeq StorageToMarket(int begin, Train& train, Town& town);
 
 private:
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
