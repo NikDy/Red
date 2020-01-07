@@ -24,21 +24,19 @@ public:
 	std::map<int, TrainDriver>& getDrivers();
 
 	bool buildRoutes(std::pair<const int, TrainDriver> &driver);
+	void loadDrivers();
 
-	void addDriver(int _idx, TrainDriver _trainDriver);
-
-
-	routeSeq bestWayToMarket(int begin, Train& train);
-	routeSeq bestWayToStorage(int begin, Train& train);
-	routeSeq bestWayToHome(int begin, Train& train);
-
+	std::map<int, std::pair<int, int>> makeTurn();
 
 private:
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
 
 	routeSeq wayToMostActualPost(int begin, TrainDriver& train);
+	routeSeq bestWayToMarket(int begin, Train& train);
+	routeSeq bestWayToStorage(int begin, Train& train);
+	routeSeq bestWayToHome(int begin, Train& train);
 
-	
+	void addDriver(int _idx, TrainDriver _trainDriver);
 
 	std::map<int,TrainDriver> drivers; //int- driver's idx; true in town, false on road
 	RoutePlaner();

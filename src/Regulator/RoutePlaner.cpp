@@ -12,6 +12,38 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 }
 
 
+
+std::map<int, std::pair<int, int>> RoutePlaner::makeTurn() {
+
+	std::map<int, std::pair<int, int>> turn;
+	for (auto& driver : drivers) {
+		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+		if (train.cooldown != 0)
+		{
+			driver.second.getRoute().path_seq.clear();
+			driver.second.setStatus(true);
+			driver.second.goodsType = 0;
+			continue;
+		}
+		bool check = false;
+		while (true) {
+			if (buildRoutes(driver) == false) {
+				check = false;
+				break;
+			}
+			if (driver.second.foundSpeedNLine() == true) {
+				check = true;
+				break;
+			}
+		}
+		if (check == true) turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
+	}
+	return turn;
+
+}
+
+
+
 std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
 {
 	auto town = Data_manager::getInstance().getPlayer().getTown();
@@ -60,6 +92,16 @@ bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
 		driver.second.setRoute(Route(way));
 	}
 	return true;
+}
+
+
+void RoutePlaner::loadDrivers()
+{
+	for (auto train : Data_manager::getInstance().getPlayer().getTrains()) {
+		int idx = train.second.getIdx();
+		TrainDriver driver = TrainDriver(idx);
+		RoutePlaner::getInstance().addDriver(idx, driver);
+	}
 }
 
 
