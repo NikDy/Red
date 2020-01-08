@@ -1,4 +1,8 @@
 #pragma once
+#include "Graph_Line.h"
+#include "Data_manager.h"
+
+#include <iostream>
 #include <queue>
 #include <vector>
 

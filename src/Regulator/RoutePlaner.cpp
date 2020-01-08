@@ -12,39 +12,56 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 }
 
 
-
-std::map<int, std::pair<int, int>> RoutePlaner::makeTurn() {
-
+std::map<int, std::pair<int, int>> RoutePlaner::makeTurn()
+{
+	upgradeTownIfPossible();
 	std::map<int, std::pair<int, int>> turn;
 	for (auto& driver : drivers) {
 		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 		if (train.cooldown != 0)
 		{
+			std::cout << "Train: " << driver.first << " collided" << std::endl;
 			driver.second.getRoute().path_seq.clear();
 			driver.second.setStatus(true);
 			driver.second.goodsType = 0;
 			continue;
 		}
-		bool check = false;
-		while (true) {
-			if (buildRoutes(driver) == false) {
-				check = false;
-				break;
-			}
-			if (driver.second.foundSpeedNLine() == true) {
-				check = true;
-				break;
-			}
+		if (buildRoutes(driver) && driver.second.foundSpeedNLine()) {
+			turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
 		}
-		if (check == true) turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
+		upgradeTrainIfPossible(train);
 	}
 	return turn;
-
 }
 
 
+void RoutePlaner::upgradeTownIfPossible()
+{
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+	auto trains = Data_manager::getInstance().getPlayer().getTrains();
+	int trains_upgrade_capacity = 0;
+	for (auto train : trains)
+	{
+		if (train.second.level < 3) trains_upgrade_capacity += train.second.level * 40;
+	}
+	if (trains_upgrade_capacity > town.armor_capacity) Data_manager::getInstance().upgradeRequest(town);
+}
 
-std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
+
+void RoutePlaner::upgradeTrainIfPossible(Train& train_for_upgrade)
+{
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+	if (getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(train_for_upgrade.getLineIdx()),
+		train_for_upgrade.position) == town.point_idx)
+	{
+		if (town.armor - train_for_upgrade.level * 40 < town.armor && train_for_upgrade.level < 3) { //just for test
+		//	Data_manager::getInstance().upgradeRequest(train_for_upgrade);
+		}
+	}
+}
+
+
+std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train& train)
 {
 	auto town = Data_manager::getInstance().getPlayer().getTown();
 	Regulator reg;
@@ -69,28 +86,25 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 
 
 bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
-	if (driver.second.getStatus()) {
-		Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-		if (driven_train.cooldown != 0){
-			std::cout << "Train: " << driven_train.idx << " collided" << std::endl;
-			return false;
-		}
-		int route_start_point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx()),
-								driven_train.getPosition());
-		
-		routeSeq way;
-		if (driven_train.goods == driven_train.goods_capacity) {
-			way = bestWayToHome(route_start_point, driven_train);
-		}
-		else if (driven_train.goods < driven_train.goods_capacity)
-		{
-			way = wayToMostActualPost(route_start_point, driver.second);
-		}
-		if (way.size() == 0) return false;
-		
-		driver.second.setStatus(false);
-		driver.second.setRoute(Route(way));
+	Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+	if (driven_train.cooldown != 0){
+		return false;
 	}
+	int route_start_point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx()),
+							driven_train.position);
+	
+	routeSeq way;
+	if (driven_train.goods == driven_train.goods_capacity) {
+		way = bestWayToHome(route_start_point, driven_train);
+	}
+	else if (driven_train.goods < driven_train.goods_capacity)
+	{
+		way = wayToMostActualPost(route_start_point, driver.second);
+	}
+	if (way.size() == 0) return false;
+	
+	driver.second.setStatus(false);
+	driver.second.setRoute(Route(way));
 	return true;
 }
 
