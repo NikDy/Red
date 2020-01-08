@@ -21,7 +21,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type
 		{
 			Graph_Line line = Graph.getLineByTwoPoints(current, next);
 			int speed = Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(current, next);
-			if (current == begin && (points[next].trains.size() != 0 || checkLine(line, speed) == false)) {
+			if (current == begin && checkLine(line, speed) == false) {
 				continue;
 			}
 			int new_cost = cost_so_far[current] + line.lenght;

@@ -2,7 +2,6 @@
 #include "Data_manager.h"
 #include "Menu.h"
 #include "RoutePlaner.h"
-
 #include <string>
 #include <iostream>
 
@@ -21,7 +20,7 @@ int main()
 	while(true) {
 		++i;
 		std::cout << i << std::endl;
-		if (i == 32 || i == 31) {
+		if (i == -1|| i == 20) {
 			std::cout << "lol" << std::endl;
 		}
 			//Data_manager::getInstance().tryUpdateInGame();

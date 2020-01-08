@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "Route.h"
 #include "Data_manager.h"
 #include "Regulator.h"
@@ -34,9 +35,6 @@ private:
 	routeSeq bestWayToMarket(int begin, Train& train);
 	routeSeq bestWayToStorage(int begin, Train& train);
 	routeSeq bestWayToHome(int begin, Train& train);
-
-	void upgradeTownIfPossible();
-	void upgradeTrainIfPossible(Train& train);
 
 	void addDriver(int _idx, TrainDriver _trainDriver);
 

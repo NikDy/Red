@@ -31,10 +31,6 @@ public:
 	bool makeMove(std::map<int, std::pair<int, int>> turn);
 	bool tryUpdateInGame();
 	bool forceTurn();
-	bool upgradeRequest(Train train_for_upgrade);
-	bool upgradeRequest(Town town_for_upgrade);
-
-
 
 	Graph& getMapLayer0();
 	Graph& getMapLayer01();
