@@ -44,26 +44,16 @@ void Data_manager::logout()
 
 bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 {
+	for (auto train : map_layer_1->getTrains())
+	{
+		if (train.second.cooldown != 0) std::cout << "collision!" << std::endl;
+	}
 	for (auto train : turn) {
 		if (train.second.second != 0) {
 			net.Action(3, setMoveData(std::to_string(train.second.second), std::to_string(train.second.first), std::to_string(train.first)));
 		}
 	}
 	return true;
-}
-
-
-bool Data_manager::upgradeRequest(Train train_for_upgrade)
-{
-	if (net.Action(4, std::make_pair("train", std::to_string(train_for_upgrade.idx)))) return true;
-	else return false;
-}
-
-
-bool Data_manager::upgradeRequest(Town town_for_upgrade)
-{
-	if (net.Action(4, std::make_pair("train", std::to_string(town_for_upgrade.idx)))) return true;
-	else return false;
 }
 
 

@@ -101,5 +101,5 @@ Train MapLayer1::getTrainByIdx(const int& idx) {
 			return train.second;
 		}
 	}
-	std::cout << "Wrong train Idx" << std::endl;
+	return Train(-1, -1, "", -1, -2);
 }
