@@ -65,6 +65,9 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 	}
 
 		if (getRoute().onePoint()) {
+			if (checkAndSetRout(train) == false) {
+				return false;
+			}
 			if ((position == 1 && getSpeed() == -1) || (curLine.lenght - position == 1 && getSpeed() == 1)) {
 				setStatus(true);
 				getRoute().pathPop();
@@ -72,9 +75,6 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 			else if ((position == 0 && getSpeed() == -1) || (curLine.lenght - position == 0 && getSpeed() == 1)) {
 				setStatus(true);
 				getRoute().pathPop();
-				return false;
-			}
-			else if (checkAndSetRout(train) == false) {
 				return false;
 			}
 		}
@@ -87,7 +87,7 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 			setLineToGo(line.idx);
 			
 			setSpeed(Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(firstPoint, secondPoint));
-			if (isNextLineInRouteAvailable(line, getSpeed()) == false) {
+			if (isNextLineInRouteAvailable(line, getSpeed()) == false || checkPoint(points[getRoute().pathTop()], train, line.lenght) == false) {
 				getRoute().path_seq.clear();
 				setStatus(true);
 				return false;
@@ -110,7 +110,7 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 			return false;
 		}
 		setNewDataForTrain(idx);
-		setNewPoint();
+		setNewPoint(train);
 		return true;
 	//driver.getRoute().showRoute();
 }
@@ -127,7 +127,7 @@ bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, int speed)
 	return true;
 }
 
-bool TrainDriver::checkLine(Graph_Line line, Train train)
+bool TrainDriver::checkLine(Graph_Line line, Train& train)
 {
 	for (auto tr : line.trains) {
 		if (tr.idx != train.idx) {
@@ -151,9 +151,9 @@ bool TrainDriver::checkLine(Graph_Line line, Train train)
 	return true;
 }
 
-bool TrainDriver::checkPoint(Graph_Point point, Train train, int length)
+bool TrainDriver::checkPoint(Graph_Point point, Train& train, int length)
 {
-	if ((getSpeed() == 1 && (length - train.position > 2)) || (getSpeed() == -1 && train.position > 2)) return true;
+	/*if ((getSpeed() == 1 && (length - train.position > 2)) || (getSpeed() == -1 && train.position > 2)) return true;
 	Graph_Line trainLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(train.line_idx);
 	int trainToPoint = 0;
 	if (trainLine.points.second == point.idx) {
@@ -161,10 +161,10 @@ bool TrainDriver::checkPoint(Graph_Point point, Train train, int length)
 	}
 	else if (trainLine.points.first == point.idx) {
 		trainToPoint = train.position;
-	}
+	}*/
 	for (auto tr : point.trains) {
 		if (tr.idx != train.idx && tr.line_idx != train.line_idx) {
-			Graph_Line trLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(tr.line_idx);
+			/*Graph_Line trLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(tr.line_idx);
 			int trToPoint = 1000;
 			if (tr.speed == 1) {
 				trToPoint = trLine.lenght - tr.position;
@@ -172,13 +172,14 @@ bool TrainDriver::checkPoint(Graph_Point point, Train train, int length)
 			else if(tr.speed == -1){
 				trToPoint = tr.position;
 			}
-			if(trainToPoint >= trToPoint)	return false;
+			if(trainToPoint >= trToPoint)	*/
+				return false;
 		}
 	}
 	return true;
 }
 
-bool TrainDriver::checkAndSetRout(Train train)
+bool TrainDriver::checkAndSetRout(Train& train)
 {
 	auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 	int position = train.getPosition();
@@ -239,7 +240,7 @@ bool TrainDriver::checkAndSetRout(Train train)
 	return true;
 }
 
-int TrainDriver::nearestTrain(Graph_Line line, Train train)
+int TrainDriver::nearestTrain(Graph_Line line, Train& train)
 {
 	Train nearesTrain = Train(train);
 	int point = getRoute().pathTop();
@@ -308,10 +309,9 @@ void TrainDriver::setNewDataForTrain(int trainIdx)
 	}
 }
 
-void TrainDriver::setNewPoint()
+void TrainDriver::setNewPoint(Train train)
 {
 	auto& player = Data_manager::getInstance().getPlayer();
-	Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(idx);
 	auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 	Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(getLineToGo());
 	if (getSpeed() == 1) {

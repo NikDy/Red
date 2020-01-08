@@ -28,6 +28,8 @@ public:
 
 	std::map<int, std::pair<int, int>> makeTurn();
 
+	void upgradeIfPossible();
+
 private:
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
 

@@ -44,6 +44,6 @@ public:
 	static Player fromPlayer(std::string json_string);
 	static Games fromGames(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);
-	static std::string toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains);
+	static std::string toJsonWithArray(std::pair<std::string, int> posts, std::pair<std::string, int> trains);
 };
 

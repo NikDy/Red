@@ -175,7 +175,7 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 		//std::cout << response << std::endl;
 		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 		response_list.push_back(result);
-		std::cout << response << std::endl;
+		//std::cout << response << std::endl;
 	}
 	else if (action_code == 3)
 	{
@@ -185,12 +185,13 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 	return true;
 }
 
-bool Network_manager::ActionToUpdate(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains)
+bool Network_manager::ActionToUpgrade(std::pair<std::string, int> posts, std::pair<std::string, int> trains)
 {
 	int action_code = 4;
 
 	auto json_string = Json_Parser::toJsonWithArray(posts, trains);
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
 	//std::cout << response << std::endl;

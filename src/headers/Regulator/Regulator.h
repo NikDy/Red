@@ -14,7 +14,7 @@ public:
 	static int wayLength(std::vector<std::pair<int, int>>);
 
 	bool checkLine(Graph_Line line, int speed);
-
+	bool checkPoint(Graph_Point point, Train& train);
 	Regulator();
 	~Regulator();
 };

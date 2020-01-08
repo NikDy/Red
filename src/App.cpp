@@ -20,7 +20,7 @@ int main()
 	while(true) {
 		++i;
 		std::cout << i << std::endl;
-		if (i == -1|| i == 20) {
+		if (i == -1|| i == 42) {
 			std::cout << "lol" << std::endl;
 		}
 			//Data_manager::getInstance().tryUpdateInGame();
