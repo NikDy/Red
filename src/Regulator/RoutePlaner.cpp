@@ -142,9 +142,8 @@ routeSeq RoutePlaner::wayToMostActualPost(int begin, TrainDriver& _driver)
 		std::min((town.population + (2 * way_to_storage_and_market) / 25), town.population_capacity) *
 		2 * way_to_storage_and_market + 2 * way_to_storage_and_market;
 	int way_to_market_len = reg.wayLength(best_way_to_market);
-	//if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_product_income <= 0)) ||
-	//	(way_to_market_len <= town.armor && expected_product_income != 0 && expected_armor_income == 0))
-		//|| safe_product_capacity > town.product_capacity) && town.level != 3)
+	//if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_food_income <= 0)
+	//|| safe_product_capacity > town.product_capacity) && town.level != 3)
 	if(expected_armor_income == 0)
 	{
 		_driver.goodsType = 2;
