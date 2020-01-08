@@ -24,9 +24,9 @@ int main()
 			std::cout << "lol" << std::endl;
 		}
 			//Data_manager::getInstance().tryUpdateInGame();
-			Data_manager::getInstance().makeMove(RoutePlaner::getInstance().makeTurn());
-			Data_manager::getInstance().forceTurn();
-			while (Data_manager::getInstance().turn != false);
+		RoutePlaner::getInstance().makeTurn();
+		Data_manager::getInstance().forceTurn();
+		while (Data_manager::getInstance().turn != false);
 	}
 
 	return 0;

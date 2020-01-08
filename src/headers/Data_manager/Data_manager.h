@@ -28,7 +28,7 @@ public:
 
 	bool login(std::string name, std::string password, std::string game, int num_turns, int num_players);
 	void logout();
-	bool makeMove(std::map<int, std::pair<int, int>> turn);
+	bool makeMove(int trainIdx, int lineIdx, int speed);
 	bool tryUpgradeInGame(std::pair<std::string, int> postsToSend, std::pair<std::string, int> trainsToSend);
 	bool forceTurn();
 

@@ -65,29 +65,23 @@ std::string Network_manager::receiveJsonString()
 	int result_code;
 	size_t received;
 	if (this->socket.receive(&result_code, 4, received) != sf::Socket::Done)
-		return "";
-	std::cout << result_code << std::endl;
-	if (result_code == 0)
-	{
-		int response_size = 0;
-		if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
-			return "";
-
-		std::string jsonString = "";
-		char* in = new char[sizeof(unsigned short)];
-		size_t already_received = 0;
-		while (already_received < response_size)
-		{
-			this->socket.receive(in, sizeof(unsigned short), received);
-			already_received += received;
-			jsonString.append(in, received);
-		}
-		return jsonString;
-	}
-	else {
 		return "None";
+	std::cout << result_code << std::endl;
+	int response_size = 0;
+	if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
+		return "None";
+
+	std::string jsonString = "";
+	char* in = new char[sizeof(unsigned short)];
+	size_t already_received = 0;
+	while (already_received < response_size)
+	{
+		this->socket.receive(in, sizeof(unsigned short), received);
+		already_received += received;
+		jsonString.append(in, received);
 	}
-	return "";
+	if (result_code != 0) return "None";
+	return jsonString;
 }
 
 
@@ -97,6 +91,7 @@ bool Network_manager::Login(std::vector<std::pair<std::string, std::string>> log
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
 	if(!trySend(message)) return false;
 	auto response = receiveJsonString();
+	if (response == "None") return false;
 	std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 	response_list.push_back(result);
 	return true;

@@ -13,7 +13,7 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 
 
 
-std::map<int, std::pair<int, int>> RoutePlaner::makeTurn() {
+void RoutePlaner::makeTurn() {
 
 	upgradeIfPossible();
 
@@ -38,9 +38,15 @@ std::map<int, std::pair<int, int>> RoutePlaner::makeTurn() {
 				break;
 			}
 		}
-		if (check == true) turn.emplace(driver.second.getIdx(), std::make_pair(driver.second.getSpeed(), driver.second.getLineToGo()));
+		if (check == true) {
+			if (!Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed())) {
+				driver.second.getRoute().path_seq.clear();
+				driver.second.setStatus(true);
+				driver.second.goodsType = 0;
+			}
+		}
+
 	}
-	return turn;
 
 }
 

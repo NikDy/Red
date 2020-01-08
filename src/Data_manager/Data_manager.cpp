@@ -42,7 +42,7 @@ void Data_manager::logout()
 }
 
 
-bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
+/*bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 {
 
 	for (auto train : turn) {
@@ -51,6 +51,11 @@ bool Data_manager::makeMove(std::map<int, std::pair<int, int>> turn)
 		}
 	}
 	return true;
+}*/
+
+bool Data_manager::makeMove(int trainIdx, int lineIdx, int speed)
+{
+	return net.Action(3, setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx)));
 }
 
 

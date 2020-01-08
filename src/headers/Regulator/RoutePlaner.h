@@ -26,7 +26,7 @@ public:
 	bool buildRoutes(std::pair<const int, TrainDriver> &driver);
 	void loadDrivers();
 
-	std::map<int, std::pair<int, int>> makeTurn();
+	void makeTurn();
 
 	void upgradeIfPossible();
 
