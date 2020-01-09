@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(Red)			
 
-set(COMPILER "Visual Studio")
+set(COMPILER "Visual Studio 16")
 
-execute_process(COMMAND conan remote add sfml:bincrafters https://api.bintray.com/conan/bincrafters/public-conan)
-execute_process(COMMAND conan install ./src -if ./build --build missing)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -13,6 +11,8 @@ set(SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/App.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Drawer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Line.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/DrawerContainer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Forces.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Json/Json_Parser.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Network/Network_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Data_manager.cpp
@@ -31,6 +31,10 @@ set(SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Town.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Train.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/Regulator.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/Decision.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/Route.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/RoutePlaner.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/TrainDriver.cpp
 )
 
 include_directories(
