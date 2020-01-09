@@ -1,6 +1,6 @@
 #include "Regulator.h"
 
-std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type)
+std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& train, int type)
 {
 	auto& Graph = Data_manager::getInstance().getMapLayer0();
 	auto& points = Graph.getPoints();
@@ -21,7 +21,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type
 		{
 			Graph_Line line = Graph.getLineByTwoPoints(current, next);
 			int speed = Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(current, next);
-			if (current == begin && (checkLine(line, speed) == false || points[next].trains.size() != 0)) {
+			if (current == begin && (checkLine(line, speed) == false || checkPoint(points[next], train, line) == false)) {
 				continue;
 			}
 			int new_cost = cost_so_far[current] + line.lenght;
@@ -85,21 +85,21 @@ int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 bool Regulator::checkLine(Graph_Line line, int speed)
 {
 	for (auto tr : line.trains) {
-		if (tr.speed != speed) {
+		if (tr.speed != speed && speed != 0) {
 			return false;
 		}
 		else {
-			if(speed == 1 && tr.position < 3) return false;
-			if(speed == -1 && line.lenght - tr.position < 3) return false;
+			if(speed == 1 && tr.position < 2) return false;
+			if(speed == -1 && line.lenght - tr.position < 2) return false;
 		}
 	}
 	return true;
 }
 
-bool Regulator::checkPoint(Graph_Point point, Train & train)
+bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 {
 	for (auto tr : point.trains) {
-		if (tr.idx != train.idx && tr.line_idx != train.line_idx) {
+		if (tr.idx != train.idx && tr.line_idx != line.idx) {
 			return false;
 		}
 	}
@@ -107,6 +107,18 @@ bool Regulator::checkPoint(Graph_Point point, Train & train)
 }
 
 
+int Regulator::lengthToPoint(Graph_Point point, Train & train)
+{
+	Graph_Line trainLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(train.line_idx);
+	int trainToPoint = 0;
+	if (trainLine.points.second == point.idx) {
+		trainToPoint = trainLine.lenght - train.position;
+	}
+	else if (trainLine.points.first == point.idx) {
+		trainToPoint = train.position;
+	}
+	return trainToPoint;
+}
 
 
 Regulator::Regulator()

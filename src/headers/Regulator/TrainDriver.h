@@ -16,8 +16,7 @@ public:
 	void setStatus(bool _status);
 	bool getStatus();
 	bool foundSpeedNLine(); //to found speedToSet
-	//bool checkSituation(Route _route); //check situation on the road
-	//Route makeNewRoute(int firstPoint, int lastPoin); //if the situation is bad, driver makes new route with first and last point from an old route
+
 
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
@@ -35,12 +34,14 @@ private:
 	bool wait = false;
 
 
-	bool isNextLineInRouteAvailable(Graph_Line line, int speed);
+	bool isNextLineInRouteAvailable(Graph_Line line, Train& train);
 	bool checkLine(Graph_Line line, Train& train);
 	bool checkPoint(Graph_Point point, Train& train, int length);
 	bool checkAndSetRout(Train& train);
 	int nearestTrain(Graph_Line line, Train& train);
-	void deleteTrainInPoint(int trainIdx);
+	void deleteTrainInPoint(int trainIdx, int pointIdx);
 	void setNewDataForTrain(int trainIdx);
 	void setNewPoint(Train train);
+
+	int lengthToPoint(Graph_Point point, Train& train);
 };

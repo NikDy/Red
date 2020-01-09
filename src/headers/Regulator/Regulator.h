@@ -10,11 +10,13 @@ private:
 
 public:
 	
-	std::vector<std::pair<int, int>> findWay(int begin, int end, int type = 0);
+	std::vector<std::pair<int, int>> findWay(int begin, int end, Train& train, int type = 0);
 	static int wayLength(std::vector<std::pair<int, int>>);
 
-	bool checkLine(Graph_Line line, int speed);
-	bool checkPoint(Graph_Point point, Train& train);
 	Regulator();
 	~Regulator();
+private:
+	bool checkLine(Graph_Line line, int speed);
+	bool checkPoint(Graph_Point point, Train& train, Graph_Line line);
+	int lengthToPoint(Graph_Point point, Train & train);
 };

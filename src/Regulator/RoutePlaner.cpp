@@ -61,7 +61,7 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 	int bestDelta = 10000000;
 	for (auto storage : Data_manager::getInstance().getMapLayer1().getStorages()) {
 		if (begin == storage.second->point_idx) continue;
-		routeSeq way = reg.findWay(begin, storage.second->point_idx, 1);
+		routeSeq way = reg.findWay(begin, storage.second->point_idx, train, 1);
 		if (way.size() == 0) continue;
 		int safe_armor_capacity = 4 * reg.wayLength(way);
 		int possible_to_take = std::min(storage.second->armor, train.goods_capacity);
@@ -166,7 +166,7 @@ routeSeq RoutePlaner::bestWayToHome(int begin, Train& train)
 	Regulator reg;
 	train.inMarket = false;
 	train.longway = false;
-	return reg.findWay(begin, Data_manager::getInstance().getPlayer().getTown().point_idx);
+	return reg.findWay(begin, Data_manager::getInstance().getPlayer().getTown().point_idx, train);
 }
 
 
@@ -178,7 +178,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 	int bestDelta = 10000000;
 	for (auto market : Data_manager::getInstance().getMapLayer1().getMarkets()) {
 		if (begin == market.second->point_idx) continue;
-		routeSeq way = reg.findWay(begin, market.second->point_idx, 2);
+		routeSeq way = reg.findWay(begin, market.second->point_idx, train, 2);
 		if (way.size() == 0) continue;
 		int safe_product_capacity =
 				std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) * 
