@@ -138,9 +138,10 @@ bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, Train& train)
 bool TrainDriver::checkPoint(Graph_Point point, Train& train, int length)
 {
 	int trainToPoint = lengthToPoint(point, train);
-	if (trainToPoint > 2 && length > 2) return true;
+	//if (trainToPoint > 2 && length > 2) return true;
 	for (auto tr : point.trains) {
 		if (tr.idx != train.idx && tr.line_idx != train.line_idx) {
+			if (trainToPoint > 2 && tr.getPlayerIdx() == train.getPlayerIdx()) continue;
 			int trToPoint = lengthToPoint(point, tr);
 			if(trainToPoint >= trToPoint)	
 				return false;
@@ -191,13 +192,21 @@ bool TrainDriver::checkAndSetRout(Train& train)
 				train.speed = nearestTrain.speed;
 				setSpeed(nearestTrain.speed);
 				point = line.points.second;
+				deleteTrainInPoint(train.idx, getRoute().pathTop());
+				points[point].trains.push_back(train);
+				getRoute().path_seq.clear();
+				getRoute().path_seq.push_back(point);
 			}
 			else if (nearestTrain.speed == -1) {
 				train.speed = nearestTrain.speed;
 				setSpeed(nearestTrain.speed);
 				point = line.points.first;
+				deleteTrainInPoint(train.idx, getRoute().pathTop());
+				points[point].trains.push_back(train);
+				getRoute().path_seq.clear();
+				getRoute().path_seq.push_back(point);
 			}
-			else if ((lengthToPoint(points[point], train) > lengthToPoint(points[point], nearestTrain))){
+			/*else if ((lengthToPoint(points[point], train) > lengthToPoint(points[point], nearestTrain))){
 				if (needSpeed == -1 && checkPoint(line.points.second, train, line.lenght)) {
 					train.speed = 1;
 					point = line.points.second;
@@ -208,11 +217,7 @@ bool TrainDriver::checkAndSetRout(Train& train)
 					point = line.points.first;
 					setSpeed(-1);
 				}
-			}
-			deleteTrainInPoint(train.idx, getRoute().pathTop());
-			points[point].trains.push_back(train);
-			getRoute().path_seq.clear();
-			getRoute().path_seq.push_back(point);
+			}*/
 		}
 	}
 	return true;

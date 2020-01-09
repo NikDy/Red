@@ -22,6 +22,7 @@ void RoutePlaner::makeTurn() {
 		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 		if (train.cooldown != 0)
 		{
+			Data_manager::getInstance().countOfCol++;
 			driver.second.getRoute().path_seq.clear();
 			driver.second.setStatus(true);
 			driver.second.goodsType = 0;
@@ -61,7 +62,9 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 	int bestDelta = 10000000;
 	for (auto storage : Data_manager::getInstance().getMapLayer1().getStorages()) {
 		if (begin == storage.second->point_idx) continue;
-		routeSeq way = reg.findWay(begin, storage.second->point_idx, train, 1);
+		routeSeq way;
+		if(train.goods_type != 3) way = reg.findWay(begin, storage.second->point_idx, train, 1);
+		else way = reg.findWay(begin, storage.second->point_idx, train);
 		if (way.size() == 0) continue;
 		int safe_armor_capacity = 4 * reg.wayLength(way);
 		int possible_to_take = std::min(storage.second->armor, train.goods_capacity);
@@ -80,7 +83,7 @@ bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
 	if (driver.second.getStatus()) {
 		Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 		if (driven_train.cooldown != 0){
-			std::cout << "Train: " << driven_train.idx << " collided" << std::endl;
+			//std::cout << "Train: " << driven_train.idx << " collided" << std::endl;
 			return false;
 		}
 		int route_start_point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx()),
@@ -144,7 +147,7 @@ routeSeq RoutePlaner::wayToMostActualPost(int begin, TrainDriver& _driver)
 	int way_to_market_len = reg.wayLength(best_way_to_market);
 	//if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_food_income <= 0)
 	//|| safe_product_capacity > town.product_capacity) && town.level != 3)
-	if(expected_armor_income == 0)
+	if((expected_armor_income + town.armor) < 220 || train.goods_type == 3)
 	{
 		_driver.goodsType = 2;
 		return best_way_to_storage;
@@ -188,7 +191,9 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 	int bestDelta = 10000000;
 	for (auto market : Data_manager::getInstance().getMapLayer1().getMarkets()) {
 		if (begin == market.second->point_idx) continue;
-		routeSeq way = reg.findWay(begin, market.second->point_idx, train, 2);
+		routeSeq way;
+		if(train.goods_type != 2) way = reg.findWay(begin, market.second->point_idx, train, 2);
+		else way = reg.findWay(begin, market.second->point_idx, train);
 		if (way.size() == 0) continue;
 		int safe_product_capacity =
 				std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) * 
@@ -219,20 +224,20 @@ void RoutePlaner::upgradeIfPossible()
 
 	int all_train_upgrade_cost = 0;
 	for (auto train : player.getTrains()) {
-		if (train.second.level != 3)all_train_upgrade_cost += train.second.level * 40;
+		if (train.second.level != 3) all_train_upgrade_cost += train.second.level * 40;
 		int point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(train.second.getLineIdx()),
 			train.second.getPosition());
 		if (train.second.next_level_price <= player.getTown().armor &&
 			train.second.next_level_price != 0 &&
 			point == player.getHome().idx &&
-			reg.wayLength(bestWayToStorage(point, train.second)) * 4 < player.getTown().armor) { //multiply by 4 just for safe interval
+			reg.wayLength(bestWayToStorage(point, train.second)) * 2 < player.getTown().armor) { //multiply by 4 just for safe interval
 			Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", -1), std::make_pair("trains", train.second.idx));
 			player.getTown().armor -= train.second.next_level_price;
 		}
 	}
 	if (player.getTown().next_level_price <= player.getTown().armor &&
-		player.getTown().next_level_price != 0 &&
-		all_train_upgrade_cost > player.getTown().armor_capacity) {
+		player.getTown().next_level_price != 0 && 
+		(all_train_upgrade_cost > player.getTown().armor_capacity || all_train_upgrade_cost == 0)) {
 		Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", player.getTown().idx), std::make_pair("trains", -1));
 	}
 }

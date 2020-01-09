@@ -245,7 +245,9 @@ Train Json_Parser::addTrain(const rapidjson::Value & doc)
 	}
 	new_train.goods = doc["goods"].GetInt();
 	new_train.goods_capacity = doc["goods_capacity"].GetInt();
-	new_train.goods_type = NULL;
+	if (doc.HasMember("goods_type"))
+		if (!doc["goods_type"].IsNull())
+			new_train.goods_type = doc["goods_type"].GetInt();
 	if(doc.HasMember("level")) new_train.level = doc["level"].GetInt();
 	if(doc.HasMember("next_level_price")) 
 		if(!doc["next_level_price"].IsNull())

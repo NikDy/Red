@@ -50,6 +50,9 @@ public:
 	int last_tick_Refuges = 0;
 
 	std::mutex update_mutex;
+
+	int countOfCol = 0;
+	int maxRating = 0;
 private:
 	Data_manager() {};
 

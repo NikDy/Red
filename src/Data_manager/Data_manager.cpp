@@ -186,6 +186,7 @@ void Data_manager::updateGame()
 		player = getPlayerFromServer();
 		markPoints();
 		updateRefuges();
+		maxRating = std::max(maxRating, player->getRating());
 		turn = false;
 	}
 }
@@ -212,17 +213,21 @@ void Data_manager::markPoints()
 			lines[line.points].trains.push_back(train.second);
 		}
 		if (train.second.speed == 1) {
-			if (line.lenght - train.second.position <= 2 && line.points.second != player->getHome().idx) {
+			if (line.points.second != player->getHome().idx) {
 				points[line.points.second].trains.push_back(train.second);
 			}
 		}
 		else if (train.second.speed == -1) {
-			if (train.second.position <= 2 && line.points.first != player->getHome().idx) {
+			if (line.points.first != player->getHome().idx) {
 				points[line.points.first].trains.push_back(train.second);
 			}
 		}
 		else if (train.second.speed == 0) {
-			if (train.second.position == 0) {
+			if (train.second.getPlayerIdx() != player->getTown().player_idx) {
+				points[line.points.first].trains.push_back(train.second);
+				points[line.points.second].trains.push_back(train.second);
+			}
+			else if (train.second.position == 0) {
 				points[line.points.first].trains.push_back(train.second);
 			}
 			else if (train.second.position == line.lenght) {
