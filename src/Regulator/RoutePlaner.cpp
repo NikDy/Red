@@ -119,22 +119,32 @@ routeSeq RoutePlaner::wayToMostActualPost(int begin, TrainDriver& _driver)
 	auto train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(_driver.getIdx());
 	Regulator reg;
 
-	int expected_food_income = town.product;
+	int expected_product_income = 0;
+	int expected_armor_income = 0;
 	for (auto driver : drivers)
 	{
 		if (driver.second.goodsType == 1)
 		{
 			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			expected_food_income += driven_train.goods_capacity;
+			expected_product_income += driven_train.goods_capacity;
+		}
+		else if (driver.second.goodsType == 2)
+		{
+			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+			expected_armor_income += driven_train.goods_capacity;
 		}
 	}
+	int possible_avaible_product = expected_product_income + town.product;
 	routeSeq best_way_to_storage = bestWayToStorage(begin, train);
+	routeSeq best_way_to_market = bestWayToMarket(begin, train);
+	int way_to_storage_and_market = reg.wayLength(best_way_to_market) + reg.wayLength(best_way_to_storage);
 	int safe_product_capacity =
-		std::min((town.population + (2 * reg.wayLength(best_way_to_storage)) / 25), town.population_capacity) *
-		2 * reg.wayLength(best_way_to_storage) + 2 * reg.wayLength(best_way_to_storage);
-
-	if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_food_income <= 0)
-		|| safe_product_capacity > town.product_capacity) && town.level != 3)
+		std::min((town.population + (2 * way_to_storage_and_market) / 25), town.population_capacity) *
+		2 * way_to_storage_and_market + 2 * way_to_storage_and_market;
+	int way_to_market_len = reg.wayLength(best_way_to_market);
+	//if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_food_income <= 0)
+	//|| safe_product_capacity > town.product_capacity) && town.level != 3)
+	if(expected_armor_income == 0)
 	{
 		_driver.goodsType = 2;
 		return best_way_to_storage;
@@ -142,7 +152,7 @@ routeSeq RoutePlaner::wayToMostActualPost(int begin, TrainDriver& _driver)
 	else
 	{
 		_driver.goodsType = 1;
-		return bestWayToMarket(begin, train);
+		return best_way_to_market;
 	}
 }
 
@@ -206,17 +216,23 @@ RoutePlaner::~RoutePlaner()
 void RoutePlaner::upgradeIfPossible()
 {
 	auto& player = Data_manager::getInstance().getPlayer();
-	int armor_in_towm = player.getTown().armor;
 
+	int all_train_upgrade_cost = 0;
 	for (auto train : player.getTrains()) {
+		if (train.second.level != 3)all_train_upgrade_cost += train.second.level * 40;
 		int point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(train.second.getLineIdx()),
 			train.second.getPosition());
-		if (train.second.next_level_price <= player.getTown().armor && train.second.next_level_price != 0 && point == player.getHome().idx) {
+		if (train.second.next_level_price <= player.getTown().armor &&
+			train.second.next_level_price != 0 &&
+			point == player.getHome().idx &&
+			reg.wayLength(bestWayToStorage(point, train.second)) * 4 < player.getTown().armor) { //multiply by 4 just for safe interval
 			Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", -1), std::make_pair("trains", train.second.idx));
 			player.getTown().armor -= train.second.next_level_price;
 		}
 	}
-	if (player.getTown().next_level_price <= player.getTown().armor && player.getTown().next_level_price != 0) {
+	if (player.getTown().next_level_price <= player.getTown().armor &&
+		player.getTown().next_level_price != 0 &&
+		all_train_upgrade_cost > player.getTown().armor_capacity) {
 		Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", player.getTown().idx), std::make_pair("trains", -1));
 	}
 }

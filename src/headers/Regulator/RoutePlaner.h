@@ -31,6 +31,7 @@ public:
 	void upgradeIfPossible();
 
 private:
+	Regulator reg;
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
 
 	routeSeq wayToMostActualPost(int begin, TrainDriver& train);
