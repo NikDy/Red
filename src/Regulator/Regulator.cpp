@@ -104,7 +104,6 @@ bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 	int homeIdx = Data_manager::getInstance().getPlayer().getHome().idx;
 	if (point.idx == line.points.first) pointNow = line.points.second;
 	else pointNow = line.points.first;
-	//if (trainToPoint > 2 && line.lenght > 2) return true;
 	for (auto tr : point.trains) {
 		if (tr.idx != train.idx) {
 			if (trainToPoint > 2 && tr.getPlayerIdx() == train.getPlayerIdx() && pointNow != homeIdx) continue;

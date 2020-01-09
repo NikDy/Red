@@ -20,10 +20,6 @@ int main()
 	while(true) {
 		++i;
 		std::cout << i << std::endl;
-		if (i == -1|| i == 42) {
-			std::cout << "lol" << std::endl;
-		}
-			//Data_manager::getInstance().tryUpdateInGame();
 		RoutePlaner::getInstance().makeTurn();
 		Data_manager::getInstance().forceTurn();
 		while (Data_manager::getInstance().turn != false);

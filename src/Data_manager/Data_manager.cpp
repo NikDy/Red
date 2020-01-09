@@ -179,7 +179,7 @@ void Data_manager::updateGame()
 	while (update_on) 
 	{
 		std::unique_lock<std::mutex> locker(update_mutex);
-		update_check.wait_for(locker, std::chrono::seconds(60), [&]() {return (this->turn); });
+		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn); });
 		map_layer_1 = getMapLayer1FromServer();
 		map_layer_0 = getMapLayer0FromServer();
 		this->map_layer_0->createAdjacencyLists();
