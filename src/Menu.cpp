@@ -19,6 +19,7 @@ void Menu::gameSelect()
 			<< std::setw(15) << game.state << std::endl;
 	}
 	std::string game_name;
+	int number_of_players = 1;
 	std::cout << "Enter game name to connect or create new game: ";
 	while (true)
 	{
@@ -29,9 +30,14 @@ void Menu::gameSelect()
 			if (it->state == 2) std::cout << "Game already begin, try another or create new one." << std::endl;
 			else break;
 		}
-		else break;
+		else
+		{
+			std::cout << "Enter numer of players: ";
+			std::cin >> number_of_players;
+			break;
+		}
 	}
-	Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, 1);
+	Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, number_of_players);
 	waitUntilStart(game_name);
 }
 

@@ -34,11 +34,6 @@ void Drawer::buildVisualGraph()
 		sf::Vector2f position((float)(std::rand() % (int)w_sizeX), (float)(std::rand() % (int)w_sizeY));
 		DrawerContainer new_point = DrawerContainer(position);
 		sf::CircleShape point_shape(points_radius);
-		
-		point_shape.setFillColor(w_points_color);
-		if (i.first == 88) {
-			point_shape.setFillColor(sf::Color::Black);
-		}
 		point_shape.setOutlineColor(w_outline_color);
 		point_shape.setOutlineThickness(outline_thickness);
 		new_point.addShape(point_shape, sf::Vector2f(-points_radius, -points_radius));
@@ -134,6 +129,35 @@ void Drawer::reforceGraph()
 }
 
 
+sf::FloatRect Drawer::graphCenter()
+{
+	float max_h = 0.f;
+	float min_h = 0.f;
+	float max_w = 0.f;
+	float min_w = 0.f;
+	bool first = true;
+	for (auto point : points)
+	{
+		if (first)
+		{
+			max_h = point.second.position.y;
+			min_h = point.second.position.y;
+			max_w = point.second.position.x;
+			min_w = point.second.position.x;
+			first = false;
+		}
+		else
+		{
+			if (point.second.position.y > max_h) max_h = point.second.position.y;
+			if (point.second.position.y < min_h) min_h = point.second.position.y;
+			if (point.second.position.x > max_w) max_w = point.second.position.x;
+			if (point.second.position.x < min_w) min_w = point.second.position.x;
+		}
+	}
+	return sf::FloatRect(max_w, max_h, max_w - min_w, max_h - min_h);
+}
+
+
 void Drawer::draw()
 {
 		windowThread = std::thread(&Drawer::drawAll, this);
@@ -142,6 +166,7 @@ void Drawer::draw()
 void Drawer::drawAll()
 {
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
+	window.setFramerateLimit(60u);
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();
 	sf::Clock clock;
@@ -203,6 +228,16 @@ void Drawer::drawAll()
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
 			camera.move(0, camera_movement_speed);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+		{
+			auto new_size = graphCenter();
+			camera.setCenter(new_size.top - new_size.height / 2, new_size.left - new_size.width / 2);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+		{
+			auto home_town_position = points[Data_manager::getInstance().getPlayer().getTown().point_idx].position;
+			camera.setCenter(home_town_position.x, home_town_position.y);
 		}
 		window.setView(camera);
 		window.display();

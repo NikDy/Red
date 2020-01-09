@@ -59,6 +59,8 @@ private:
 	void updatePosts();
 	void updateTrains();
 	void updateLines();
+	sf::FloatRect graphCenter();
+
 	
 	bool update_window = true;
 	std::thread updateThread;
