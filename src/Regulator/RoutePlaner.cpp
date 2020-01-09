@@ -147,7 +147,9 @@ routeSeq RoutePlaner::wayToMostActualPost(int begin, TrainDriver& _driver)
 	int way_to_market_len = reg.wayLength(best_way_to_market);
 	//if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_food_income <= 0)
 	//|| safe_product_capacity > town.product_capacity) && town.level != 3)
-	if((expected_armor_income + town.armor) < 220 || train.goods_type == 3)
+	if(((expected_armor_income + town.armor) < 220 && town.level < 3) 
+		|| ((expected_armor_income + town.armor) < 80  && town.level == 3)
+		|| train.goods_type == 3)
 	{
 		_driver.goodsType = 2;
 		return best_way_to_storage;
@@ -206,7 +208,14 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 		}
 	}
 
-	return bestWay;
+	if (train.goods - train.goods_capacity < reg.wayLength(bestWay) && train.goods != 0) 
+	{
+		return bestWayToHome(begin, train);
+	}
+	else
+	{
+		return bestWay;
+	}
 }
 
 

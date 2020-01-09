@@ -1,7 +1,7 @@
 #include "Forces.h"
 
 
-std::map<int, DrawerContainer> Forces::recalcForces(std::map<int, DrawerContainer>& current_points)
+std::map<int, DrawerContainer> Forces::recalcForces(std::map<int, DrawerContainer>& current_points, bool& is_stable)
 {
 	
 	auto graph = Data_manager::getInstance().getMapLayer01();
@@ -31,7 +31,23 @@ std::map<int, DrawerContainer> Forces::recalcForces(std::map<int, DrawerContaine
 		point.second.position += total_force * 0.8f;
 		new_points[point.first] = point.second;
 	}
+	is_stable = isStable(current_points, new_points);
 	return new_points;
+}
+
+
+bool Forces::isStable(std::map<int, DrawerContainer>& prev_points, std::map<int, DrawerContainer>& new_points)
+{
+	int stable_count = 0;
+	for (auto prev : prev_points)
+	{
+		if (std::fabs(new_points[prev.first].position.x - prev.second.position.x) < std::stof(Data_manager::getInstance().config["EPS"]) &&
+			std::fabs(new_points[prev.first].position.y - prev.second.position.y) < std::stof(Data_manager::getInstance().config["EPS"]))
+		{
+			stable_count++;
+		}
+	}
+	return stable_count == new_points.size();
 }
 
 

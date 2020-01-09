@@ -52,6 +52,7 @@ private:
 	const float lines_thickness = std::stof(Data_manager::getInstance().config["lines_thickness"]);
 	const float camera_movement_speed = std::stof(Data_manager::getInstance().config["camera_move_speed"]);
 	const float camera_zoom_speed = std::stof(Data_manager::getInstance().config["camera_zoom_speed"]);
+	bool is_graph_stable = false;
 	
 	void reforceGraph();
 	void updateShapes();
@@ -61,7 +62,7 @@ private:
 	void updateLines();
 	sf::FloatRect graphCenter();
 
-	
+
 	bool update_window = true;
 	std::thread updateThread;
 	std::thread windowThread;

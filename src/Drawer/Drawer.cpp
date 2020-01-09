@@ -124,8 +124,11 @@ void Drawer::updateLines()
 
 void Drawer::reforceGraph()
 {
-	points = Forces::recalcForces(points);
-	updateLines();
+	if (!is_graph_stable)
+	{
+		points = Forces::recalcForces(points, is_graph_stable);
+		updateLines();
+	}
 }
 
 
