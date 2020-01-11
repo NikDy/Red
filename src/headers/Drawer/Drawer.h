@@ -68,7 +68,7 @@ private:
 	std::thread windowThread;
 	std::condition_variable update_check;
 
-
+	bool forced_paused = false;
 
 	Drawer();
 	~Drawer();

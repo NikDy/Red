@@ -38,6 +38,11 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 
 void Data_manager::logout()
 {
+	{
+		std::lock_guard<std::mutex> locker(update_mutex);
+		update_on = false;
+	}
+	updateThread.join();
 	net.Logout();
 }
 
@@ -71,6 +76,7 @@ Graph& Data_manager::getMapLayer0()
 
 	return *this->map_layer_0;
 }
+
 
 Graph & Data_manager::getMapLayer01()
 {

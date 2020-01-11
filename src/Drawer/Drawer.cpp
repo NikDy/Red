@@ -186,7 +186,10 @@ void Drawer::drawAll()
 				window.close();
 			}
 		}
-		this->reforceGraph();
+		if (!forced_paused)
+		{
+			this->reforceGraph();
+		}
 		if (Data_manager::getInstance().turn == false) {
 			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 			{
@@ -208,7 +211,6 @@ void Drawer::drawAll()
 			window.draw(t.second);
 		}
 		
-
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
 			camera.zoom(1.f + camera_zoom_speed);
@@ -241,6 +243,10 @@ void Drawer::drawAll()
 		{
 			auto home_town_position = points[Data_manager::getInstance().getPlayer().getTown().point_idx].position;
 			camera.setCenter(home_town_position.x, home_town_position.y);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+		{
+			forced_paused = !forced_paused;
 		}
 		window.setView(camera);
 		window.display();
