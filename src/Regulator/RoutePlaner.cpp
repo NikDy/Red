@@ -13,19 +13,50 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 
 
 
-void RoutePlaner::makeTurn() {
+void RoutePlaner::makeTurn() 
+{
+	resetTrainsLists();
+	stageAffairs();
+}
 
-	upgradeIfPossible();
 
-	std::map<int, std::pair<int, int>> turn;
-	for (auto& driver : drivers) {
+void RoutePlaner::stageAffairs()
+{
+	if (game_stage == 1)
+	{
+		upgradeIfPossible();
+		resetRoutes();
+		tryGoToSecondStage();
+	}
+	else if (game_stage == 2)
+	{
+		resetRoutes();
+	}
+
+}
+
+
+void RoutePlaner::tryGoToSecondStage()
+{
+	int top_trains = 0;
+	for (auto driver : drivers)
+	{
+		if (Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx()).level == 3) top_trains++;
+	}
+	if (top_trains == drivers.size() && Data_manager::getInstance().getPlayer().getTown().level == 3) game_stage = 2;
+}
+
+
+void RoutePlaner::resetRoutes()
+{
+	for (auto& driver : drivers)
+	{
 		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 		if (train.cooldown != 0)
 		{
 			Data_manager::getInstance().countOfCol++;
 			driver.second.getRoute().path_seq.clear();
 			driver.second.setStatus(true);
-			driver.second.goodsType = 0;
 			continue;
 		}
 		bool check = false;
@@ -46,17 +77,13 @@ void RoutePlaner::makeTurn() {
 				driver.second.goodsType = 0;
 			}
 		}
-
 	}
-
 }
-
 
 
 std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
 {
 	auto town = Data_manager::getInstance().getPlayer().getTown();
-	Regulator reg;
 
 	routeSeq bestWay = routeSeq();
 	int bestDelta = 10000000;
@@ -79,28 +106,58 @@ std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train 
 }
 
 
-bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver> &driver) {
+void RoutePlaner::resetTrainsLists()
+{
+	products_drivers.clear();
+	armor_drivers.clear();
+	division_coef = std::stof(Data_manager::getInstance().config["stage_" + std::to_string(game_stage)]);
+	int products_drivers_num = (int)(division_coef * drivers.size());
+	for (auto driver : drivers)
+	{
+		if (driver.second.waitForOrder && products_drivers.size() < products_drivers_num)
+		{
+			products_drivers.emplace_back(driver.second);
+		}
+	}
+	for (auto driver : drivers)
+	{
+		if (std::find(products_drivers.begin(), products_drivers.end(), driver.second) == products_drivers.end())
+		{
+			armor_drivers.emplace_back(driver.second);
+		}
+	}
+}
+
+
+bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver>& driver) {
 	if (driver.second.getStatus()) {
 		Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-		if (driven_train.cooldown != 0){
-			//std::cout << "Train: " << driven_train.idx << " collided" << std::endl;
+		if (driven_train.cooldown != 0) {
 			return false;
 		}
 		int route_start_point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx()),
-								driven_train.getPosition());
-		
+			driven_train.getPosition());
+
 		routeSeq way;
 		if (driven_train.goods == driven_train.goods_capacity) {
 			way = bestWayToHome(route_start_point, driven_train);
 		}
 		else if (driven_train.goods < driven_train.goods_capacity)
 		{
-			way = wayToMostActualPost(route_start_point, driver.second);
+			if (std::find(products_drivers.begin(), products_drivers.end(), driver.second) == products_drivers.end())
+			{
+				way = bestWayToStorage(route_start_point, driven_train);
+			}
+			else
+			{
+				way = bestWayToMarket(route_start_point, driven_train);
+			}
 		}
 		if (way.size() == 0) return false;
-		
+
 		driver.second.setStatus(false);
 		driver.second.setRoute(Route(way));
+		
 	}
 	return true;
 }
@@ -112,52 +169,6 @@ void RoutePlaner::loadDrivers()
 		int idx = train.second.getIdx();
 		TrainDriver driver = TrainDriver(idx);
 		RoutePlaner::getInstance().addDriver(idx, driver);
-	}
-}
-
-
-routeSeq RoutePlaner::wayToMostActualPost(int begin, TrainDriver& _driver)
-{
-	auto town = Data_manager::getInstance().getPlayer().getTown();
-	auto train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(_driver.getIdx());
-	Regulator reg;
-
-	int expected_product_income = 0;
-	int expected_armor_income = 0;
-	for (auto driver : drivers)
-	{
-		if (driver.second.goodsType == 1)
-		{
-			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			expected_product_income += driven_train.goods_capacity;
-		}
-		else if (driver.second.goodsType == 2)
-		{
-			Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			expected_armor_income += driven_train.goods_capacity;
-		}
-	}
-	int possible_avaible_product = expected_product_income + town.product;
-	routeSeq best_way_to_storage = bestWayToStorage(begin, train);
-	routeSeq best_way_to_market = bestWayToMarket(begin, train);
-	int way_to_storage_and_market = reg.wayLength(best_way_to_market) + reg.wayLength(best_way_to_storage);
-	int safe_product_capacity =
-		std::min((town.population + (2 * way_to_storage_and_market) / 25), town.population_capacity) *
-		2 * way_to_storage_and_market + 2 * way_to_storage_and_market;
-	int way_to_market_len = reg.wayLength(best_way_to_market);
-	//if (((best_way_to_storage.size() != 0 && _driver.goodsType != 1 && safe_product_capacity - expected_food_income <= 0)
-	//|| safe_product_capacity > town.product_capacity) && town.level != 3)
-	if(((expected_armor_income + town.armor) < 220 && town.level < 3) 
-		|| ((expected_armor_income + town.armor) < 80  && town.level == 3)
-		|| train.goods_type == 3)
-	{
-		_driver.goodsType = 2;
-		return best_way_to_storage;
-	}
-	else
-	{
-		_driver.goodsType = 1;
-		return best_way_to_market;
 	}
 }
 
@@ -178,7 +189,6 @@ int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
 
 routeSeq RoutePlaner::bestWayToHome(int begin, Train& train)
 {
-	Regulator reg;
 	train.inMarket = false;
 	train.longway = false;
 	return reg.findWay(begin, Data_manager::getInstance().getPlayer().getTown().point_idx, train);
@@ -187,7 +197,6 @@ routeSeq RoutePlaner::bestWayToHome(int begin, Train& train)
 
 routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 	auto town = Data_manager::getInstance().getPlayer().getTown();
-	Regulator reg;
 
 	routeSeq bestWay = routeSeq();
 	int bestDelta = 10000000;
@@ -219,13 +228,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 }
 
 
-RoutePlaner::RoutePlaner()
-{
-}
 
-RoutePlaner::~RoutePlaner()
-{
-}
 
 void RoutePlaner::upgradeIfPossible()
 {
@@ -234,20 +237,32 @@ void RoutePlaner::upgradeIfPossible()
 	int all_train_upgrade_cost = 0;
 	for (auto train : player.getTrains()) {
 		if (train.second.level != 3) all_train_upgrade_cost += train.second.level * 40;
+	}
+	if (player.getTown().next_level_price <= player.getTown().armor &&
+		player.getTown().next_level_price != 0 &&
+		(all_train_upgrade_cost > player.getTown().armor_capacity || all_train_upgrade_cost == 0)) {
+		Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", player.getTown().idx), std::make_pair("trains", -1));
+	}
+	for (auto train : player.getTrains()) {
 		int point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(train.second.getLineIdx()),
 			train.second.getPosition());
 		if (train.second.next_level_price <= player.getTown().armor &&
 			train.second.next_level_price != 0 &&
-			point == player.getHome().idx &&
-			reg.wayLength(bestWayToStorage(point, train.second)) * 2 < player.getTown().armor) { //multiply by 4 just for safe interval
+			point == player.getHome().idx)
+		{ 
 			Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", -1), std::make_pair("trains", train.second.idx));
 			player.getTown().armor -= train.second.next_level_price;
 		}
 	}
-	if (player.getTown().next_level_price <= player.getTown().armor &&
-		player.getTown().next_level_price != 0 && 
-		(all_train_upgrade_cost > player.getTown().armor_capacity || all_train_upgrade_cost == 0)) {
-		Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", player.getTown().idx), std::make_pair("trains", -1));
-	}
+	
+}
+
+
+RoutePlaner::RoutePlaner()
+{
+}
+
+RoutePlaner::~RoutePlaner()
+{
 }
 
