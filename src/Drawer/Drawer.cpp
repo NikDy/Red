@@ -89,7 +89,23 @@ void Drawer::updatePosts()
 		text2.setFillColor(sf::Color::Black);
 		points[pidx].addText(text2, sf::Vector2f(0, -points_radius - 2 * font_size));
 	}
+
 }
+
+
+void Drawer::updateGui()
+{
+	gui.clear();
+	for (auto rating : Data_manager::getInstance().getMapLayer1().getRaiting())
+	{
+		DrawerContainer ui = DrawerContainer(sf::Vector2f(-10000.f, -10000.f - gui.size() * font_size));
+		sf::Text text(rating.second.name + " : " + std::to_string(rating.second.rating), font, (unsigned int)(font_size));
+		text.setFillColor(sf::Color::Black);
+		ui.addText(text, sf::Vector2f(0, 0));
+		gui.emplace(rating.second.idx, ui);
+	}
+}
+
 
 void Drawer::updateTrains()
 {
@@ -177,6 +193,7 @@ void Drawer::drawAll()
 	{
 		window.clear(w_background_color);
 		updateLines();
+		updateGui();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -186,10 +203,7 @@ void Drawer::drawAll()
 				window.close();
 			}
 		}
-		if (!forced_paused)
-		{
-			this->reforceGraph();
-		}
+		this->reforceGraph();
 		if (Data_manager::getInstance().turn == false) {
 			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 			{
@@ -209,6 +223,10 @@ void Drawer::drawAll()
 		for (auto t : trains)
 		{
 			window.draw(t.second);
+		}
+		for (auto g : gui)
+		{
+			window.draw(g.second);
 		}
 		
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -244,9 +262,9 @@ void Drawer::drawAll()
 			auto home_town_position = points[Data_manager::getInstance().getPlayer().getTown().point_idx].position;
 			camera.setCenter(home_town_position.x, home_town_position.y);
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
 		{
-			forced_paused = !forced_paused;
+			camera.setCenter(-10000.f, -10000.f);
 		}
 		window.setView(camera);
 		window.display();

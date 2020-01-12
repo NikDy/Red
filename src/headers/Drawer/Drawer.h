@@ -22,6 +22,7 @@ private:
 
 	std::map<int, DrawerContainer> points;
 	std::map<int, DrawerContainer> trains;
+	std::map<std::string, DrawerContainer> gui;
 	std::vector<selbaward::Line> lines;
 
 	float w_sizeX = std::stof(Data_manager::getInstance().config["window_W"]);
@@ -60,6 +61,7 @@ private:
 	void updatePosts();
 	void updateTrains();
 	void updateLines();
+	void updateGui();
 	sf::FloatRect graphCenter();
 
 
@@ -68,7 +70,6 @@ private:
 	std::thread windowThread;
 	std::condition_variable update_check;
 
-	bool forced_paused = false;
 
 	Drawer();
 	~Drawer();
