@@ -13,7 +13,7 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 
 
 
-void RoutePlaner::makeTurn() 
+void RoutePlaner::makeTurn()
 {
 	resetTrainsLists();
 	stageAffairs();
@@ -47,8 +47,10 @@ void RoutePlaner::tryGoToSecondStage()
 }
 
 
+
 void RoutePlaner::resetRoutes()
 {
+	void makeQueue();
 	for (auto& driver : drivers)
 	{
 		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
@@ -77,7 +79,50 @@ void RoutePlaner::resetRoutes()
 				driver.second.goodsType = 0;
 			}
 		}
+
 	}
+
+}
+
+void RoutePlaner::makeQueue()
+{
+	for (auto& i : drivers) {
+		if (i.second.getStatus() == true) continue;
+		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(i.second.getIdx());
+		Graph_Line lineTrain = Data_manager::getInstance().getMapLayer0().getLineByIdx(train.line_idx);
+		Graph_Point point = Data_manager::getInstance().getMapLayer0().getPoints()[i.second.getRoute().pathTop()];
+		int trainToPoint = lengthToPoint(point, train);
+		for (auto& j : drivers) {
+			if (j.first <= i.first) continue;
+			if (j.second.getStatus() == true) continue;
+			Train tr = Data_manager::getInstance().getMapLayer1().getTrainByIdx(j.second.getIdx());
+			Graph_Line lineTr = Data_manager::getInstance().getMapLayer0().getLineByIdx(tr.line_idx);
+			Graph_Point pointTr = Data_manager::getInstance().getMapLayer0().getPoints()[j.second.getRoute().pathTop()];
+			if ((tr.speed == 1 || tr.speed == 0) && tr.position == 0) {
+				pointTr = Data_manager::getInstance().getMapLayer0().getPoints()[lineTr.points.first];
+			}
+			else if ((tr.speed == -1 || tr.speed == 0) && tr.position == lineTr.lenght) {
+				pointTr = Data_manager::getInstance().getMapLayer0().getPoints()[lineTr.points.second];
+			}
+			if (pointTr.idx == point.idx) {
+				int trToPoint = lengthToPoint(point, tr);
+				if (trToPoint < trainToPoint) std::swap(i.second, j.second);
+			}
+		}
+	}
+}
+
+int RoutePlaner::lengthToPoint(Graph_Point point, Train & train)
+{
+	Graph_Line trainLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(train.line_idx);
+	int trainToPoint = -1;
+	if (trainLine.points.second == point.idx) {
+		trainToPoint = trainLine.lenght - train.position;
+	}
+	else if (trainLine.points.first == point.idx) {
+		trainToPoint = train.position;
+	}
+	return trainToPoint;
 }
 
 
@@ -157,7 +202,7 @@ bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver>& driver) {
 
 		driver.second.setStatus(false);
 		driver.second.setRoute(Route(way));
-		
+
 	}
 	return true;
 }
@@ -207,8 +252,8 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 		else way = reg.findWay(begin, market.second->point_idx, train);
 		if (way.size() == 0) continue;
 		int safe_product_capacity =
-				std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) * 
-				2 * reg.wayLength(way) + 2 * reg.wayLength(way);
+			std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) *
+			2 * reg.wayLength(way) + 2 * reg.wayLength(way);
 		int possible_to_take = std::min(market.second->product, train.goods_capacity);
 		if (safe_product_capacity - possible_to_take < bestDelta)
 		{
@@ -217,7 +262,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 		}
 	}
 
-	if (train.goods - train.goods_capacity < reg.wayLength(bestWay) && train.goods != 0) 
+	if (train.goods - train.goods_capacity < reg.wayLength(bestWay) && train.goods != 0)
 	{
 		return bestWayToHome(begin, train);
 	}
@@ -249,12 +294,12 @@ void RoutePlaner::upgradeIfPossible()
 		if (train.second.next_level_price <= player.getTown().armor &&
 			train.second.next_level_price != 0 &&
 			point == player.getHome().idx)
-		{ 
+		{
 			Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", -1), std::make_pair("trains", train.second.idx));
 			player.getTown().armor -= train.second.next_level_price;
 		}
 	}
-	
+
 }
 
 

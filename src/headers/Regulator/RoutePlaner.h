@@ -46,6 +46,7 @@ private:
 	void upgradeIfPossible();
 	void resetTrainsLists();
 
+	void makeQueue();
 
 	int game_stage = std::stoi(Data_manager::getInstance().config["game_stage"]);
 	float division_coef = 1;

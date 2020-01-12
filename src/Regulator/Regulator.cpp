@@ -1,4 +1,5 @@
 #include "Regulator.h"
+#include "RoutePlaner.h"
 
 std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& train, int type)
 {
@@ -22,7 +23,9 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& t
 			Graph_Line line = Graph.getLineByTwoPoints(current, next);
 			train.line_idx = line.idx;
 			train.speed = Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(current, next);
-			if (current == begin && (checkLine(line, train.speed) == false || checkPoint(points[next], train, line) == false)) {
+			if (train.speed == 1) train.position = 0;
+			else train.position = line.lenght;
+			if (current == begin && (checkLine(line, train) == false || checkPoint(points[next], train, line) == false)) {
 				continue;
 			}
 			int new_cost;
@@ -34,7 +37,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& t
 			{
 				continue;
 			}
-			
+
 			if (!cost_so_far.count(next) || new_cost < cost_so_far[next])
 			{
 				cost_so_far[next] = new_cost;
@@ -141,15 +144,14 @@ int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 	return lenght;
 }
 
-bool Regulator::checkLine(Graph_Line line, int speed)
+bool Regulator::checkLine(Graph_Line line,Train& train)
 {
-	for (auto tr : line.trains) {
-		if (tr.speed != speed && speed != 0) {
-			return false;
-		}
+	Train tr = nearestTrain(line, train);
+	if (tr.idx != train.idx) {
+		if (tr.speed != train.speed) return false;
 		else {
-			if(speed == 1 && tr.position < 2) return false;
-			if(speed == -1 && line.lenght - tr.position < 2) return false;
+			if (train.speed == 1 && tr.position < 2) return false;
+			if (train.speed == -1 && line.lenght - tr.position < 2) return false;
 		}
 	}
 	return true;
@@ -157,15 +159,25 @@ bool Regulator::checkLine(Graph_Line line, int speed)
 
 bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 {
-	int trainToPoint = lengthToPoint(point, train);
+	int trainToPoint = line.lenght;
 	int pointNow = 0;
 	int homeIdx = Data_manager::getInstance().getPlayer().getHome().idx;
 	if (point.idx == line.points.first) pointNow = line.points.second;
 	else pointNow = line.points.first;
 	for (auto tr : point.trains) {
 		if (tr.idx != train.idx) {
-			if (trainToPoint > 2 && tr.getPlayerIdx() == train.getPlayerIdx() && pointNow != homeIdx) continue;
-			if (tr.line_idx == line.idx && tr.speed == train.speed) continue;
+			if (tr.line_idx == line.idx) {
+				if(tr.speed == train.speed) continue;
+				else return false;
+			}
+			int trToPoint = lengthToPoint(point, tr);
+			if ((trainToPoint < trToPoint && pointNow != homeIdx && tr.goods_type == 0) || (trToPoint == 0 && line.lenght != 1)) continue;
+			if (tr.getPlayerIdx() == train.getPlayerIdx()) {
+				Route dri = RoutePlaner::getInstance().getDrivers()[tr.idx].getRoute();
+				if (dri.path_seq.size() >= 2) {
+					if (dri.path_seq[1] != pointNow && trainToPoint != 1) continue;
+				}
+			}
 			return false;
 		}
 	}
@@ -173,10 +185,10 @@ bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 }
 
 
-int Regulator::lengthToPoint(Graph_Point point, Train & train)
+int Regulator::lengthToPoint(Graph_Point point, Train& train)
 {
 	Graph_Line trainLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(train.line_idx);
-	int trainToPoint = 0;
+	int trainToPoint = -1;
 	if (trainLine.points.second == point.idx) {
 		trainToPoint = trainLine.lenght - train.position;
 	}
@@ -186,6 +198,29 @@ int Regulator::lengthToPoint(Graph_Point point, Train & train)
 	return trainToPoint;
 }
 
+Train Regulator::nearestTrain(Graph_Line line, Train& train)
+{
+	Train nearesTrain = Train(train);
+	if (train.speed == 1) {
+		nearesTrain.position = 10000;
+		for (auto tr : line.trains) {
+			if (tr.idx == train.idx) continue;
+			if (tr.position > train.position && tr.position < nearesTrain.position) {
+				nearesTrain = tr;
+			}
+		}
+	}
+	else if (train.speed == -1) {
+		nearesTrain.position = -1;
+		for (auto tr : line.trains) {
+			if (tr.idx == train.idx) continue;
+			if (tr.position < train.position && tr.position > nearesTrain.position) {
+				nearesTrain = tr;
+			}
+		}
+	}
+	return nearesTrain;
+}
 
 Regulator::Regulator()
 {

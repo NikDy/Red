@@ -228,7 +228,7 @@ void Drawer::drawAll()
 		{
 			window.draw(g.second);
 		}
-		
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
 			camera.zoom(1.f + camera_zoom_speed);

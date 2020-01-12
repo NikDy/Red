@@ -42,7 +42,7 @@ void Data_manager::logout()
 		std::lock_guard<std::mutex> locker(update_mutex);
 		update_on = false;
 	}
-	updateThread.join();
+	updateThread.join(); 
 	net.Logout();
 }
 
@@ -229,15 +229,27 @@ void Data_manager::markPoints()
 			}
 		}
 		else if (train.second.speed == 0) {
-			if (train.second.getPlayerIdx() != player->getTown().player_idx) {
+			if (train.second.position == 0) {
 				points[line.points.first].trains.push_back(train.second);
-				points[line.points.second].trains.push_back(train.second);
-			}
-			else if (train.second.position == 0) {
-				points[line.points.first].trains.push_back(train.second);
+				for (auto point : points[line.points.first].adjacency_list) {
+					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.first, point);
+					if (nextLine.idx != line.idx && nextLine.lenght == 1) points[point].trains.push_back(train.second);
+				}
 			}
 			else if (train.second.position == line.lenght) {
 				points[line.points.second].trains.push_back(train.second);
+				for (auto point : points[line.points.second].adjacency_list) {
+					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.second, point);
+					if (nextLine.idx != line.idx && nextLine.lenght == 1) points[point].trains.push_back(train.second);
+				}
+			} 
+			else {
+				if (train.second.position == 1) {
+					points[line.points.first].trains.push_back(train.second);
+				}
+				if (train.second.position == (line.lenght - 1)) {
+					points[line.points.second].trains.push_back(train.second);
+				}
 			}
 		}
 
