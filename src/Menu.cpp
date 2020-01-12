@@ -37,7 +37,10 @@ void Menu::gameSelect()
 			break;
 		}
 	}
-	Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, number_of_players);
+	if (number_of_players <= 4 && number_of_players > 0)
+	{
+		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, number_of_players);
+	}
 	waitUntilStart(game_name);
 }
 

@@ -35,12 +35,17 @@ MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 		}
 	}
 
-	const char* str = doc["ratings"].GetObject().MemberBegin()->name.GetString();
-	//const char* eee = doc["ratings"][str]["idx"].GetString();
-	Rating new_rating = Rating(doc["ratings"][str]["idx"].GetString(),
-							   doc["ratings"][str]["name"].GetString(),
-							   doc["ratings"][str]["rating"].GetInt());
-	new_mapLayer1.addRaiting(new_rating.idx, new_rating);
+	for (auto town : new_mapLayer1.getTowns())
+	{
+		if (town.second->player_idx != "Null")
+		{
+			Rating new_rating = Rating(doc["ratings"][town.second->player_idx.c_str()]["idx"].GetString(),
+				doc["ratings"][town.second->player_idx.c_str()]["name"].GetString(),
+				doc["ratings"][town.second->player_idx.c_str()]["rating"].GetInt());
+			new_mapLayer1.addRaiting(new_rating.idx, new_rating);
+		}
+	}
+	
 	for (int i = 0; i < (int)doc["trains"].Size(); i++)
 	{
 		new_mapLayer1.addTrain(doc["trains"][i]["idx"].GetInt(), addTrain(doc["trains"][i]));
