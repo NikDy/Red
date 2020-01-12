@@ -5,6 +5,11 @@
 
 class TrainDriver {
 public:
+	friend bool operator==(TrainDriver l_val, TrainDriver r_val)
+	{
+		if (l_val.idx == r_val.idx) return true;
+		else return false;
+	}
 
 	int& getIdx();
 	void setIdx(int _idx);
@@ -42,7 +47,7 @@ private:
 	bool checkAndSetRout(Train& train);
 	Train nearestTrain(Graph_Line line, Train& train);
 	void deleteTrainInPoint(int trainIdx, int pointIdx);
-	void setNewDataForTrain(int trainIdx);
+	//void setNewDataForTrain(int trainIdx);
 
 	int lengthToPoint(Graph_Point point, Train& train);
 };

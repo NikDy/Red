@@ -21,7 +21,7 @@ public:
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 
 
-
+	std::map<int, TrainDriver>& getDrivers();
 	void loadDrivers();
 
 	void makeTurn();
@@ -30,8 +30,8 @@ public:
 private:
 	Regulator reg;
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
-	std::map<int, TrainDriver>& getDrivers();
 
+	int lengthToPoint(Graph_Point point, Train & train);
 
 	bool buildRoutes(std::pair<const int, TrainDriver>& driver);
 	routeSeq bestWayToMarket(int begin, Train& train);
