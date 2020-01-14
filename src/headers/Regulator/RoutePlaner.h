@@ -40,6 +40,7 @@ private:
 
 	void stageAffairs();
 	void tryGoToSecondStage();
+	void tryGoToThirdStage();
 	void resetRoutes();
 
 	void addDriver(int _idx, TrainDriver _trainDriver);
@@ -48,6 +49,10 @@ private:
 
 
 	int game_stage = std::stoi(Data_manager::getInstance().config["game_stage"]);
+	int max_town_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_town_max"]);
+	int max_train_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_train_max"]);
+	int average_market_way = std::stoi(Data_manager::getInstance().config["average_market_way"]);
+	int average_storage_way = std::stoi(Data_manager::getInstance().config["average_storage_way"]);
 	float division_coef = 1;
 	std::list<TrainDriver> products_drivers;
 	std::list<TrainDriver> armor_drivers;
