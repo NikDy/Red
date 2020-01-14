@@ -23,6 +23,7 @@ void Drawer::updateShapes()
 	if (points.empty()) buildVisualGraph();
 	updatePosts();
 	updateTrains();
+	updateGui();
 }
 
 
@@ -193,7 +194,6 @@ void Drawer::drawAll()
 	{
 		window.clear(w_background_color);
 		updateLines();
-		updateGui();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
