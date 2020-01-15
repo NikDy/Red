@@ -166,18 +166,24 @@ bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 	else pointNow = line.points.first;
 	for (auto tr : point.trains) {
 		if (tr.idx != train.idx) {
-			if (tr.line_idx == line.idx) {
-				if(tr.speed == train.speed) continue;
-				else return false;
-			}
+			if (tr.line_idx == line.idx && tr.speed == train.speed) continue;
+			if (tr.getPlayerIdx() == train.getPlayerIdx() && pointNow == homeIdx) return false;
 			int trToPoint = lengthToPoint(point, tr);
-			if ((trainToPoint < trToPoint && pointNow != homeIdx && tr.goods_type == 0) || (trToPoint == 0 && line.lenght != 1)) continue;
-			if (tr.getPlayerIdx() == train.getPlayerIdx()) {
-				Route dri = RoutePlaner::getInstance().getDrivers()[tr.idx].getRoute();
-				if (dri.path_seq.size() >= 2) {
-					if (dri.path_seq[1] != pointNow && trainToPoint != 1) continue;
+			if (tr.getPlayerIdx() == train.getPlayerIdx() && trToPoint <= trainToPoint && trainToPoint > 2) {
+				Route dri =  RoutePlaner::getInstance().getRouteByIdx(tr.idx);
+				if (dri.path_seq.size() == 1) {
+					if (dri.path_seq[0] != pointNow && trainToPoint != 1) continue;
+				}
+				else if (dri.path_seq.size() >= 2) {
+					if (dri.path_seq[0] == pointNow || dri.path_seq[1] == pointNow) {
+						if (train.goods_type == 0 || (train.goods_type != 0 && tr.goods_type != 0)) return false;
+					}
+					else continue;
 				}
 			}
+			if (trToPoint == 0 && line.lenght != 1 && train.getPlayerIdx() != tr.getPlayerIdx()) continue;
+			//if (trToPoint == 0 && tr.getPlayerIdx() == train.getPlayerIdx()) continue;
+
 			return false;
 		}
 	}

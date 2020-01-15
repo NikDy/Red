@@ -185,7 +185,7 @@ void Data_manager::updateGame()
 	while (update_on) 
 	{
 		std::unique_lock<std::mutex> locker(update_mutex);
-		update_check.wait_for(locker, std::chrono::seconds(10), [&]() {return (this->turn); });
+		update_check.wait_for(locker, std::chrono::seconds(60), [&]() {return (this->turn); });
 		map_layer_1 = getMapLayer1FromServer();
 		map_layer_0 = getMapLayer0FromServer();
 		this->map_layer_0->createAdjacencyLists();
@@ -240,7 +240,7 @@ void Data_manager::markPoints()
 				points[line.points.second].trains.push_back(train.second);
 				for (auto point : points[line.points.second].adjacency_list) {
 					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.second, point);
-					if (nextLine.idx != line.idx && nextLine.lenght == 1) points[point].trains.push_back(train.second);
+					if (nextLine.idx != line.idx && nextLine.lenght <= 1) points[point].trains.push_back(train.second);
 				}
 			} 
 			else {

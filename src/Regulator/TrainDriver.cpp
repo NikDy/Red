@@ -62,9 +62,15 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 	auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 	auto& lines = Data_manager::getInstance().getMapLayer0().getLines();
 	Graph_Line curLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(curLineIdx);
+	int homeIdx = Data_manager::getInstance().getPlayer().getHome().idx;
 	int position = train.getPosition();
 	
 	if (getRoute().path_seq.size() == 0) {
+		setStatus(true);
+		return false;
+	}
+	else if (train.goods == train.goods_capacity && getRoute().path_seq.back() != homeIdx && (position == 0 || position == curLine.lenght)) {
+		getRoute().path_seq.clear();
 		setStatus(true);
 		return false;
 	}
@@ -91,17 +97,22 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 			if (getSpeed() == 1) train.position = 0;
 			else train.position = line.lenght;
 		
-			if (isNextLineInRouteAvailable(line, train) == false || checkNextPoint(points[getRoute().pathTop()], train, line) == false) {
+			if (checkNextPoint(points[getRoute().pathTop()], train, line) == false || isNextLineInRouteAvailable(line, train) == false) {
 				getRoute().path_seq.clear();
 				setStatus(true);
 				return false;
 			} 
 			else {
-				if (getSpeed() == 0) wait = true;
-				else deleteTrainInPoint(idx, firstPoint);
-				train.position = getSpeed() * 1;
-				points[secondPoint].trains.push_back(train);
-				lines[line.points].trains.push_back(train);
+				if (getSpeed() == 0) {
+					wait = true;
+					train.speed = getSpeed();
+				}
+				else {
+					deleteTrainInPoint(idx, firstPoint);
+					train.position += getSpeed() * 1;
+					points[secondPoint].trains.push_back(train);
+					lines[line.points].trains.push_back(train);
+				}
 			}
 		}
 		else {
@@ -112,24 +123,39 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 			else {
 				setSpeed(1);
 			}
-			if (isNextLineInRouteAvailable(curLine, train) == false || checkNextPoint(points[getRoute().pathTop()], train, curLine) == false) {
+			if (countOfWait > 4) {
+				if (getSpeed() == 1) deleteTrainInPoint(idx, curLine.points.first);
+				else deleteTrainInPoint(idx, curLine.points.second);
+				train.position = getSpeed() * 1;
+				points[getRoute().pathTop()].trains.push_back(train);
+				lines[curLine.points].trains.push_back(train);
+				return true;
+			}
+			train.speed = getSpeed();
+			if (checkNextPoint(points[getRoute().pathTop()], train, curLine) == false || isNextLineInRouteAvailable(curLine, train) == false) {
 				getRoute().path_seq.clear();
 				setStatus(true);
 				return false;
 			}
 			else {
-				if (getSpeed() == 0) wait = true;
-				else if(getSpeed() == 1) deleteTrainInPoint(idx, curLine.points.first);
-				else deleteTrainInPoint(idx, curLine.points.second);
-				train.position = getSpeed() * 1;
-				points[getRoute().pathTop()].trains.push_back(train);
-				lines[curLine.points].trains.push_back(train);
+				if (getSpeed() == 0) {
+					wait = true;
+					train.speed = getSpeed();
+				}
+				else {
+					if (getSpeed() == 1) deleteTrainInPoint(idx, curLine.points.first);
+					else deleteTrainInPoint(idx, curLine.points.second);
+					train.position = getSpeed() * 1;
+					points[getRoute().pathTop()].trains.push_back(train);
+					lines[curLine.points].trains.push_back(train);
+				}
 			}
 		}
 	}
 	else if (checkAndSetRout(train) == false) {
 		return false;
 	}
+	else setNewDataForTrain(train.idx);
 	
 	return true;
 }
@@ -141,13 +167,15 @@ bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, Train& train)
 	Train nearTrain = nearestTrain(line, train);
 	if (nearTrain.idx != train.idx)
 	{
-		if (nearTrain.speed == 0 && nearTrain.getPlayerIdx() == train.getPlayerIdx()) setSpeed(0);
-		else if (nearTrain.speed != getSpeed() && train.speed != 0) return false;
-		else {
-			if (train.speed == 1 && nearTrain.position < 2) setSpeed(0);
-			if (train.speed == -1 && line.lenght - nearTrain.position < 2) setSpeed(0);
+		if (nearTrain.getPlayerIdx() == train.getPlayerIdx() && nearTrain.speed == 0) {
+			if (countOfWait > 2) return false;
+			else setSpeed(0);
 		}
-		if (getSpeed() == 0) wait = true;
+		else if (nearTrain.speed != train.speed) return false;
+		else {
+			if (train.speed == 1 && nearTrain.position < 3) setSpeed(0);
+			if (train.speed == -1 && line.lenght - nearTrain.position < 3) setSpeed(0);
+		}
 	}
 	return true;
 }
@@ -156,18 +184,25 @@ bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, Train& train)
 bool TrainDriver::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 {
 	int trainToPoint = lengthToPoint(point, train);
+	int pointNow = 0;
+	if (point.idx == line.points.first) pointNow = line.points.second;
+	else pointNow = line.points.first;
 	for (auto tr : point.trains) {
 		if (tr.idx == train.idx) continue;
-		if (tr.line_idx == line.idx && tr.speed == train.speed) {
-			continue;
-		}
+		if (tr.line_idx == line.idx && tr.speed == train.speed) continue;
 		else {
 			int trToPoint = lengthToPoint(point, tr);
 			if (trainToPoint < trToPoint) continue;
-			if (trToPoint <= trainToPoint && tr.getPlayerIdx() == train.getPlayerIdx() && trainToPoint != 1) continue;
-			else if ((trToPoint == 0 && line.lenght != 1) || (trToPoint == -1 && trainToPoint < 2)) setSpeed(0);
-			else if (trToPoint == 0 && trainToPoint == 1 && tr.getPlayerIdx() != train.getPlayerIdx()) setSpeed(getSpeed()*-1);
-			else if (trToPoint <= trainToPoint && trainToPoint < 3) setSpeed(0);
+			if (tr.getPlayerIdx() == train.getPlayerIdx() && trainToPoint >= trToPoint && trainToPoint > 2) {
+				Route dri = RoutePlaner::getInstance().getRouteByIdx(tr.idx);
+				if (dri.path_seq.size() >= 2) {
+					if (dri.path_seq[1] != pointNow && trainToPoint != 1) continue;
+				}
+				else if (dri.path_seq.size() >= 1) {
+					if (dri.path_seq[0] != pointNow && trainToPoint != 1) continue;
+				}
+			}
+			//if (trToPoint == 0 && trainToPoint == 1 && tr.getPlayerIdx() != train.getPlayerIdx()) setSpeed(getSpeed()*-1);
 			else setSpeed(0);
 		}
 	}
@@ -183,10 +218,7 @@ bool TrainDriver::checkNextPoint(Graph_Point point, Train& train, Graph_Line lin
 	else pointNow = line.points.first;
 	for (auto tr : point.trains) {
 		if (tr.idx == train.idx) continue;
-		if (tr.line_idx == line.idx) {
-			if (tr.speed == train.speed) continue;
-			else return false;
-		}
+		if (tr.line_idx == line.idx && tr.speed == train.speed) continue;
 		else {
 			int trToPoint = lengthToPoint(point, tr);
 			if (trainToPoint < trToPoint) {
@@ -194,22 +226,27 @@ bool TrainDriver::checkNextPoint(Graph_Point point, Train& train, Graph_Line lin
 					Graph_Line curLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(tr.line_idx);
 					int trPointNow = curLine.points.first;
 					if (point.idx == trPointNow) trPointNow = curLine.points.second;
-					if (getRoute().path_seq[1] == trPointNow) return false;
+					if (getRoute().path_seq[1] == trPointNow && tr.goods_type == 0) return false;
 				}
 			}
-			else if (tr.getPlayerIdx() == train.getPlayerIdx()) {
-				Route dri = RoutePlaner::getInstance().getDrivers()[tr.idx].getRoute();
-				if (dri.path_seq.size() >= 2) {
-					if (dri.path_seq[1] != pointNow && trainToPoint != 1) continue;
+			if (tr.getPlayerIdx() == train.getPlayerIdx() && trainToPoint >= trToPoint && trainToPoint > 2) {
+				Route dri = RoutePlaner::getInstance().getRouteByIdx(tr.idx);
+				if (dri.path_seq.size() == 1) {
+					if (dri.path_seq[0] != pointNow && trainToPoint != 1) continue;
+				}
+				else if (dri.path_seq.size() >= 2) {
+					if (dri.path_seq[0] == pointNow || dri.path_seq[1] == pointNow) {
+						if (train.goods_type == 0 || (train.goods_type != 0 && tr.goods_type != 0)) return false;
+					}
+					else continue;
 				}
 			}
-			else if (trToPoint == 0 && line.lenght != 1) setSpeed(0);
-			else if (trToPoint < 2) setSpeed(0);
-			else return false;
+			if (tr.getPlayerIdx() != train.getPlayerIdx() && trToPoint == -1 && line.lenght <= 2) setSpeed(0);
+			else if (trToPoint == 0 && line.lenght != 1 && train.getPlayerIdx() != tr.getPlayerIdx()) setSpeed(0);
+			else if (trainToPoint >= trToPoint) return false;
 		}
 	}
 
-	if (getSpeed() == 0) wait = true;
 	return true;
 }
 
@@ -218,7 +255,6 @@ bool TrainDriver::checkAndSetRout(Train& train)
 	auto& points = Data_manager::getInstance().getMapLayer0().getPoints();
 	int position = train.getPosition();
 	Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(getLineToGo());
-	Train nearTrain = nearestTrain(line, train);
 	if(wait == true) {
 		wait = false;
 		if (points[getRoute().pathTop()].idx == line.points.first) {
@@ -227,14 +263,18 @@ bool TrainDriver::checkAndSetRout(Train& train)
 		else {
 			setSpeed(1);
 		}
+		if (countOfWait > 4) {
+			return true;
+		}
 	}
 	int needSpeed = getSpeed();
+	train.speed = needSpeed;
+	Train nearTrain = nearestTrain(line, train);
 	checkPoint(points[getRoute().pathTop()], train, line);
 	if (nearTrain.idx != train.idx) {
-		if (nearTrain.speed != getSpeed()) {
+		if (nearTrain.speed != train.speed) {
 			int point = getRoute().pathTop();
 			if (train.position == 0 || train.position == line.lenght) {
-				deleteTrainInPoint(train.idx, getRoute().pathTop());
 				getRoute().path_seq.clear();
 				setStatus(true);
 				return false;
@@ -315,7 +355,7 @@ void TrainDriver::deleteTrainInPoint(int trainIdx, int pointIdx)
 	}
 }
 
-/*void TrainDriver::setNewDataForTrain(int trainIdx)
+void TrainDriver::setNewDataForTrain(int trainIdx)
 {
 	auto& lines = Data_manager::getInstance().getMapLayer0().getLines();
 	Graph_Line curLine = Data_manager::getInstance().getMapLayer0().getLineByIdx(getLineToGo());
@@ -331,7 +371,7 @@ void TrainDriver::deleteTrainInPoint(int trainIdx, int pointIdx)
 		it->speed = getSpeed();
 		it->position += getSpeed() * 1;
 	}
-}*/
+}
 
 
 int TrainDriver::lengthToPoint(Graph_Point point, Train & train)

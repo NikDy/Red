@@ -40,6 +40,7 @@ public:
 
 	std::shared_ptr<Games> getGamesFromServer();
 
+	int tick = 0;
 
 	bool update_on = true;
 	~Data_manager();

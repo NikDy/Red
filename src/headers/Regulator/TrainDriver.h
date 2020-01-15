@@ -22,7 +22,8 @@ public:
 	void setStatus(bool _status);
 	bool getStatus();
 	bool foundSpeedNLine(); //to found speedToSet
-
+	int countOfWait = 0;
+	int lastSpeed = 0;
 
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
@@ -47,7 +48,7 @@ private:
 	bool checkAndSetRout(Train& train);
 	Train nearestTrain(Graph_Line line, Train& train);
 	void deleteTrainInPoint(int trainIdx, int pointIdx);
-	//void setNewDataForTrain(int trainIdx);
+	void setNewDataForTrain(int trainIdx);
 
 	int lengthToPoint(Graph_Point point, Train& train);
 };

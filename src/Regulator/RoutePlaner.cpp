@@ -2,6 +2,13 @@
 
 
 
+Route RoutePlaner::getRouteByIdx(int idx)
+{
+	for (auto& driver : drivers) {
+		if (driver.second.getIdx() == idx) return driver.second.getRoute();
+	}
+}
+
 std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
 	return drivers;
 }
@@ -38,22 +45,23 @@ void RoutePlaner::stageAffairs()
 
 void RoutePlaner::tryGoToSecondStage()
 {
-	int top_trains = 0;
+	/*int top_trains = 0;
 	for (auto driver : drivers)
 	{
 		if (Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx()).level == 3) top_trains++;
 	}
-	if (top_trains == drivers.size() && Data_manager::getInstance().getPlayer().getTown().level == 3) game_stage = 2;
+	if (top_trains == drivers.size() && Data_manager::getInstance().getPlayer().getTown().level == 3) game_stage = 2;*/
+	if (Data_manager::getInstance().tick == 480) game_stage = 2;
 }
 
 
 
 void RoutePlaner::resetRoutes()
 {
-	void makeQueue();
+	makeQueue();
 	for (auto& driver : drivers)
 	{
-		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+ 	Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
 		if (train.cooldown != 0)
 		{
 			Data_manager::getInstance().countOfCol++;
@@ -73,6 +81,13 @@ void RoutePlaner::resetRoutes()
 			}
 		}
 		if (check == true) {
+			if (driver.second.lastSpeed == driver.second.getSpeed() && driver.second.lastSpeed == 0) {
+				driver.second.countOfWait += 1;
+			}
+			else {
+				driver.second.lastSpeed = driver.second.getSpeed();
+				driver.second.countOfWait = 0;
+			}
 			if (!Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed())) {
 				driver.second.getRoute().path_seq.clear();
 				driver.second.setStatus(true);

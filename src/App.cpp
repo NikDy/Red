@@ -18,8 +18,11 @@ int main()
 	int i = 0;
 
 	while(true) {
-		++i;
-		std::cout << i << std::endl;
+		Data_manager::getInstance().tick++;
+		std::cout << Data_manager::getInstance().tick << std::endl;
+		if (Data_manager::getInstance().tick == 187) {
+			std::cout << i << std::endl;
+		}
 		RoutePlaner::getInstance().makeTurn();
 		Data_manager::getInstance().forceTurn();
 		while (Data_manager::getInstance().turn != false);

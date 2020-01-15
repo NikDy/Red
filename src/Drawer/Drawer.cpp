@@ -193,7 +193,6 @@ void Drawer::drawAll()
 	{
 		window.clear(w_background_color);
 		updateLines();
-		updateGui();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -209,6 +208,7 @@ void Drawer::drawAll()
 			{
 				updateShapes();
 				clock.restart();
+				updateGui();
 			}
 		}
 

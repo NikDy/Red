@@ -20,7 +20,7 @@ public:
 	RoutePlaner(RoutePlaner const&) = delete;
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 
-
+	Route getRouteByIdx(int idx);
 	std::map<int, TrainDriver>& getDrivers();
 	void loadDrivers();
 
