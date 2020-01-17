@@ -13,7 +13,7 @@ int main()
 	Data_manager::getInstance().loadConfigFromFile();
 	Menu::getInstance().gameSelect();
 	RoutePlaner::getInstance().loadDrivers();
-
+	
 	Drawer::getInstance().draw();
 	int i = 0;
 

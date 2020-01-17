@@ -11,6 +11,7 @@
 
 
 #include "Line.h"
+#include "Forces.h"
 #include "Data_manager.h"
 #include "DrawerContainer.h"
 
