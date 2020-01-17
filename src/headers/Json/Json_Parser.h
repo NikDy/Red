@@ -12,6 +12,7 @@
 #include "Graph.h"
 #include "Player.h"
 #include "MapLayer1.h"
+#include "MapLayer10.h"
 #include "Event_game.h"
 #include "Games.h"
 
@@ -41,6 +42,7 @@ public:
 
 	static MapLayer1 fromMapLayer1(std::string json_string);
 	static Graph fromMapLayer0(std::string json_string);
+	static MapLayer10 fromMapLayer10(std::string json_string);
 	static Player fromPlayer(std::string json_string);
 	static Games fromGames(std::string json_string);
 	static std::string toJson(std::vector<std::pair<std::string, std::string>>);

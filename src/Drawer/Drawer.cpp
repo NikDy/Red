@@ -28,10 +28,10 @@ void Drawer::updateShapes()
 
 void Drawer::buildVisualGraph()
 {
-	auto graph = Data_manager::getInstance().getMapLayer01();
-	for (auto i : graph.getPoints())
+	auto graph = Data_manager::getInstance().getMapLayer10();
+	for (auto i : graph.points)
 	{
-		sf::Vector2f position((float)(std::rand() % (int)w_sizeX), (float)(std::rand() % (int)w_sizeY));
+		sf::Vector2f position((float)i.second.first * 120, (float)i.second.second * 120);
 		DrawerContainer new_point = DrawerContainer(position);
 		sf::CircleShape point_shape(points_radius);
 		point_shape.setOutlineColor(w_outline_color);
@@ -203,7 +203,6 @@ void Drawer::drawAll()
 				window.close();
 			}
 		}
-		this->reforceGraph();
 		if (Data_manager::getInstance().turn == false) {
 			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 			{
