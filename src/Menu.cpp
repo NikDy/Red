@@ -39,7 +39,9 @@ void Menu::gameSelect()
 	}
 	if (number_of_players <= 4 && number_of_players > 0)
 	{
+		sf::Clock timer;
 		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, number_of_players);
+		std::cout << timer.getElapsedTime().asMilliseconds() << std::endl;
 	}
 	waitUntilStart(game_name);
 }

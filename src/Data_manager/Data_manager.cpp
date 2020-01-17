@@ -23,9 +23,7 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	setLoginData(name, password, game, num_turns, num_players);
 
 
-	net.Login(login_data);
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	player = std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
+	player = std::dynamic_pointer_cast<Player, Game_object>(net.Login(login_data));
 	map_layer_1 = getMapLayer1FromServer();
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
@@ -61,7 +59,7 @@ void Data_manager::logout()
 
 bool Data_manager::makeMove(int trainIdx, int lineIdx, int speed)
 {
-	return net.Action(3, setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx)));
+	return net.Action(3, setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx))) != nullptr;
 }
 
 
@@ -155,43 +153,30 @@ std::vector<std::pair<std::string, std::string>> Data_manager::setMoveData(std::
 
 std::shared_ptr<Graph> Data_manager::getMapLayer0FromServer()
 {
-	net.Action(10, std::make_pair("layer", "0"));
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	return std::dynamic_pointer_cast<Graph, Game_object>(list_objects.back());
+	return std::dynamic_pointer_cast<Graph, Game_object>(net.Action(10, std::make_pair("layer", "0")));
 }
 
 
 std::shared_ptr<MapLayer1> Data_manager::getMapLayer1FromServer()
 {
-	net.Action(10, std::make_pair("layer", "1"));
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer1, Game_object>(list_objects.back());
-	else return NULL;
+	return std::dynamic_pointer_cast<MapLayer1, Game_object>(net.Action(10, std::make_pair("layer", "1")));
 }
 
 
 std::shared_ptr<MapLayer10> Data_manager::getMapLayer10FromServer()
 {
-	net.Action(10, std::make_pair("layer", "10"));
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer10, Game_object>(list_objects.back());
-	else return NULL;
+	return std::dynamic_pointer_cast<MapLayer10, Game_object>(net.Action(10, std::make_pair("layer", "10")));
 }
 
 
 std::shared_ptr<Player> Data_manager::getPlayerFromServer()
 {
-	net.Action(6, std::make_pair("", ""));
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	if (!list_objects.empty()) return std::dynamic_pointer_cast<Player, Game_object>(list_objects.back());
-	else return NULL;
+	return std::dynamic_pointer_cast<Player, Game_object>(net.Action(6, std::make_pair("", "")));
 }
 
 std::shared_ptr<Games> Data_manager::getGamesFromServer()
 {
-	net.Action(7, std::make_pair("", ""));
-	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
-	return std::dynamic_pointer_cast<Games, Game_object>(list_objects.back());
+	return std::dynamic_pointer_cast<Games, Game_object>(net.Action(7, std::make_pair("", "")));
 }
 
 
