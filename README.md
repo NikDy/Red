@@ -23,6 +23,8 @@ usage run Red.exe in build/bin
 contols:
  W - zoom in
  S - zoom out
+ C - center camera on graph center
+ R - center camera on home town
  Arrows - camera movement
  ```
 

@@ -1,7 +1,7 @@
 #include "Drawer.h"
 #include "Data_manager.h"
-#include "Decision.h"
-
+#include "Menu.h"
+#include "RoutePlaner.h"
 #include <string>
 #include <iostream>
 
@@ -10,19 +10,17 @@
 
 int main()
 {
-	Decision dec;
-	Regulator reg;
-	
 	Data_manager::getInstance().loadConfigFromFile();
-	auto username = Data_manager::getInstance().config["name"];
-	Data_manager::getInstance().login(username);
-	dec.Insertion();
+	Menu::getInstance().gameSelect();
+	RoutePlaner::getInstance().loadDrivers();
 	
 	Drawer::getInstance().draw();
+	int i = 0;
 
 	while(true) {
-		Data_manager::getInstance().tryUpdateInGame();
-		Data_manager::getInstance().makeMove(dec.makeTurn());
+		++i;
+		std::cout << i << std::endl;
+		RoutePlaner::getInstance().makeTurn();
 		Data_manager::getInstance().forceTurn();
 		while (Data_manager::getInstance().turn != false);
 	}

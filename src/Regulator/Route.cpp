@@ -7,6 +7,11 @@ Route::Route()
 {
 }
 
+Route::Route(std::vector<std::pair<int, int>> seq)
+{
+	buildPathQueue(seq);
+}
+
 Route::~Route()
 {
 }
@@ -18,16 +23,10 @@ void Route::buildPathQueue(std::vector<std::pair<int, int>> points_n_weigths)
 		path_seq.push_back(point->first);
 		route_lenght += point->second;
 	}
-
-
 }
 
 int Route::pathTop()
 {
-	//std::cout << "i'm inside pathTop() " << std::endl;
-	//std::cout << "path seq begin is " << *path_seq.begin()<< std::endl;
-
-
 	return *path_seq.begin();
 }
 
@@ -38,7 +37,6 @@ void Route::showRoute() {
 
 void Route::pathPop()
 {
-	//std::cout << "path POP" << std::endl;
 	path_seq.erase(path_seq.begin());
 }
 

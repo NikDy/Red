@@ -10,17 +10,15 @@ private:
 
 public:
 	
-	std::vector<int> linesStatus(); //return status of all lines on the map, which tell us what is going on inside this line(0-nobody inside, 1-everybody in positive direction,-1 - everybody in negative direction, 2-all mixed
-	bool storageOrMarket(); //true if market, false if storage 
-	std::map<int, std::pair<int, int>> makeTurn();
+	std::vector<std::pair<int, int>> findWay(int begin, int end, Train& train, int type = 0);
 	std::vector<std::pair<int, int>> findWay(int begin, int end, int type = 0);
 	static int wayLength(std::vector<std::pair<int, int>>);
 
-
-	//idk if we will ned them after new logic
-	//int nearestMarket(int _lineIdx, int _position);
-	//std::pair<int, int> whereToGo(int _position, int _lineIdx, int pointToGo); //return speed and lineIdx, where to go
-
 	Regulator();
 	~Regulator();
+private:
+	int nextPointWeight(int current_point_idx, int next_point_idx, int train_type);
+	bool checkLine(Graph_Line line, int speed);
+	bool checkPoint(Graph_Point point, Train& train, Graph_Line line);
+	int lengthToPoint(Graph_Point point, Train & train);
 };

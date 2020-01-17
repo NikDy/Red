@@ -19,21 +19,22 @@ Drawer::~Drawer()
 
 void Drawer::updateShapes()
 {
+	std::lock_guard<std::mutex> locker(Data_manager::getInstance().update_mutex);
 	if (points.empty()) buildVisualGraph();
 	updatePosts();
 	updateTrains();
+	updateGui();
 }
 
 
 void Drawer::buildVisualGraph()
 {
-	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto graph = Data_manager::getInstance().getMapLayer01();
 	for (auto i : graph.getPoints())
 	{
 		sf::Vector2f position((float)(std::rand() % (int)w_sizeX), (float)(std::rand() % (int)w_sizeY));
 		DrawerContainer new_point = DrawerContainer(position);
 		sf::CircleShape point_shape(points_radius);
-		point_shape.setFillColor(w_points_color);
 		point_shape.setOutlineColor(w_outline_color);
 		point_shape.setOutlineThickness(outline_thickness);
 		new_point.addShape(point_shape, sf::Vector2f(-points_radius, -points_radius));
@@ -89,7 +90,23 @@ void Drawer::updatePosts()
 		text2.setFillColor(sf::Color::Black);
 		points[pidx].addText(text2, sf::Vector2f(0, -points_radius - 2 * font_size));
 	}
+
 }
+
+
+void Drawer::updateGui()
+{
+	gui.clear();
+	for (auto rating : Data_manager::getInstance().getMapLayer1().getRaiting())
+	{
+		DrawerContainer ui = DrawerContainer(sf::Vector2f(-10000.f, -10000.f - gui.size() * font_size));
+		sf::Text text(rating.second.name + " : " + std::to_string(rating.second.rating), font, (unsigned int)(font_size));
+		text.setFillColor(sf::Color::Black);
+		ui.addText(text, sf::Vector2f(0, 0));
+		gui.emplace(rating.second.idx, ui);
+	}
+}
+
 
 void Drawer::updateTrains()
 {
@@ -110,7 +127,7 @@ void Drawer::updateTrains()
 
 void Drawer::updateLines()
 {
-	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto graph = Data_manager::getInstance().getMapLayer01();
 	lines.clear();
 	for (auto line : graph.getLines())
 	{
@@ -124,8 +141,40 @@ void Drawer::updateLines()
 
 void Drawer::reforceGraph()
 {
-	points = Forces::recalcForces(points);
-	updateLines();
+	if (!is_graph_stable)
+	{
+		points = Forces::recalcForces(points, is_graph_stable);
+		updateLines();
+	}
+}
+
+
+sf::FloatRect Drawer::graphCenter()
+{
+	float max_h = 0.f;
+	float min_h = 0.f;
+	float max_w = 0.f;
+	float min_w = 0.f;
+	bool first = true;
+	for (auto point : points)
+	{
+		if (first)
+		{
+			max_h = point.second.position.y;
+			min_h = point.second.position.y;
+			max_w = point.second.position.x;
+			min_w = point.second.position.x;
+			first = false;
+		}
+		else
+		{
+			if (point.second.position.y > max_h) max_h = point.second.position.y;
+			if (point.second.position.y < min_h) min_h = point.second.position.y;
+			if (point.second.position.x > max_w) max_w = point.second.position.x;
+			if (point.second.position.x < min_w) min_w = point.second.position.x;
+		}
+	}
+	return sf::FloatRect(max_w, max_h, max_w - min_w, max_h - min_h);
 }
 
 
@@ -136,8 +185,8 @@ void Drawer::draw()
 
 void Drawer::drawAll()
 {
-	std::unique_lock<std::mutex> locker(lock);
 	sf::RenderWindow window(sf::VideoMode((unsigned int)w_sizeX, (unsigned int)w_sizeY), w_name.c_str());
+	window.setFramerateLimit(60u);
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();
 	sf::Clock clock;
@@ -150,11 +199,11 @@ void Drawer::drawAll()
 		{
 			if (event.type == sf::Event::Closed)
 			{
+				Data_manager::getInstance().logout();
 				window.close();
 			}
 		}
-
-			this->reforceGraph();
+		this->reforceGraph();
 		if (Data_manager::getInstance().turn == false) {
 			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
 			{
@@ -175,8 +224,11 @@ void Drawer::drawAll()
 		{
 			window.draw(t.second);
 		}
+		for (auto g : gui)
+		{
+			window.draw(g.second);
+		}
 		
-
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
 			camera.zoom(1.f + camera_zoom_speed);
@@ -199,6 +251,20 @@ void Drawer::drawAll()
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
 			camera.move(0, camera_movement_speed);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+		{
+			auto new_size = graphCenter();
+			camera.setCenter(new_size.top - new_size.height / 2, new_size.left - new_size.width / 2);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+		{
+			auto home_town_position = points[Data_manager::getInstance().getPlayer().getTown().point_idx].position;
+			camera.setCenter(home_town_position.x, home_town_position.y);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+		{
+			camera.setCenter(-10000.f, -10000.f);
 		}
 		window.setView(camera);
 		window.display();

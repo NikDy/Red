@@ -9,6 +9,7 @@ conan_basic_setup()
 
 set(SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/App.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Menu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Drawer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/Line.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Drawer/DrawerContainer.cpp
@@ -30,8 +31,8 @@ set(SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Storage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Town.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Train.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Data_manager/Games.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/Regulator.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/Decision.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/Route.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/RoutePlaner.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Regulator/TrainDriver.cpp

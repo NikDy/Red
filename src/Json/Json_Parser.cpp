@@ -13,6 +13,7 @@ Json_Parser::~Json_Parser()
 
 MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 {
+	//std::cout << json_string;
 	rapidjson::Document doc;
 	doc.Parse(json_string.c_str());
 
@@ -34,12 +35,17 @@ MapLayer1 Json_Parser::fromMapLayer1(std::string json_string)
 		}
 	}
 
-	const char* str = doc["ratings"].GetObject().MemberBegin()->name.GetString();
-	//const char* eee = doc["ratings"][str]["idx"].GetString();
-	Rating new_rating = Rating(doc["ratings"][str]["idx"].GetString(),
-							   doc["ratings"][str]["name"].GetString(),
-							   doc["ratings"][str]["rating"].GetInt());
-	new_mapLayer1.addRaiting(new_rating.idx, new_rating);
+	for (auto town : new_mapLayer1.getTowns())
+	{
+		if (town.second->player_idx != "Null")
+		{
+			Rating new_rating = Rating(doc["ratings"][town.second->player_idx.c_str()]["idx"].GetString(),
+				doc["ratings"][town.second->player_idx.c_str()]["name"].GetString(),
+				doc["ratings"][town.second->player_idx.c_str()]["rating"].GetInt());
+			new_mapLayer1.addRaiting(new_rating.idx, new_rating);
+		}
+	}
+	
 	for (int i = 0; i < (int)doc["trains"].Size(); i++)
 	{
 		new_mapLayer1.addTrain(doc["trains"][i]["idx"].GetInt(), addTrain(doc["trains"][i]));
@@ -112,6 +118,25 @@ Player Json_Parser::fromPlayer(std::string json_string)
 
 
 
+Games Json_Parser::fromGames(std::string json_string)
+{
+	rapidjson::Document doc;
+	doc.Parse(json_string.c_str());
+
+	Games new_games = Games();
+	for (int i = 0; i < (int)doc["games"].Size(); i++)
+	{
+		new_games.addGame(doc["games"][i]["name"].GetString(),
+						  doc["games"][i]["num_players"].GetInt(),
+						  doc["games"][i]["num_turns"].GetInt(),
+						  doc["games"][i]["state"].GetInt());
+	}
+	return new_games;
+}
+
+
+
+
 bool Json_Parser::is_number(const std::string& s)
 {
 	auto first_char = s.begin();
@@ -162,7 +187,8 @@ Town Json_Parser::addTown(const rapidjson::Value& doc)
 	if (doc.HasMember("next_level_price")) 
 		if (!doc["next_level_price"].IsNull())
 			town_map.next_level_price = doc["next_level_price"].GetInt();
-	town_map.player_idx = doc["player_idx"].GetString();
+	if(!doc["player_idx"].IsNull()) town_map.player_idx = doc["player_idx"].GetString();
+	else town_map.player_idx = "Null";
 	town_map.point_idx = doc["point_idx"].GetInt();
 	town_map.population = doc["population"].GetInt();
 	town_map.population_capacity = doc["population_capacity"].GetInt();
@@ -224,7 +250,9 @@ Train Json_Parser::addTrain(const rapidjson::Value & doc)
 	}
 	new_train.goods = doc["goods"].GetInt();
 	new_train.goods_capacity = doc["goods_capacity"].GetInt();
-	new_train.goods_type = NULL;
+	if (doc.HasMember("goods_type"))
+		if (!doc["goods_type"].IsNull())
+			new_train.goods_type = doc["goods_type"].GetInt();
 	if(doc.HasMember("level")) new_train.level = doc["level"].GetInt();
 	if(doc.HasMember("next_level_price")) 
 		if(!doc["next_level_price"].IsNull())
@@ -260,26 +288,24 @@ std::string Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>
 }
 
 
-std::string Json_Parser::toJsonWithArray(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains)
+std::string Json_Parser::toJsonWithArray(std::pair<std::string, int> posts, std::pair<std::string, int> trains)
 {
 	rapidjson::StringBuffer str;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(str);
 
 	writer.StartObject();
+
 	writer.Key(posts.first.c_str());
 	writer.StartArray();
-	for (auto p : posts.second)
-	{
-		writer.Int(p);
-	}
+	if(posts.second != -1) writer.Int(posts.second);
 	writer.EndArray();
+
 	writer.Key(trains.first.c_str());
 	writer.StartArray();
-	for (auto p : trains.second)
-	{
-		writer.Int(p);
-	}
+	if (trains.second != -1) writer.Int(trains.second);
 	writer.EndArray();
+
 	writer.EndObject();
+
 	return str.GetString();
 }

@@ -2,8 +2,6 @@
 
 
 
-
-
 std::map<int, TrainDriver>& RoutePlaner::getDrivers() {
 	return drivers;
 }
@@ -13,292 +11,258 @@ void RoutePlaner::addDriver(int _idx, TrainDriver _trainDriver) {
 	 drivers.emplace(_idx, _trainDriver);
 }
 
-int RoutePlaner::needProducts(int length, int &population)
+
+
+void RoutePlaner::makeTurn() 
 {
-	int cooldown = 30;
-	int necessaryProdacts = 0;
-	int number_of_ticks_from_last = Data_manager::getInstance().last_tick_Refuges;
-	int countRef = Data_manager::getInstance().count_Refuges;
-	for (int turnCount = number_of_ticks_from_last; turnCount < length + number_of_ticks_from_last; turnCount++) {
-		necessaryProdacts += population;
-		if ((turnCount % cooldown == 0)) {
-			if(countRef * cooldown < turnCount)  ++population;
+	resetTrainsLists();
+	stageAffairs();
+}
+
+
+void RoutePlaner::stageAffairs()
+{
+	if (game_stage == 1)
+	{
+		upgradeIfPossible();
+		resetRoutes();
+		tryGoToSecondStage();
+	}
+	else if (game_stage == 2)
+	{
+		resetRoutes();
+	}
+
+}
+
+
+void RoutePlaner::tryGoToSecondStage()
+{
+	int top_trains = 0;
+	for (auto driver : drivers)
+	{
+		if (Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx()).level == 3) top_trains++;
+	}
+	if (top_trains == drivers.size() && Data_manager::getInstance().getPlayer().getTown().level == 3) game_stage = 2;
+}
+
+
+void RoutePlaner::resetRoutes()
+{
+	for (auto& driver : drivers)
+	{
+		Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+		if (train.cooldown != 0)
+		{
+			Data_manager::getInstance().countOfCol++;
+			driver.second.getRoute().path_seq.clear();
+			driver.second.setStatus(true);
+			continue;
+		}
+		bool check = false;
+		while (true) {
+			if (buildRoutes(driver) == false) {
+				check = false;
+				break;
+			}
+			if (driver.second.foundSpeedNLine() == true) {
+				check = true;
+				break;
+			}
+		}
+		if (check == true) {
+			if (!Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed())) {
+				driver.second.getRoute().path_seq.clear();
+				driver.second.setStatus(true);
+				driver.second.goodsType = 0;
+			}
 		}
 	}
-	return necessaryProdacts;
 }
+
 
 std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
 {
-	auto storages = Data_manager::getInstance().getMapLayer1().getStorages();
 	auto town = Data_manager::getInstance().getPlayer().getTown();
-	Regulator reg;
 
-	if (train.goods == train.goods_capacity) {
-		train.inStorage = false;
-		return reg.findWay(begin, town.point_idx);
-	}
-
-	int populationInTownBeforeRoad = town.population;
-	int populationInTownThroughRoad;
-	int productInTrain = 0;
-	int maxProducts = 0;
-	int productsFromStorage = 0;
-	int idx_market = 0;
-	int necessaryProdacts = 0;
-	int lengthPath = 0;
-
-	std::vector<std::pair<int, int>> bestPath = std::vector<std::pair<int, int>>();
-	for (auto storage : storages) {
-		Town town_in = town;
-		Storage _storage = *storage.second;
-		if (begin == _storage.point_idx) continue;
-		std::vector<std::pair<int, int>> path;
-		if (train.inStorage == true) {
-			path = reg.findWay(begin, _storage.point_idx);
-		}
-		else {
-			path = reg.findWay(begin, _storage.point_idx, 1);
-		}
-		std::vector<std::pair<int, int>> pathToHome = reg.findWay(_storage.point_idx, town.point_idx);
-		int lengthToStorage = reg.wayLength(path);
-		int lengthToHome = reg.wayLength(pathToHome);
-		lengthPath = lengthToHome + lengthToStorage;
-		int turnCount = 1;
-		populationInTownThroughRoad = populationInTownBeforeRoad;
-
-		necessaryProdacts = needProducts(lengthPath, populationInTownThroughRoad);
-		town_in.population = populationInTownThroughRoad;
-		if (town_in.product > necessaryProdacts) {
-			town_in.product = town.product - necessaryProdacts;
-		}
-		if (StorageToMarket(begin, train, town_in).size() == 0) continue;
-
-		int actualProducts = 0;
-
-		if (_storage.armor_capacity <= _storage.armor + lengthToStorage * _storage.replenishment) {
-			actualProducts = _storage.armor_capacity;
-		}
-		else {
-			actualProducts = _storage.armor + lengthToStorage * _storage.replenishment;
-		}
-
-		if (actualProducts > (train.goods_capacity - train.goods)) {
-			actualProducts = train.goods_capacity - train.goods;
-		}
-
-
-
-		if (town.product > necessaryProdacts && actualProducts > maxProducts) {
-			maxProducts = actualProducts;
-			bestPath = path;
+	routeSeq bestWay = routeSeq();
+	int bestDelta = 10000000;
+	for (auto storage : Data_manager::getInstance().getMapLayer1().getStorages()) {
+		if (begin == storage.second->point_idx) continue;
+		routeSeq way;
+		if(train.goods_type != 3) way = reg.findWay(begin, storage.second->point_idx, train, 1);
+		else way = reg.findWay(begin, storage.second->point_idx, train);
+		if (way.size() == 0) continue;
+		int safe_armor_capacity = 4 * reg.wayLength(way);
+		int possible_to_take = std::min(storage.second->armor, train.goods_capacity);
+		if (safe_armor_capacity - possible_to_take < bestDelta)
+		{
+			bestWay = way;
+			bestDelta = safe_armor_capacity - possible_to_take;
 		}
 	}
 
-	if (bestPath.size() == 0) {
-		if (begin != town.point_idx) {
-			train.inStorage = false;
-			bestPath = reg.findWay(begin, town.point_idx);
-		}
-	}
-	else {
-		train.inStorage = true;
-	}
-
-	return bestPath;
+	return bestWay;
 }
 
 
-void RoutePlaner::buildRoutes() {
-	//std::cout << "I'm inside buildRoutes" << std::endl;
-	Regulator  reg;
+void RoutePlaner::resetTrainsLists()
+{
+	products_drivers.clear();
+	armor_drivers.clear();
+	division_coef = std::stof(Data_manager::getInstance().config["stage_" + std::to_string(game_stage)]);
+	int products_drivers_num = (int)(division_coef * drivers.size());
+	for (auto driver : drivers)
+	{
+		if (driver.second.waitForOrder && products_drivers.size() < products_drivers_num)
+		{
+			products_drivers.emplace_back(driver.second);
+		}
+	}
+	for (auto driver : drivers)
+	{
+		if (std::find(products_drivers.begin(), products_drivers.end(), driver.second) == products_drivers.end())
+		{
+			armor_drivers.emplace_back(driver.second);
+		}
+	}
+}
+
+
+bool RoutePlaner::buildRoutes(std::pair<const int, TrainDriver>& driver) {
+	if (driver.second.getStatus()) {
+		Train driven_train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
+		if (driven_train.cooldown != 0) {
+			return false;
+		}
+		int route_start_point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(driven_train.getLineIdx()),
+			driven_train.getPosition());
+
+		routeSeq way;
+		if (driven_train.goods == driven_train.goods_capacity) {
+			way = bestWayToHome(route_start_point, driven_train);
+		}
+		else if (driven_train.goods < driven_train.goods_capacity)
+		{
+			if (std::find(products_drivers.begin(), products_drivers.end(), driver.second) == products_drivers.end())
+			{
+				way = bestWayToStorage(route_start_point, driven_train);
+			}
+			else
+			{
+				way = bestWayToMarket(route_start_point, driven_train);
+			}
+		}
+		if (way.size() == 0) return false;
+
+		driver.second.setStatus(false);
+		driver.second.setRoute(Route(way));
+		
+	}
+	return true;
+}
+
+
+void RoutePlaner::loadDrivers()
+{
+	for (auto train : Data_manager::getInstance().getPlayer().getTrains()) {
+		int idx = train.second.getIdx();
+		TrainDriver driver = TrainDriver(idx);
+		RoutePlaner::getInstance().addDriver(idx, driver);
+	}
+}
+
+
+int RoutePlaner::getPointIdxByLineAndPosition(Graph_Line line, int pos)
+{
+	if (pos == line.lenght) {
+		return line.points.second;
+	}
+	else if (pos == 0) {
+		return line.points.first;
+	}
+	else {
+		return -1;
+	}
+}
+
+
+routeSeq RoutePlaner::bestWayToHome(int begin, Train& train)
+{
+	train.inMarket = false;
+	train.longway = false;
+	return reg.findWay(begin, Data_manager::getInstance().getPlayer().getTown().point_idx, train);
+}
+
+
+routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
+	auto town = Data_manager::getInstance().getPlayer().getTown();
+
+	routeSeq bestWay = routeSeq();
+	int bestDelta = 10000000;
+	for (auto market : Data_manager::getInstance().getMapLayer1().getMarkets()) {
+		if (begin == market.second->point_idx) continue;
+		routeSeq way;
+		if(train.goods_type != 2) way = reg.findWay(begin, market.second->point_idx, train, 2);
+		else way = reg.findWay(begin, market.second->point_idx, train);
+		if (way.size() == 0) continue;
+		int safe_product_capacity =
+				std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) * 
+				2 * reg.wayLength(way) + 2 * reg.wayLength(way);
+		int possible_to_take = std::min(market.second->product, train.goods_capacity);
+		if (safe_product_capacity - possible_to_take < bestDelta)
+		{
+			bestWay = way;
+			bestDelta = safe_product_capacity - possible_to_take;
+		}
+	}
+
+	if (train.goods - train.goods_capacity < reg.wayLength(bestWay) && train.goods != 0) 
+	{
+		return bestWayToHome(begin, train);
+	}
+	else
+	{
+		return bestWay;
+	}
+}
+
+
+
+
+void RoutePlaner::upgradeIfPossible()
+{
+	auto& player = Data_manager::getInstance().getPlayer();
+
+	int all_train_upgrade_cost = 0;
+	for (auto train : player.getTrains()) {
+		if (train.second.level != 3) all_train_upgrade_cost += train.second.level * 40;
+	}
+	if (player.getTown().next_level_price <= player.getTown().armor &&
+		player.getTown().next_level_price != 0 &&
+		(all_train_upgrade_cost > player.getTown().armor_capacity || all_train_upgrade_cost == 0)) {
+		Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", player.getTown().idx), std::make_pair("trains", -1));
+	}
+	for (auto train : player.getTrains()) {
+		int point = getPointIdxByLineAndPosition(Data_manager::getInstance().getMapLayer0().getLineByIdx(train.second.getLineIdx()),
+			train.second.getPosition());
+		if (train.second.next_level_price <= player.getTown().armor &&
+			train.second.next_level_price != 0 &&
+			point == player.getHome().idx)
+		{ 
+			Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", -1), std::make_pair("trains", train.second.idx));
+			player.getTown().armor -= train.second.next_level_price;
+		}
+	}
 	
-	for (auto& driver : getInstance().getDrivers()) {
-		if (driver.second.getStatus()) {
-			Train train = Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx());
-			int point = 0;
-			int lineIdx = train.getLineIdx();
-			int position = train.getPosition();
-			Route route;
-			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(lineIdx);
-			if (position == line.lenght) {
-				point = line.points.second;
-			}
-			else {
-				point = line.points.first;
-			} 
-			// market or storage
-			std::vector<std::pair<int, int>> way = std::vector<std::pair<int, int>>();
-			if (train.longway == false) {
-				if (Data_manager::getInstance().stopUpdate == false) {
-					if(train.inMarket == false) way = bestWayToStorage(point, train);
-					if (way.size() == 0) {
-						if(train.inStorage == false) way = bestWayToMarket(point, train);
-					}
-				}
-				else {
-					way = bestWayToMarket(point, train);
-				}
-			}
-			else {
-				way = bestWayToMarket(point, train);
-			}
-			route.buildPathQueue(way);
-			
-			driver.second.setStatus(false);
-			driver.second.setRoute(route);		
-		}
-	}
-
 }
 
 
-RoutePlaner::RoutePlaner() {
-
-
+RoutePlaner::RoutePlaner()
+{
 }
 
-RoutePlaner::~RoutePlaner(){
-
-
+RoutePlaner::~RoutePlaner()
+{
 }
 
-
-std::vector<std::pair<int, int>> RoutePlaner::bestWayToMarket(int begin, Train& train) {
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-	auto& town = Data_manager::getInstance().getPlayer().getTown();
-	Regulator reg;
-
-	if (train.goods == train.goods_capacity) {
-		train.inMarket = false;
-		train.longway = false;
-		return reg.findWay(begin, town.point_idx);
-	}
-
-	int populationInTownBeforeRoad = town.population;
-	int populationInTownThroughRoad;
-	int productInTrain = 0;
-	int maxProducts = 0;
-	int productsFromMarket = 0;
-	int idx_market = 0;
-	int necessaryProdacts = 0;
-	int lengthPath = 0;
-	std::vector<std::pair<int, int>> bestPath = std::vector<std::pair<int, int>>();
-	for (auto market : markets) {
-		Market _market = *market.second;
-		if (begin == _market.point_idx) continue;
-		std::vector<std::pair<int, int>> path;
-		if (train.inMarket == true) {
-			path = reg.findWay(begin, _market.point_idx);
-		}
-		else {
-			path = reg.findWay(begin, _market.point_idx, 2);
-		}
-		std::vector<std::pair<int, int>> pathToHome = reg.findWay(_market.point_idx, town.point_idx);
-		int lengthToMarket = reg.wayLength(path);
-		int lengthToHome = reg.wayLength(pathToHome);
-		lengthPath = lengthToHome + lengthToMarket;
-		int turnCount = 1;
-		populationInTownThroughRoad = populationInTownBeforeRoad;
-
-		if (train.longway == false) {
-			necessaryProdacts = needProducts(lengthPath, populationInTownThroughRoad);
-		}
-		int actualProducts = 0;
-
-		if (_market.product_capacity <= _market.product + lengthToMarket * _market.replenishment) {
-			actualProducts = _market.product_capacity;
-		}
-		else {
-			actualProducts = _market.product + lengthToMarket * _market.replenishment;
-		}
-
-		if (actualProducts > (train.goods_capacity - train.goods)) {
-			actualProducts = train.goods_capacity - train.goods;
-		}
-		productsFromMarket = actualProducts - necessaryProdacts;
-
-
-		if (productsFromMarket>maxProducts && town.product > necessaryProdacts) {
-			maxProducts = productsFromMarket;
-			bestPath = path;
-		}
-	}
-
-	if(bestPath.size() == 0) {
-		if (begin != town.point_idx) {
-			bestPath = reg.findWay(begin, town.point_idx);
-			train.inMarket = false;
-		}
-		else {
-			train.longway = true;
-			bestPath = bestWayToMarket(begin, train);
-		}
-	}
-	else {
-		train.inMarket = true;
-	}
-
-	return bestPath;
-}
-
-
-
-std::vector<std::pair<int, int>> RoutePlaner::StorageToMarket(int begin, Train& train, Town& town) {
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-	Regulator reg;
-
-	if (train.goods == train.goods_capacity) {
-		return reg.findWay(begin, town.point_idx);
-	}
-
-	int populationInTownBeforeRoad = town.population;
-	int bestLength = 100000;
-	int populationInTownThroughRoad;
-	int productInTrain = 0;
-	int maxProducts = 0;
-	int productsFromMarket = 0;
-	int idx_market = 0;
-	int necessaryProdacts = 0;
-	int lengthPath = 0;
-	std::vector<std::pair<int, int>> bestPath = std::vector<std::pair<int, int>>();
-	for (auto market : markets) {
-		Market _market = *market.second;
-		if (begin == _market.point_idx) continue;
-		std::vector<std::pair<int, int>> path = reg.findWay(begin, _market.point_idx, 2);
-		std::vector<std::pair<int, int>> pathToHome = reg.findWay(_market.point_idx, town.point_idx);
-		int lengthToMarket = reg.wayLength(path);
-		int lengthToHome = reg.wayLength(pathToHome);
-		lengthPath = lengthToHome + lengthToMarket;
-		int turnCount = 1;
-		populationInTownThroughRoad = populationInTownBeforeRoad;
-
-		necessaryProdacts = needProducts(lengthPath, populationInTownThroughRoad) + populationInTownThroughRoad * 10; //populationInTownThroughRoad * 10 just for fun. Need more products
-		int actualProducts = 0;
-
-		if (_market.product_capacity <= _market.product + lengthToMarket * _market.replenishment) {
-			actualProducts = _market.product_capacity;
-		}
-
-		else {
-			actualProducts = _market.product + lengthToMarket * _market.replenishment;
-		}
-
-		if (actualProducts > (train.goods_capacity - train.goods)) {
-			actualProducts = train.goods_capacity - train.goods;
-		}
-
-
-		//productsFromMarket = actualProducts - necessaryProdacts;
-
-		if (town.product > necessaryProdacts) {
-			if (lengthPath < bestLength) {
-				bestLength = lengthPath;
-				maxProducts = productsFromMarket;
-				bestPath = path;
-			}
-		}
-	}
-
-	return bestPath;
-}

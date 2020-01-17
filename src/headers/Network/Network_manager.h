@@ -55,7 +55,7 @@ public:
 	bool Login(std::vector<std::pair<std::string, std::string>> login_data);
 	bool Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
 	bool Action(int action_code, std::pair<std::string, std::string> key_value_pairs);
-	bool ActionToUpdate(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains);
+	bool ActionToUpgrade(std::pair<std::string, int> posts, std::pair<std::string, int> trains);
 	//bool Update(int action_code, std::pair<std::string, std::string> key_value_pair);
 	bool Logout();
 };

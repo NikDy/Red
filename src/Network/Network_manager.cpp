@@ -65,42 +65,36 @@ std::string Network_manager::receiveJsonString()
 	int result_code;
 	size_t received;
 	if (this->socket.receive(&result_code, 4, received) != sf::Socket::Done)
-		return "";
+		return "None";
 	//std::cout << result_code << std::endl;
-	if (result_code == 0)
-	{
-		int response_size = 0;
-		if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
-			return "";
+	int response_size = 0;
+	if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
+		return "None";
 
-		std::string jsonString = "";
-		char* in = new char[sizeof(unsigned short)];
-		size_t already_received = 0;
-		while (already_received < response_size)
-		{
-			this->socket.receive(in, sizeof(unsigned short), received);
-			already_received += received;
-			jsonString.append(in, received);
-		}
-		return jsonString;
+	std::string jsonString = "";
+	char* in = new char[sizeof(unsigned short)];
+	size_t already_received = 0;
+	while (already_received < response_size)
+	{
+		this->socket.receive(in, sizeof(unsigned short), received);
+		already_received += received;
+		jsonString.append(in, received);
 	}
-	return "";
+	if (result_code != 0) return "None";
+	return jsonString;
 }
 
 
 bool Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
 {
-	
-
 	auto json_string = Json_Parser::toJson(login_data);
-
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
 	if(!trySend(message)) return false;
 	auto response = receiveJsonString();
+	if (response == "None") return false;
 	std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 	response_list.push_back(result);
 	return true;
-
 }
 
 
@@ -111,6 +105,7 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
+	if (response == "None") return false;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{
@@ -122,12 +117,19 @@ bool Network_manager::Action(int action_code, std::vector<std::pair<std::string,
 		else if (key_value_pairs[0].second == "1") {
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
 			response_list.push_back(result);
+			std::cout << response << std::endl;
 		}
+	}
+	else if (action_code == 7)
+	{
+		std::shared_ptr<Game_object> result = Json_Parser::fromGames(response).getObjectPtr();
+		response_list.push_back(result);
 	}
 	else if (action_code == 6)
 	{
 		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 		response_list.push_back(result);
+		//std::cout << response << std::endl;
 	}
 	else if (action_code == 3)
 	{
@@ -142,8 +144,10 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 {
 	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pair});
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
+	if (response == "None") return false;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{
@@ -156,12 +160,18 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
 			response_list.push_back(result);
 		}
-	} 
+	}
+	else if (action_code == 7)
+	{
+		std::shared_ptr<Game_object> result = Json_Parser::fromGames(response).getObjectPtr();
+		response_list.push_back(result);
+	}
 	else if (action_code == 6) 
 	{
 		//std::cout << response << std::endl;
 		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 		response_list.push_back(result);
+		//std::cout << response << std::endl;
 	}
 	else if (action_code == 3)
 	{
@@ -171,12 +181,13 @@ bool Network_manager::Action(int action_code, std::pair<std::string, std::string
 	return true;
 }
 
-bool Network_manager::ActionToUpdate(std::pair<std::string, std::vector<int>> posts, std::pair<std::string, std::vector<int>> trains)
+bool Network_manager::ActionToUpgrade(std::pair<std::string, int> posts, std::pair<std::string, int> trains)
 {
 	int action_code = 4;
 
 	auto json_string = Json_Parser::toJsonWithArray(posts, trains);
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
 	//std::cout << response << std::endl;
@@ -194,5 +205,6 @@ bool Network_manager::Logout()
 
 	if (socket.send(message.c_str(), message.length()) != sf::Socket::Done)
 		return false;
+	std::cout << "Logged out";
 	return true;
 }

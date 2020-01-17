@@ -1,10 +1,15 @@
 #pragma once
 #include "Graph_Line.h"
 #include "Graph_Point.h"
-#include <map>
-#include <string>
 #include "Game_object.h"
+
+#include <string>
+#include <map>
 #include <typeinfo>
+
+
+
+
 
 class Graph : public Game_object
 {
@@ -28,6 +33,9 @@ public:
 	void setIdx(int idx_);
 	void setName(const std::string& name_);
 	const std::string& getName() const;
+	int getLineDirectionByTwoPoints(int first, int second);
+	
+
 
 	std::shared_ptr<Game_object> getObjectPtr();
 	const std::type_info& getObjectType();

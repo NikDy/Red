@@ -7,6 +7,7 @@ class Route
 {
 public:
 	Route();
+	Route(std::vector<std::pair<int, int>>);
 	~Route();
 
 	void buildPathQueue(std::vector<std::pair<int, int>>);
@@ -15,8 +16,6 @@ public:
 	bool onePoint();
 	bool isEmpty();
 	void showRoute();
-
-private:
 	std::vector<int> path_seq;  //points of current route
 	int route_lenght = 0;
 

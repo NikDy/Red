@@ -2,6 +2,8 @@
 #include <utility>
 #include "Game_object.h"
 #include <typeinfo>
+#include <vector>
+#include "Train.h"
 
 class Graph_Line : public Game_object
 {
@@ -9,6 +11,8 @@ public:
 	int idx = 0;
 	int lenght = 0;
 	std::pair<int, int> points = std::pair<int, int>(0, 0);
+
+	std::vector<Train> trains = std::vector<Train>();
 
 	Graph_Line();
 	Graph_Line(int idx_, int lenght_, std::pair<int, int> points_);
