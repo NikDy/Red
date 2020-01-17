@@ -87,6 +87,23 @@ Graph Json_Parser::fromMapLayer0(std::string json_string)
 }
 
 
+MapLayer10 Json_Parser::fromMapLayer10(std::string json_string)
+{
+	rapidjson::Document doc;
+	doc.Parse(json_string.c_str());
+
+	MapLayer10 new_maplayer10 = MapLayer10(doc["idx"].GetInt(),
+										   std::make_pair(doc["size"][1].GetInt(), doc["size"][1].GetInt()));
+	for (int i = 0; i < (int)doc["coordinates"].Size(); i++)
+	{
+		new_maplayer10.points.emplace(doc["coordinates"][i]["idx"].GetInt(),
+					   std::make_pair(doc["coordinates"][i]["x"].GetInt(), doc["coordinates"][i]["y"].GetInt()));
+	}
+
+	return new_maplayer10;
+}
+
+
 Player Json_Parser::fromPlayer(std::string json_string)
 {
 	rapidjson::Document doc;

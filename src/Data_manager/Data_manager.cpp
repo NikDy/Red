@@ -31,6 +31,7 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	this->map_layer_0->createAdjacencyLists();
 	this->map_layer_01 = this->map_layer_0;
 	this->map_layer_01->createAdjacencyLists();
+	this->map_layer_10 = getMapLayer10FromServer();
 	updateThread = std::thread(&Data_manager::updateGame, this);
 	return true;
 }
@@ -73,10 +74,13 @@ bool Data_manager::tryUpgradeInGame(std::pair<std::string, int> postsToSend, std
 
 Graph& Data_manager::getMapLayer0()
 {
-
 	return *this->map_layer_0;
 }
 
+MapLayer10& Data_manager::getMapLayer10()
+{
+	return *this->map_layer_10;
+}
 
 Graph & Data_manager::getMapLayer01()
 {
@@ -159,6 +163,15 @@ std::shared_ptr<MapLayer1> Data_manager::getMapLayer1FromServer()
 	net.Action(10, std::make_pair("layer", "1"));
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer1, Game_object>(list_objects.back());
+	else return NULL;
+}
+
+
+std::shared_ptr<MapLayer10> Data_manager::getMapLayer10FromServer()
+{
+	net.Action(10, std::make_pair("layer", "10"));
+	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
+	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer10, Game_object>(list_objects.back());
 	else return NULL;
 }
 
