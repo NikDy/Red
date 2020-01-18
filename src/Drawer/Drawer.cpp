@@ -38,6 +38,9 @@ void Drawer::buildVisualGraph()
 		point_shape.setOutlineColor(w_outline_color);
 		point_shape.setOutlineThickness(outline_thickness);
 		new_point.addShape(point_shape, sf::Vector2f(-points_radius, -points_radius));
+		sf::Text text(std::to_string(i.first), font, (unsigned int)(font_size));
+		text.setFillColor(sf::Color::Black);
+		new_point.addText(text, sf::Vector2f(0, -points_radius - font_size));
 
 		points.emplace(i.first, new_point);
 	}

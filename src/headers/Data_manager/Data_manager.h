@@ -39,7 +39,6 @@ public:
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
 
-
 	std::shared_ptr<Games> getGamesFromServer();
 
 

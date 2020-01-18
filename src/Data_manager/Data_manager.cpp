@@ -22,7 +22,6 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 {
 	setLoginData(name, password, game, num_turns, num_players);
 
-
 	player = std::dynamic_pointer_cast<Player, Game_object>(net.Login(login_data));
 	map_layer_1 = getMapLayer1FromServer();
 	this->map_layer_0 = getMapLayer0FromServer();
