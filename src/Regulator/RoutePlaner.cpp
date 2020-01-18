@@ -7,6 +7,7 @@ TrainDriver RoutePlaner::getTrainDriverByIdx(int idx)
 	for (auto& driver : drivers) {
 		if (driver.second.getIdx() == idx) return driver.second;
 	}
+	return drivers.end()->second;
 }
 
 Route RoutePlaner::getRouteByIdx(int idx)
@@ -14,6 +15,7 @@ Route RoutePlaner::getRouteByIdx(int idx)
 	for (auto& driver : drivers) {
 		if (driver.second.getIdx() == idx) return driver.second.getRoute();
 	}
+	return drivers.end()->second.getRoute();
 }
 
 std::map<int, TrainDriver>& RoutePlaner::getDrivers() {

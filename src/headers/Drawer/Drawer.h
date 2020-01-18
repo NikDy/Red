@@ -44,6 +44,8 @@ private:
 	sf::Texture storage_texture;
 	sf::Texture town_texture;
 	sf::Texture train_texture;
+	sf::Texture enemy_texture;
+
 
 	int grid_size = 0;
 	float updateTime = std::stof(Data_manager::getInstance().config["drawer_update_time"]);
