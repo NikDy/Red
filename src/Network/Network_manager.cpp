@@ -58,8 +58,6 @@ Network_manager::~Network_manager()
 }
 
 
-
-
 char* Network_manager::shortToCharArray(short num)
 {
 	char* bytes = new char[4];
@@ -144,6 +142,7 @@ bool Network_manager::forceTurn(std::pair<std::string, std::string> key_value_pa
 	if (response == "None") return false;
 	return true;
 }
+
 
 std::shared_ptr<Game_object> Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
 {
@@ -251,6 +250,7 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::pair<
 	return nullptr;
 }
 
+
 bool Network_manager::ActionToUpgrade(std::pair<std::string, int> posts, std::pair<std::string, int> trains)
 {
 	int action_code = 4;
@@ -263,8 +263,6 @@ bool Network_manager::ActionToUpgrade(std::pair<std::string, int> posts, std::pa
 	//std::cout << response << std::endl;
 	return true;
 }
-
-
 
 
 bool Network_manager::Logout()
