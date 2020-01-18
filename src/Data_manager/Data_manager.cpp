@@ -111,7 +111,7 @@ bool Data_manager::forceTurn()
 {
 	std::lock_guard<std::mutex> locker(update_mutex);
 	turn = true;
-	while (!net.Action(5, std::pair<std::string, std::string>("", "")));
+	net.Action(5, std::pair<std::string, std::string>("", ""));
 
 	update_check.notify_one();
 

@@ -20,8 +20,9 @@ public:
 	RoutePlaner(RoutePlaner const&) = delete;
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 
-
-
+	TrainDriver getTrainDriverByIdx(int idx);
+	Route getRouteByIdx(int idx);
+	std::map<int, TrainDriver>& getDrivers();
 	void loadDrivers();
 
 	void makeTurn();
@@ -30,8 +31,8 @@ public:
 private:
 	Regulator reg;
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
-	std::map<int, TrainDriver>& getDrivers();
 
+	int lengthToPoint(Graph_Point point, Train & train);
 
 	bool buildRoutes(std::pair<const int, TrainDriver>& driver);
 	routeSeq bestWayToMarket(int begin, Train& train);
@@ -47,6 +48,7 @@ private:
 	void upgradeIfPossible();
 	void resetTrainsLists();
 
+	void makeQueue();
 
 	int game_stage = std::stoi(Data_manager::getInstance().config["game_stage"]);
 	int max_town_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_town_max"]);

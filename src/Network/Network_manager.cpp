@@ -69,7 +69,7 @@ std::string Network_manager::receiveJsonString()
 	size_t already_received = 0;
 	while (already_received < response_size)
 	{
-		this->socket.receive(in, sizeof(unsigned short), received);
+		this->socket.receive(in, sizeof(int), received);
 		already_received += received;
 		jsonString.append(in, received);
 	}

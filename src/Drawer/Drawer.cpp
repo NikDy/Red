@@ -188,12 +188,12 @@ void Drawer::drawAll()
 	window.setFramerateLimit(60u);
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();
+	updateLines();
 	sf::Clock clock;
 	while (window.isOpen())
 	{
 		window.clear(w_background_color);
-		updateLines();
-		updateGui();
+		
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -204,11 +204,9 @@ void Drawer::drawAll()
 			}
 		}
 		if (Data_manager::getInstance().turn == false) {
-			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
-			{
+				updateGui();
 				updateShapes();
 				clock.restart();
-			}
 		}
 
 		for (auto l : lines)

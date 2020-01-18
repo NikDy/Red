@@ -2,6 +2,7 @@
 #include "Route.h"
 #include "Data_manager.h"
 
+
 class TrainDriver {
 public:
 	friend bool operator==(TrainDriver l_val, TrainDriver r_val)
@@ -9,7 +10,6 @@ public:
 		if (l_val.idx == r_val.idx) return true;
 		else return false;
 	}
-
 
 	int& getIdx();
 	void setIdx(int _idx);
@@ -22,11 +22,13 @@ public:
 	void setStatus(bool _status);
 	bool getStatus();
 	bool foundSpeedNLine(); //to found speedToSet
-
+	int countOfWait = 0;
+	int lastSpeed = 0;
 
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
 
+	TrainDriver();
 	TrainDriver(int _idx);
 	~TrainDriver();
 	
@@ -41,13 +43,12 @@ private:
 
 
 	bool isNextLineInRouteAvailable(Graph_Line line, Train& train);
-	bool checkLine(Graph_Line line, Train& train);
-	bool checkPoint(Graph_Point point, Train& train, int length);
+	bool checkPoint(Graph_Point point, Train& train, Graph_Line line);
+	bool checkNextPoint(Graph_Point point, Train& train, Graph_Line line);
 	bool checkAndSetRout(Train& train);
-	int nearestTrain(Graph_Line line, Train& train);
+	Train nearestTrain(Graph_Line line, Train& train);
 	void deleteTrainInPoint(int trainIdx, int pointIdx);
 	void setNewDataForTrain(int trainIdx);
-	void setNewPoint(Train train);
 
 	int lengthToPoint(Graph_Point point, Train& train);
 };
