@@ -101,10 +101,11 @@ inline int pack4chars(char c1, char c2, char c3, char c4) {
 
 std::string Network_manager::receiveJsonString()
 {
-	auto begin = std::chrono::steady_clock::now();
 	ZeroMemory(buf, 4096);
 	int bytesRecived = recv(sock, buf, 4, 0);
-	if (pack4chars(buf[0], buf[1], buf[2], buf[3]) != 0) return "None";
+	int action_code = pack4chars(buf[0], buf[1], buf[2], buf[3]);
+	std::cout << action_code << std::endl;
+	if (action_code != 0) return "None";
 	int responseSize = -1;
 		bytesRecived = recv(sock, buf, 4, 0);
 		responseSize = pack4chars(buf[0], buf[1], buf[2], buf[3]);
@@ -129,12 +130,20 @@ std::string Network_manager::receiveJsonString()
 		}
 	} while (true);
 	if (jsonString == "") return "None";
-	auto end = std::chrono::steady_clock::now();
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-	std::cout << elapsed_ms.count() << std::endl;
 	return jsonString;
 }
 
+
+bool Network_manager::forceTurn(std::pair<std::string, std::string> key_value_pairs)
+{
+	const int action_code = 5;
+	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pairs});
+	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	if (!trySend(message)) return false;
+	auto response = receiveJsonString();
+	if (response == "None") return false;
+	return true;
+}
 
 std::shared_ptr<Game_object> Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
 {
@@ -152,9 +161,13 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::vecto
 {
 	auto json_string = Json_Parser::toJson(key_value_pairs);
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
-	std::cout << message << std::endl;
+	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
+	//auto begin = std::chrono::steady_clock::now();
 	auto response = receiveJsonString();
+	/*auto end = std::chrono::steady_clock::now();
+	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+	std::cout << elapsed_ms.count() << std::endl;*/
 	if (response == "None") return false;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
@@ -197,7 +210,7 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::pair<
 {
 	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pair});
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
-	std::cout << message << std::endl;
+	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
 	if (response == "None") return false;

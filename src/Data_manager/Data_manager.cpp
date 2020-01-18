@@ -111,7 +111,7 @@ bool Data_manager::forceTurn()
 {
 	std::lock_guard<std::mutex> locker(update_mutex);
 	turn = true;
-	net.Action(5, std::pair<std::string, std::string>("", ""));
+	while(net.forceTurn(std::pair<std::string, std::string>("", "")) == false);
 
 	update_check.notify_one();
 
@@ -211,8 +211,8 @@ void Data_manager::markPoints()
 {
 	auto& lines = map_layer_0->getLines();
 	auto& points = map_layer_0->getPoints();
-	auto& trains = map_layer_1->getTrains();
-	for (auto& train : trains) {
+	auto trains = map_layer_1->getTrains();
+	for (auto train : trains) {
 		Graph_Line line = map_layer_0->getLineByIdx(train.second.line_idx);
 		if (train.second.position != 0 && train.second.position != line.lenght) {
 			lines[line.points].trains.push_back(train.second);

@@ -23,7 +23,9 @@ public:
 	bool getStatus();
 	bool foundSpeedNLine(); //to found speedToSet
 	int countOfWait = 0;
+
 	int lastSpeed = 0;
+	int lastLine = 0;
 
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
