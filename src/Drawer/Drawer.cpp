@@ -31,7 +31,8 @@ void Drawer::buildVisualGraph()
 	auto graph = Data_manager::getInstance().getMapLayer10();
 	for (auto i : graph.points)
 	{
-		sf::Vector2f position((float)i.second.first * 120, (float)i.second.second * 120);
+		sf::Vector2f position((float)i.second.first * std::stof(Data_manager::getInstance().config["RANGE_SCALE"]),
+							  (float)i.second.second * std::stof(Data_manager::getInstance().config["RANGE_SCALE"]));
 		DrawerContainer new_point = DrawerContainer(position);
 		sf::CircleShape point_shape(points_radius);
 		point_shape.setOutlineColor(w_outline_color);
