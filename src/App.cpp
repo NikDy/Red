@@ -19,7 +19,7 @@ int main()
 
 	while(true) {
 		++i;
-		std::cout << i << std::endl;
+		std::cout << "turn " << i << std::endl;
 		RoutePlaner::getInstance().makeTurn();
 		Data_manager::getInstance().forceTurn();
 		while (Data_manager::getInstance().turn != false);
