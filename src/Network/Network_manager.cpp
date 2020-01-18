@@ -104,8 +104,7 @@ std::string Network_manager::receiveJsonString()
 	ZeroMemory(buf, 4096);
 	int bytesRecived = recv(sock, buf, 4, 0);
 	int action_code = pack4chars(buf[0], buf[1], buf[2], buf[3]);
-	std::cout << action_code << std::endl;
-	if (action_code != 0) return "None";
+	//std::cout << action_code << std::endl;
 	int responseSize = -1;
 		bytesRecived = recv(sock, buf, 4, 0);
 		responseSize = pack4chars(buf[0], buf[1], buf[2], buf[3]);
@@ -129,6 +128,7 @@ std::string Network_manager::receiveJsonString()
 			break;
 		}
 	} while (true);
+	if (action_code != 0) return "None";
 	if (jsonString == "") return "None";
 	return jsonString;
 }
