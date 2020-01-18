@@ -59,7 +59,7 @@ void Data_manager::logout()
 
 bool Data_manager::makeMove(int trainIdx, int lineIdx, int speed)
 {
-	return net.Action(3, setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx))) != nullptr;
+	return net.Action(3, setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx)));
 }
 
 
@@ -164,6 +164,15 @@ std::shared_ptr<MapLayer1> Data_manager::getMapLayer1FromServer()
 	net.Action(10, std::make_pair("layer", "1"));
 	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
 	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer1, Game_object>(list_objects.back());
+	else return NULL;
+}
+
+
+std::shared_ptr<MapLayer10> Data_manager::getMapLayer10FromServer()
+{
+	net.Action(10, std::make_pair("layer", "10"));
+	std::list<std::shared_ptr<Game_object>> list_objects = net.getResponseList();
+	if (!list_objects.empty()) return std::dynamic_pointer_cast<MapLayer10, Game_object>(list_objects.back());
 	else return NULL;
 }
 
