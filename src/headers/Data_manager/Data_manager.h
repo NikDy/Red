@@ -1,5 +1,6 @@
 #pragma once
 #include "Network_manager.h"
+#include "SFML/Network.hpp"
 #include "Game_object.h"
 #include "Graph.h"
 #include "MapLayer1.h"

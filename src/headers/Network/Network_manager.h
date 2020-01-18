@@ -1,5 +1,4 @@
 #pragma once
-#include "SFML/Network.hpp"
 #include "Game_object.h"
 #include "Json_Parser.h"
 #include <list>
@@ -10,12 +9,10 @@ class Network_manager
 {
 private:
 	const int server_port = 443;
-	const char* server_adress = "wgforge-srv.wargaming.net";
+	std::string server_adress = "92.223.2.79";
 
+	char buf[4096];
 
-
-
-	sf::TcpSocket socket;
 
 
 	static char* shortToCharArray(short num);

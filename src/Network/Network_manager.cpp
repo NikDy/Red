@@ -1,15 +1,51 @@
 #include "Network_manager.h"
 
+#include <iostream>
+#include <string>
+#include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+
+SOCKET sock;
+
 Network_manager::Network_manager()
 {
-	sf::IpAddress server(server_adress);
-	if (this->socket.connect(server, server_port) != sf::Socket::Status::Done)
+	// Initialize WinSock
+	WSAData data;
+	WORD ver = MAKEWORD(2, 2);
+	int wsResult = WSAStartup(ver, &data);
+	if (wsResult != 0)
 	{
-		std::cout << "Fail to create socket" << std::endl;
+		std::cerr << "Can't start Winsock, Err #" << wsResult << std::endl;
+		return;
+	}
+
+	// Create socket
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+	{
+		std::cerr << "Can't create socket, Err #" << WSAGetLastError() << std::endl;
+		WSACleanup();
+		return;
+	}
+
+	// Fill in a hint structure
+	sockaddr_in hint;
+	hint.sin_family = AF_INET;
+	hint.sin_port = htons(server_port);
+	inet_pton(AF_INET, server_adress.c_str(), &hint.sin_addr);
+
+	// Connect to server
+	int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+	if (connResult == SOCKET_ERROR)
+	{
+		std::cerr << "Can't connect to server, Err #" << WSAGetLastError() << std::endl;
+		closesocket(sock);
+		WSACleanup();
+		return;
 	}
 	else
 	{
-		std::cout << "Connected to server: " << server << std::endl;
+		std::cout << "connected : " << server_adress << std::endl;
 	}
 }
 
@@ -45,7 +81,7 @@ std::string Network_manager::createPackageString(short code, short messageLength
 
 bool Network_manager::trySend(std::string packageString)
 {
-	if (this->socket.send(packageString.c_str(), packageString.length()) != sf::Socket::Done)
+	if (send(sock, packageString.c_str(), packageString.length() + 1, 0 ) == SOCKET_ERROR)
 	{
 		return false;
 	}
@@ -53,27 +89,43 @@ bool Network_manager::trySend(std::string packageString)
 }
 
 
+inline int pack4chars(char c1, char c2, char c3, char c4) {
+	return ((int)(((unsigned char)c4) << 24)
+		| (int)(((unsigned char)c3) << 16)
+		| (int)(((unsigned char)c2) << 8)
+		| (int)((unsigned char)c1));
+}
+
+
 std::string Network_manager::receiveJsonString()
 {
-	int result_code;
-	size_t received;
-	if (this->socket.receive(&result_code, 4, received) != sf::Socket::Done)
-		return "None";
-	//std::cout << result_code << std::endl;
-	int response_size = 0;
-	if (this->socket.receive(&response_size, 4, received) != sf::Socket::Done)
-		return "None";
-
+	ZeroMemory(buf, 4096);
+	int bytesRecived = recv(sock, buf, 4096, 0);
+	if (pack4chars(buf[0], buf[1], buf[2], buf[3]) != 0) return "None";
+	int responseSize = pack4chars(buf[4], buf[5], buf[6], buf[7]);
+	bytesRecived -= 8;
+	int totalRecived = 0;
 	std::string jsonString = "";
-	char* in = new char[sizeof(int)];
-	size_t already_received = 0;
-	while (already_received < response_size)
+	for (int i = 8; i < 4096; i++)
 	{
-		this->socket.receive(in, sizeof(int), received);
-		already_received += received;
-		jsonString.append(in, received);
+		buf[i - 8] = buf[i];
 	}
-	if (result_code != 0) return "None";
+	do {
+		if (bytesRecived > 0)
+		{
+			totalRecived += bytesRecived;
+			jsonString.append(std::string(buf, 0, bytesRecived));
+		}
+		if (totalRecived < responseSize)
+		{
+			bytesRecived = recv(sock, buf, 4096, 0);
+		}
+		else
+		{
+			break;
+		}
+	} while (true);
+	if (jsonString == "") return "None";
 	return jsonString;
 }
 
@@ -202,7 +254,7 @@ bool Network_manager::Logout()
 	message.append(shortToCharArray(1), 4);
 	message.append(shortToCharArray(0), 4);
 
-	if (socket.send(message.c_str(), message.length()) != sf::Socket::Done)
+	if (send(sock, message.c_str(), message.length(), 0) == SOCKET_ERROR)
 		return false;
 	std::cout << "Logged out";
 	return true;
