@@ -63,8 +63,8 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& t
 
 int Regulator::nextPointWeight(int current_point_idx, int next_point_idx, int train_type)
 {
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-	auto& storages = Data_manager::getInstance().getMapLayer1().getStorages();
+	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
+	auto storages = Data_manager::getInstance().getMapLayer1().getStorages();
 	if (train_type == 1) {
 		for (auto& market : markets) {
 			if (next_point_idx == market.second->point_idx) {
@@ -79,7 +79,7 @@ int Regulator::nextPointWeight(int current_point_idx, int next_point_idx, int tr
 			}
 		}
 	}
-	return Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(current_point_idx, next_point_idx).lenght;
+	return Data_manager::getInstance().getMapLayer01().getLineByTwoPoints(current_point_idx, next_point_idx).lenght;
 }
 
 
