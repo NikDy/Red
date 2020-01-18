@@ -20,6 +20,13 @@ Network_manager::~Network_manager()
 }
 
 
+std::list<std::shared_ptr<Game_object>> Network_manager::getResponseList()
+{
+
+	std::list<std::shared_ptr<Game_object>> list = response_list;
+	response_list = std::list<std::shared_ptr<Game_object>>();
+	return list;
+}
 
 
 char* Network_manager::shortToCharArray(short num)
@@ -65,11 +72,11 @@ std::string Network_manager::receiveJsonString()
 		return "None";
 
 	std::string jsonString = "";
-	char* in = new char[sizeof(int)];
+	char* in = new char[sizeof(unsigned short)];
 	size_t already_received = 0;
 	while (already_received < response_size)
 	{
-		this->socket.receive(in, sizeof(int), received);
+		this->socket.receive(in, sizeof(unsigned short), received);
 		already_received += received;
 		jsonString.append(in, received);
 	}
@@ -78,23 +85,24 @@ std::string Network_manager::receiveJsonString()
 }
 
 
-std::shared_ptr<Game_object> Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
+bool Network_manager::Login(std::vector<std::pair<std::string, std::string>> login_data)
 {
 	auto json_string = Json_Parser::toJson(login_data);
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
-	if(!trySend(message)) return nullptr;
+	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
-	if (response == "None") return nullptr;
+	if (response == "None") return false;
 	std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
-	return result;
+	response_list.push_back(result);
+	return true;
 }
 
 
-std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs)
+bool Network_manager::Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs)
 {
 	auto json_string = Json_Parser::toJson(key_value_pairs);
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
-	//std::cout << message << std::endl;
+	std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
 	if (response == "None") return false;
@@ -104,26 +112,23 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::vecto
 		if (key_value_pairs[0].second == "0")
 		{
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer0(response).getObjectPtr();
-			return result;
+			response_list.push_back(result);
 		}
 		else if (key_value_pairs[0].second == "1") {
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
-			return result;
-		}
-		else if (key_value_pairs[0].second == "10") {
-			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer10(response).getObjectPtr();
-			return result;
+			response_list.push_back(result);
+			std::cout << response << std::endl;
 		}
 	}
 	else if (action_code == 7)
 	{
 		std::shared_ptr<Game_object> result = Json_Parser::fromGames(response).getObjectPtr();
-		return result;
+		response_list.push_back(result);
 	}
 	else if (action_code == 6)
 	{
 		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
-		return result;
+		response_list.push_back(result);
 		//std::cout << response << std::endl;
 	}
 	else if (action_code == 3)
@@ -131,11 +136,11 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::vecto
 		//std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 		//response_list.push_back(result);
 	}
-	return nullptr;
+	return true;
 }
 
 
-std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::pair<std::string, std::string> key_value_pair)
+bool Network_manager::Action(int action_code, std::pair<std::string, std::string> key_value_pair)
 {
 	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pair});
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
@@ -149,27 +154,23 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::pair<
 		if (key_value_pair.second == "0")
 		{
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer0(response).getObjectPtr();
-			return result;
+			response_list.push_back(result);
 		}
 		else if (key_value_pair.second == "1") {
 			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer1(response).getObjectPtr();
-			return result;
-		}
-		else if (key_value_pair.second == "10") {
-			std::shared_ptr<Game_object> result = Json_Parser::fromMapLayer10(response).getObjectPtr();
-			return result;
+			response_list.push_back(result);
 		}
 	}
 	else if (action_code == 7)
 	{
 		std::shared_ptr<Game_object> result = Json_Parser::fromGames(response).getObjectPtr();
-		return result;
+		response_list.push_back(result);
 	}
-	else if (action_code == 6) 
+	else if (action_code == 6)
 	{
 		//std::cout << response << std::endl;
 		std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
-		return result;
+		response_list.push_back(result);
 		//std::cout << response << std::endl;
 	}
 	else if (action_code == 3)
@@ -177,7 +178,7 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::pair<
 		//std::shared_ptr<Game_object> result = Json_Parser::fromPlayer(response).getObjectPtr();
 		//response_list.push_back(result);
 	}
-	return nullptr;
+	return true;
 }
 
 bool Network_manager::ActionToUpgrade(std::pair<std::string, int> posts, std::pair<std::string, int> trains)
