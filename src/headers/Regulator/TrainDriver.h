@@ -27,6 +27,9 @@ public:
 	int lastSpeed = 0;
 	int lastLine = 0;
 
+	int last_ordered_speed = 0;
+	int last_ordered_line = 0;
+
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
 

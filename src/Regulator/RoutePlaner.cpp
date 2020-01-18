@@ -115,7 +115,12 @@ void RoutePlaner::resetRoutes()
 				driver.second.lastSpeed = driver.second.getSpeed();
 				driver.second.countOfWait = 0;
 			}
-			Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed());
+			if (!(driver.second.last_ordered_line == driver.second.getLineToGo() && driver.second.last_ordered_speed == driver.second.getSpeed()))
+			{
+				Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed());
+				driver.second.last_ordered_line = driver.second.getLineToGo();
+				driver.second.last_ordered_speed = driver.second.getSpeed();
+			}
 		}
 
 	}
