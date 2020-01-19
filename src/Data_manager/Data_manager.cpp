@@ -24,6 +24,7 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 
 	player = std::dynamic_pointer_cast<Player, Game_object>(net.Login(login_data));
 	map_layer_1 = getMapLayer1FromServer();
+	takeTownsIdx();
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
 	this->map_layer_0_copy = *this->map_layer_0;
@@ -118,6 +119,13 @@ bool Data_manager::forceTurn()
 	return true;
 }
 
+
+bool Data_manager::isTown(int point_idx)
+{
+	auto it = std::find(townsIdx.begin(), townsIdx.end(), point_idx);
+	if (it == townsIdx.end()) return false;
+	return true;
+}
 
 void Data_manager::setLoginData(std::string name, std::string password, std::string game, int num_turns, int num_players)
 {
@@ -218,27 +226,46 @@ void Data_manager::markPoints()
 			lines[line.points].trains.push_back(train.second);
 		}
 		if (train.second.speed == 1) {
-			if (line.points.second != player->getHome().idx) {
+			if (isTown(line.points.second) == false) {
 				points[line.points.second].trains.push_back(train.second);
 			}
 		}
 		else if (train.second.speed == -1) {
-			if (line.points.first != player->getHome().idx) {
+			if (isTown(line.points.first) == false) {
 				points[line.points.first].trains.push_back(train.second);
 			}
 		}
 		else if (train.second.speed == 0) {
-			if (train.second.getPlayerIdx() != player->getTown().player_idx) {
+			if (train.second.position == 0) {
 				points[line.points.first].trains.push_back(train.second);
-				points[line.points.second].trains.push_back(train.second);
-			}
-			else if (train.second.position == 0) {
-				points[line.points.first].trains.push_back(train.second);
+				for (auto point : points[line.points.first].adjacency_list) {
+					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.first, point);
+					if (nextLine.idx != line.idx && nextLine.lenght == 1 && isTown(point) == false) points[point].trains.push_back(train.second);
+				}
 			}
 			else if (train.second.position == line.lenght) {
 				points[line.points.second].trains.push_back(train.second);
+				for (auto point : points[line.points.second].adjacency_list) {
+					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.second, point);
+					if (nextLine.idx != line.idx && nextLine.lenght == 1 && isTown(point) == false) points[point].trains.push_back(train.second);
+				}
+			}
+			else {
+				if (train.second.position == 1 && isTown(line.points.first) == false) {
+					points[line.points.first].trains.push_back(train.second);
+				}
+				if (train.second.position == (line.lenght - 1) && isTown(line.points.second) == false) {
+					points[line.points.second].trains.push_back(train.second);
+				}
 			}
 		}
 
+	}
+}
+
+void Data_manager::takeTownsIdx()
+{
+	for (auto& town : map_layer_1->getTowns()) {
+		townsIdx.push_back(town.second->point_idx);
 	}
 }
