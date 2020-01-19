@@ -61,6 +61,7 @@ private:
 	std::shared_ptr<Player> player = nullptr;
 	std::shared_ptr<MapLayer1> map_layer_1 = nullptr;
 	std::shared_ptr<Graph> map_layer_0 = nullptr;
+	Graph map_layer_0_copy = Graph("", 0);
 	std::shared_ptr<Graph> map_layer_01 = nullptr;
 	std::shared_ptr<MapLayer10> map_layer_10 = nullptr;
 	Network_manager net;

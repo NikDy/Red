@@ -26,7 +26,8 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	map_layer_1 = getMapLayer1FromServer();
 	this->map_layer_0 = getMapLayer0FromServer();
 	this->map_layer_0->createAdjacencyLists();
-	this->map_layer_01 = this->map_layer_0;
+	this->map_layer_0_copy = *this->map_layer_0;
+	this->map_layer_01 = std::shared_ptr<Graph>(&map_layer_0_copy);
 	this->map_layer_01->createAdjacencyLists();
 	this->map_layer_10 = getMapLayer10FromServer();
 	updateThread = std::thread(&Data_manager::updateGame, this);
