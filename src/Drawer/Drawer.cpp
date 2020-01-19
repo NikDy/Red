@@ -8,6 +8,7 @@ Drawer::Drawer()
 	storage_texture.loadFromFile(Data_manager::getInstance().config["storage_texture"]);
 	town_texture.loadFromFile(Data_manager::getInstance().config["town_texture"]);
 	train_texture.loadFromFile(Data_manager::getInstance().config["train_texture"]);
+	enemy_texture.loadFromFile(Data_manager::getInstance().config["enemy_texture"]);
 }
 
 
@@ -115,6 +116,7 @@ void Drawer::updateTrains()
 {
 	auto graph_info = Data_manager::getInstance().getMapLayer1();
 	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto player = Data_manager::getInstance().getPlayer();
 	for (auto train : graph_info.getTrains())
 	{
 		Graph_Line line = graph.getLineByIdx(train.second.getLineIdx());
@@ -122,8 +124,16 @@ void Drawer::updateTrains()
 		auto end_pos = points[line.points.second].position;
 		int pidx = train.second.getIdx();
 		trains[pidx].clearSprite();
-		trains[pidx].addSprite(sf::Sprite(train_texture),
-			sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x/2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
+		if (player.getIdx() == train.second.getPlayerIdx())
+		{
+			trains[pidx].addSprite(sf::Sprite(train_texture),
+				sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x / 2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
+		}
+		else
+		{
+			trains[pidx].addSprite(sf::Sprite(enemy_texture),
+				sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x / 2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
+		}
 	}
 }
 
