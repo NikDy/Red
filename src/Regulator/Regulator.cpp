@@ -149,10 +149,10 @@ bool Regulator::checkLine(Graph_Line line,Train& train)
 	Train tr = nearestTrain(line, train);
 	if (tr.idx != train.idx) {
 		if (tr.speed != train.speed) return false;
-		else {
+		/*else {
 			if (train.speed == 1 && tr.position < 2) return false;
 			if (train.speed == -1 && line.lenght - tr.position < 2) return false;
-		}
+		}*/
 	}
 	return true;
 }

@@ -54,6 +54,9 @@ public:
 
 	int countOfCol = 0;
 	int maxRating = 0;
+
+	bool isTown(int point_idx);
+
 private:
 	Data_manager() {};
 
@@ -72,10 +75,12 @@ private:
 	std::shared_ptr<MapLayer10> getMapLayer10FromServer();
 	std::shared_ptr<MapLayer1> getMapLayer1FromServer();
 	std::shared_ptr<Player> getPlayerFromServer();
+	std::vector<int> townsIdx;
 	std::thread updateThread;
 	void updateGame();
 	void updateRefuges();
 	std::condition_variable update_check;
 	void markPoints();
+	void takeTownsIdx();
 };
 

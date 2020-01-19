@@ -207,6 +207,7 @@ void Drawer::drawAll()
 				window.close();
 			}
 		}
+
 		if (Data_manager::getInstance().turn == false) {
 				updateGui();
 				updateShapes();
