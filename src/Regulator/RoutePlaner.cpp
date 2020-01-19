@@ -43,15 +43,7 @@ void RoutePlaner::stageAffairs()
 	}
 	else if (game_stage == 2)
 	{
-		upgradeIfPossible();
 		resetRoutes();
-		tryGoToSecondStage();
-	}
-	else if (game_stage == 3)
-	{
-		upgradeIfPossible();
-		resetRoutes();
-		tryGoToSecondStage();
 	}
 
 }
@@ -59,13 +51,7 @@ void RoutePlaner::stageAffairs()
 
 void RoutePlaner::tryGoToSecondStage()
 {
-	int top_trains = 0;
-	for (auto driver : drivers)
-	{
-		if (Data_manager::getInstance().getMapLayer1().getTrainByIdx(driver.second.getIdx()).level == max_train_level) top_trains++;
-	}
-	if (top_trains == drivers.size() &&
-		Data_manager::getInstance().getPlayer().getTown().level == max_town_level) game_stage = 2;
+	if(Data_manager::getInstance().last_tick_ >700 || Data_manager::getInstance().tick > 600) game_stage = 2;
 }
 
 
@@ -299,7 +285,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 		else way = reg.findWay(begin, market.second->point_idx, train);
 		if (way.size() == 0) continue;
 		int safe_product_capacity =
-			std::min((town.population + (2 * reg.wayLength(way)) / 25), town.population_capacity) *
+			std::min((town.population + (2 * reg.wayLength(way)) / 20), town.population_capacity) *
 			2 * reg.wayLength(way) + 2 * reg.wayLength(way);
 		int possible_to_take = std::min(market.second->product, train.goods_capacity);
 		if (safe_product_capacity - possible_to_take < bestDelta)
@@ -311,7 +297,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 
 	if (train.goods - train.goods_capacity < reg.wayLength(bestWay) && train.goods != 0)
 	{
-		return bestWayToHome(begin, train);
+		return routeSeq();
 	}
 	else
 	{
@@ -330,9 +316,7 @@ void RoutePlaner::upgradeIfPossible()
 		if (train.second.level != 3) all_train_upgrade_cost += train.second.level * 40;
 	}
 	if (player.getTown().next_level_price <= player.getTown().armor &&
-		player.getTown().next_level_price != 0 &&
-		player.getTown().level < max_town_level &&
-		(all_train_upgrade_cost > player.getTown().armor_capacity || all_train_upgrade_cost == 0)) 
+		player.getTown().next_level_price != 0) 
 	{
 		Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", player.getTown().idx), std::make_pair("trains", -1));
 	}
@@ -342,8 +326,6 @@ void RoutePlaner::upgradeIfPossible()
 			train.second.getPosition());
 		if (train.second.next_level_price <= player.getTown().armor &&
 			train.second.next_level_price != 0 &&
-			train.second.level < max_train_level &&
-			player.getTown().armor - train.second.level * 40 >= average_storage_way &&
 			point == player.getHome().idx)
 		{
 			Data_manager::getInstance().tryUpgradeInGame(std::make_pair("posts", -1), std::make_pair("trains", train.second.idx));

@@ -183,8 +183,8 @@ bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, Train& train)
 		}
 		else if (nearTrain.speed != train.speed) return false;
 		else {
-			if (train.speed == 1 && nearTrain.position < 3) setSpeed(0);
-			if (train.speed == -1 && line.lenght - nearTrain.position < 3) setSpeed(0);
+			if (train.speed == 1 && nearTrain.position < 5) setSpeed(0);
+			if (train.speed == -1 && line.lenght - nearTrain.position < 5) setSpeed(0);
 		}
 	}
 	return true;

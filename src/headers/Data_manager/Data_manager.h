@@ -45,18 +45,17 @@ public:
 	bool update_on = true;
 	~Data_manager();
 	bool turn = false;
-
 	bool stopUpdate = false;
 	int count_Refuges = 0;
 	int last_tick_Refuges = 0;
-
+	int last_tick_ = 0;
 	std::mutex update_mutex;
-
+	int tick = 0;
 	int countOfCol = 0;
 	int maxRating = 0;
 
 	bool isTown(int point_idx);
-
+	void updateRefuges();
 private:
 	Data_manager() {};
 
@@ -78,7 +77,6 @@ private:
 	std::vector<int> townsIdx;
 	std::thread updateThread;
 	void updateGame();
-	void updateRefuges();
 	std::condition_variable update_check;
 	void markPoints();
 	void takeTownsIdx();

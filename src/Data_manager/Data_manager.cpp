@@ -208,10 +208,7 @@ void Data_manager::updateRefuges()
 {
 	Town town = player->getTown();
 	for (auto& event_ : town.getEvents()) {
-		if (event_.type == int(EVENT_TYPE::REFUGEES_ARRIVAL)) {
-			last_tick_Refuges = 0;
-			count_Refuges = event_.value;
-		}
+		last_tick_ = event_.tick;
 	}
 }
 

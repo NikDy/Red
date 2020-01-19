@@ -126,6 +126,7 @@ std::string Network_manager::receiveJsonString()
 			break;
 		}
 	} while (true);
+	std::cout << jsonString << std::endl;
 	if (action_code != 0) return "None";
 	if (jsonString == "") return "None";
 	return jsonString;
