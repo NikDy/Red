@@ -164,7 +164,6 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 }
 
 
-
 bool TrainDriver::isNextLineInRouteAvailable(Graph_Line line, Train& train)
 {
 	Train nearTrain = nearestTrain(line, train);

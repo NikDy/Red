@@ -162,13 +162,13 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::vecto
 	auto json_string = Json_Parser::toJson(key_value_pairs);
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
 	//std::cout << message << std::endl;
-	if (!trySend(message)) return false;
+	if (!trySend(message)) return nullptr;
 	//auto begin = std::chrono::steady_clock::now();
 	auto response = receiveJsonString();
 	/*auto end = std::chrono::steady_clock::now();
 	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 	std::cout << elapsed_ms.count() << std::endl;*/
-	if (response == "None") return false;
+	if (response == "None") return nullptr;
 	//std::cout << response << std::endl;
 	if (action_code == 10)
 	{
@@ -269,7 +269,7 @@ bool Network_manager::ActionToUpgrade(std::pair<std::string, int> posts, std::pa
 bool Network_manager::Logout()
 {
 	std::string message = "";
-	message.append(shortToCharArray(1), 4);
+	message.append(shortToCharArray(2), 4);
 	message.append(shortToCharArray(0), 4);
 
 	if (send(sock, message.c_str(), message.length(), 0) == SOCKET_ERROR)

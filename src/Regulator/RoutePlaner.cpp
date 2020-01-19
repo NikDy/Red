@@ -103,9 +103,16 @@ void RoutePlaner::resetRoutes()
 			}
 			if (!(driver.second.last_ordered_line == driver.second.getLineToGo() && driver.second.last_ordered_speed == driver.second.getSpeed()))
 			{
-				Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed());
-				driver.second.last_ordered_line = driver.second.getLineToGo();
-				driver.second.last_ordered_speed = driver.second.getSpeed();
+				if (Data_manager::getInstance().makeMove(driver.second.getIdx(), driver.second.getLineToGo(), driver.second.getSpeed()))
+				{
+					driver.second.last_ordered_line = driver.second.getLineToGo();
+					driver.second.last_ordered_speed = driver.second.getSpeed();
+				}
+				else
+				{
+					driver.second.getRoute().path_seq.clear();
+					driver.second.setStatus(true);
+				}
 			}
 		}
 
