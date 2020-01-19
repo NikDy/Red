@@ -117,25 +117,22 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 		}
 		else {
 			wait = false;
-			Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByIdx(getLineToGo());
-			if (points[getRoute().pathTop()].idx == line.points.first) {
+			if (points[getRoute().pathTop()].idx == curLine.points.first) {
 				setSpeed(-1);
 			}
 			else {
 				setSpeed(1);
 			}
-			if (getSpeed() == 1) train.position = 0;
-			else train.position = line.lenght;
 			if (countOfWait > 4) {
-				if (getSpeed() == 1) deleteTrainInPoint(idx, line.points.first);
-				else deleteTrainInPoint(idx, line.points.second);
+				if (getSpeed() == 1) deleteTrainInPoint(idx, curLine.points.first);
+				else deleteTrainInPoint(idx, curLine.points.second);
 				train.position = getSpeed() * 1;
-				if (Data_manager::getInstance().isTown(getRoute().pathTop()) == false) points[getRoute().pathTop()].trains.push_back(train);
-				lines[line.points].trains.push_back(train);
+				points[getRoute().pathTop()].trains.push_back(train);
+				lines[curLine.points].trains.push_back(train);
 				return true;
 			}
 			train.speed = getSpeed();
-			if (checkNextPoint(points[getRoute().pathTop()], train, line) == false || isNextLineInRouteAvailable(line, train) == false) {
+			if (checkNextPoint(points[getRoute().pathTop()], train, curLine) == false || isNextLineInRouteAvailable(curLine, train) == false) {
 				getRoute().path_seq.clear();
 				setStatus(true);
 				return false;
@@ -146,11 +143,11 @@ bool TrainDriver::foundSpeedNLine() { //to found speedToSet
 					train.speed = getSpeed();
 				}
 				else {
-					if (getSpeed() == 1) deleteTrainInPoint(idx, line.points.first);
-					else deleteTrainInPoint(idx, line.points.second);
-					train.position += getSpeed() * 1;
-					if (Data_manager::getInstance().isTown(getRoute().pathTop()) == false) points[getRoute().pathTop()].trains.push_back(train);
-					lines[line.points].trains.push_back(train);
+					if (getSpeed() == 1) deleteTrainInPoint(idx, curLine.points.first);
+					else deleteTrainInPoint(idx, curLine.points.second);
+					train.position = getSpeed() * 1;
+					points[getRoute().pathTop()].trains.push_back(train);
+					lines[curLine.points].trains.push_back(train);
 				}
 			}
 		}
