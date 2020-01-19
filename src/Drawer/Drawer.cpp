@@ -8,6 +8,7 @@ Drawer::Drawer()
 	storage_texture.loadFromFile(Data_manager::getInstance().config["storage_texture"]);
 	town_texture.loadFromFile(Data_manager::getInstance().config["town_texture"]);
 	train_texture.loadFromFile(Data_manager::getInstance().config["train_texture"]);
+	enemy_texture.loadFromFile(Data_manager::getInstance().config["enemy_texture"]);
 }
 
 
@@ -29,15 +30,19 @@ void Drawer::updateShapes()
 
 void Drawer::buildVisualGraph()
 {
-	auto graph = Data_manager::getInstance().getMapLayer01();
-	for (auto i : graph.getPoints())
+	auto graph = Data_manager::getInstance().getMapLayer10();
+	for (auto i : graph.points)
 	{
-		sf::Vector2f position((float)(std::rand() % (int)w_sizeX), (float)(std::rand() % (int)w_sizeY));
+		sf::Vector2f position((float)i.second.first * std::stof(Data_manager::getInstance().config["RANGE_SCALE"]),
+							  (float)i.second.second * std::stof(Data_manager::getInstance().config["RANGE_SCALE"]));
 		DrawerContainer new_point = DrawerContainer(position);
 		sf::CircleShape point_shape(points_radius);
 		point_shape.setOutlineColor(w_outline_color);
 		point_shape.setOutlineThickness(outline_thickness);
 		new_point.addShape(point_shape, sf::Vector2f(-points_radius, -points_radius));
+		sf::Text text(std::to_string(i.first), font, (unsigned int)(font_size));
+		text.setFillColor(sf::Color::Black);
+		new_point.addText(text, sf::Vector2f(0, -points_radius - font_size));
 
 		points.emplace(i.first, new_point);
 	}
@@ -112,6 +117,7 @@ void Drawer::updateTrains()
 {
 	auto graph_info = Data_manager::getInstance().getMapLayer1();
 	auto graph = Data_manager::getInstance().getMapLayer0();
+	auto player = Data_manager::getInstance().getPlayer();
 	for (auto train : graph_info.getTrains())
 	{
 		Graph_Line line = graph.getLineByIdx(train.second.getLineIdx());
@@ -119,8 +125,16 @@ void Drawer::updateTrains()
 		auto end_pos = points[line.points.second].position;
 		int pidx = train.second.getIdx();
 		trains[pidx].clearSprite();
-		trains[pidx].addSprite(sf::Sprite(train_texture),
-			sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x/2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
+		if (player.getIdx() == train.second.getPlayerIdx())
+		{
+			trains[pidx].addSprite(sf::Sprite(train_texture),
+				sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x / 2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
+		}
+		else
+		{
+			trains[pidx].addSprite(sf::Sprite(enemy_texture),
+				sf::Vector2f(start_pos.x + (((float)train.second.position / line.lenght) * (end_pos.x - start_pos.x)) - train_texture.getSize().x / 2.f, start_pos.y + (((float)train.second.position / line.lenght) * (end_pos.y - start_pos.y)) - train_texture.getSize().y / 2.f));
+		}
 	}
 }
 
@@ -189,11 +203,12 @@ void Drawer::drawAll()
 	window.setFramerateLimit(60u);
 	sf::View camera(sf::FloatRect(0.f, 0.f, w_sizeX * 3.f, w_sizeY * 3.f));
 	updateShapes();
+	updateLines();
 	sf::Clock clock;
 	while (window.isOpen())
 	{
 		window.clear(w_background_color);
-		updateLines();
+		
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -203,13 +218,11 @@ void Drawer::drawAll()
 				window.close();
 			}
 		}
-		this->reforceGraph();
+
 		if (Data_manager::getInstance().turn == false) {
-			if (clock.getElapsedTime().asMilliseconds() >= updateTime)
-			{
+				updateGui();
 				updateShapes();
 				clock.restart();
-			}
 		}
 
 		for (auto l : lines)

@@ -1,5 +1,4 @@
 #pragma once
-#include "SFML/Network.hpp"
 #include "Game_object.h"
 #include "Json_Parser.h"
 #include <list>
@@ -10,13 +9,9 @@ class Network_manager
 {
 private:
 	const int server_port = 443;
-	const char* server_adress = "wgforge-srv.wargaming.net";
+	std::string server_adress = "92.223.2.79";
 
-
-
-
-	std::list<std::shared_ptr<Game_object>> response_list;
-	sf::TcpSocket socket;
+	char buf[4096];
 
 
 	static char* shortToCharArray(short num);
@@ -50,11 +45,10 @@ public:
 		TIMEOUT = 5,
 		INTERNAL_SERVER_ERROR = 500
 	};
-
-	std::list<std::shared_ptr<Game_object>> getResponseList();
-	bool Login(std::vector<std::pair<std::string, std::string>> login_data);
-	bool Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
-	bool Action(int action_code, std::pair<std::string, std::string> key_value_pairs);
+	bool forceTurn(std::pair<std::string, std::string> key_value_pairs);
+	std::shared_ptr<Game_object> Login(std::vector<std::pair<std::string, std::string>> login_data);
+	std::shared_ptr<Game_object> Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
+	std::shared_ptr<Game_object> Action(int action_code, std::pair<std::string, std::string> key_value_pairs);
 	bool ActionToUpgrade(std::pair<std::string, int> posts, std::pair<std::string, int> trains);
 	//bool Update(int action_code, std::pair<std::string, std::string> key_value_pair);
 	bool Logout();
