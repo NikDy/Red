@@ -151,7 +151,7 @@ std::shared_ptr<Game_object> Network_manager::Login(std::vector<std::pair<std::s
 {
 	auto json_string = Json_Parser::toJson(login_data);
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
-	std::cout << message << std::endl;
+	//std::cout << message << std::endl;
 	if(!trySend(message)) return nullptr;
 	auto response = receiveJsonString();
 	if (response == "None") return nullptr;
