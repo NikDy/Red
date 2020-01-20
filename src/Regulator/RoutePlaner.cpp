@@ -51,7 +51,7 @@ void RoutePlaner::stageAffairs()
 
 void RoutePlaner::tryGoToSecondStage()
 {
-	if(Data_manager::getInstance().last_tick_ >580 || Data_manager::getInstance().tick > 480) game_stage = 2;
+	if(Data_manager::getInstance().last_tick_ >1580 || Data_manager::getInstance().tick > 1380) game_stage = 2;
 }
 
 

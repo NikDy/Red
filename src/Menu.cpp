@@ -20,6 +20,7 @@ void Menu::gameSelect()
 	}
 	std::string game_name;
 	int number_of_players = 1;
+	int number_of_ticks = -1;
 	std::cout << "Enter game name to connect or create new game: ";
 	while (true)
 	{
@@ -34,13 +35,15 @@ void Menu::gameSelect()
 		{
 			std::cout << "Enter numer of players: ";
 			std::cin >> number_of_players;
+			std::cout << "Enter numer of ticks: ";
+			std::cin >> number_of_ticks;
 			break;
 		}
 	}
 	if (number_of_players > 0)
 	{
 		sf::Clock timer;
-		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, number_of_players);
+		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, number_of_ticks, number_of_players);
 		std::cout << timer.getElapsedTime().asMilliseconds() << std::endl;
 	}
 	waitUntilStart(game_name);
