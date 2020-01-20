@@ -78,7 +78,10 @@ private:
 	std::thread updateThread;
 	void updateGame();
 	std::condition_variable update_check;
+	void waitUntilStart(std::string game_name);
 	void markPoints();
 	void takeTownsIdx();
+
+	std::shared_ptr<Games> exist_games;
 };
 

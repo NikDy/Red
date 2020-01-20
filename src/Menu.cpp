@@ -42,30 +42,6 @@ void Menu::gameSelect()
 	}
 	if (number_of_players > 0)
 	{
-		sf::Clock timer;
-		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, number_of_ticks, number_of_players);
-		std::cout << timer.getElapsedTime().asMilliseconds() << std::endl;
-	}
-	waitUntilStart(game_name);
-}
-
-
-void Menu::waitUntilStart(std::string game_name)
-{
-	std::cout << "Wait for other players" << std::endl;
-	while (true)
-	{
-		exist_games = Data_manager::getInstance().getGamesFromServer();
-		auto it = std::find_if(exist_games->games.begin(), exist_games->games.end(), [&game_name](const Game& obj) {return obj.name == game_name; });
-		if (it != exist_games->games.end())
-		{
-			if (it->state == 2) break;
-		}
-		else
-		{
-			std::cout << "Game was canceled :(" << std::endl;
-			Data_manager::getInstance().logout();
-			break;
-		}
+		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, (int)number_of_ticks, (int)number_of_players);
 	}
 }

@@ -14,8 +14,8 @@ private:
 	char buf[4096];
 
 
-	static char* shortToCharArray(short num);
-	std::string createPackageString(short code, short messageLength, std::string message);
+	static char* shortToCharArray(int num);
+	std::string createPackageString(int code, int messageLength, std::string message);
 	bool trySend(std::string packageString);
 	std::string receiveJsonString();
 

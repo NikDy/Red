@@ -58,7 +58,7 @@ Network_manager::~Network_manager()
 }
 
 
-char* Network_manager::shortToCharArray(short num)
+char* Network_manager::shortToCharArray(int num)
 {
 	char* bytes = new char[4];
 	bytes[0] = num & 0xff;
@@ -69,7 +69,7 @@ char* Network_manager::shortToCharArray(short num)
 }
 
 
-std::string Network_manager::createPackageString(short code, short messageLength, std::string message)
+std::string Network_manager::createPackageString(int code, int messageLength, std::string message)
 {
 	std::string package;
 	package.append(shortToCharArray(code), 4);
@@ -101,11 +101,13 @@ std::string Network_manager::receiveJsonString()
 {
 	ZeroMemory(buf, 4096);
 	int bytesRecived = recv(sock, buf, 4, 0);
+	//std::cout << std::string(buf, 0, bytesRecived) << std::endl;
 	int action_code = pack4chars(buf[0], buf[1], buf[2], buf[3]);
-	//std::cout << action_code << std::endl;
+	//std::cout << "c: " << action_code << std::endl;
 	int responseSize = -1;
 		bytesRecived = recv(sock, buf, 4, 0);
 		responseSize = pack4chars(buf[0], buf[1], buf[2], buf[3]);
+	//std::cout << "s: " << responseSize << std::endl;
 	if (responseSize == 0) return "";
 	bytesRecived = recv(sock, buf, 4096, 0);
 	int totalRecived = 0;
@@ -149,6 +151,7 @@ std::shared_ptr<Game_object> Network_manager::Login(std::vector<std::pair<std::s
 {
 	auto json_string = Json_Parser::toJson(login_data);
 	auto message = Network_manager::createPackageString(1, (short)json_string.length(), json_string);
+	std::cout << message << std::endl;
 	if(!trySend(message)) return nullptr;
 	auto response = receiveJsonString();
 	if (response == "None") return nullptr;
@@ -210,6 +213,7 @@ std::shared_ptr<Game_object> Network_manager::Action(int action_code, std::pair<
 {
 	auto json_string = Json_Parser::toJson(std::vector<std::pair<std::string, std::string>>{key_value_pair});
 	auto message = Network_manager::createPackageString(action_code, (short)json_string.length(), json_string);
+	//std::cout << message << std::endl;
 	//std::cout << message << std::endl;
 	if (!trySend(message)) return false;
 	auto response = receiveJsonString();
