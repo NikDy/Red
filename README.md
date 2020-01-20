@@ -30,7 +30,7 @@ contols:
  S - zoom out
  Arrows - camera movement
  ```
-
+you can change username, zoom and camera speed in config.cfg
 
 
 #### Red team:
