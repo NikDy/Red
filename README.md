@@ -21,6 +21,11 @@ usage run Red.exe in build/bin
 ```
 ```
 contols:
+
+ C - center on graph
+ R - center on home town
+ TAB - center on raitings
+ 
  W - zoom in
  S - zoom out
  Arrows - camera movement
