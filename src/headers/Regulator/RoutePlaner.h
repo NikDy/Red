@@ -50,6 +50,8 @@ private:
 
 	void makeQueue();
 
+	int server_tick_to_update = std::stoi(Data_manager::getInstance().config["server_tick_to_update"]);
+	int game_tick_to_update = std::stoi(Data_manager::getInstance().config["game_tick_to_update"]);
 	int game_stage = std::stoi(Data_manager::getInstance().config["game_stage"]);
 	int max_town_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_town_max"]);
 	int max_train_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_train_max"]);
