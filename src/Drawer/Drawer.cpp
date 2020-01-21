@@ -214,8 +214,8 @@ void Drawer::drawAll()
 		{
 			if (event.type == sf::Event::Closed)
 			{
-				Data_manager::getInstance().logout();
 				window.close();
+				Data_manager::getInstance().logout();
 			}
 		}
 

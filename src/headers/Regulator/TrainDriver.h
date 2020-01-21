@@ -33,6 +33,8 @@ public:
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
 
+	int marketIdx = -1;
+
 	TrainDriver();
 	TrainDriver(int _idx);
 	~TrainDriver();
@@ -47,7 +49,7 @@ private:
 	bool wait = false;
 
 
-	bool isNextLineInRouteAvailable(Graph_Line line, Train& train);
+	bool isNextLineInRouteAvailable(Graph_Line line, Train& train, Graph_Point pointNow);
 	bool checkPoint(Graph_Point point, Train& train, Graph_Line line);
 	bool checkNextPoint(Graph_Point point, Train& train, Graph_Line line);
 	bool checkAndSetRout(Train& train);

@@ -18,7 +18,7 @@ public:
 	~Regulator();
 private:
 	int nextPointWeight(int current_point_idx, int next_point_idx, int train_type);
-	bool checkLine(Graph_Line line, Train& train);
+	bool checkLine(Graph_Line line, Train& train, Graph_Point pointNow);
 	bool checkPoint(Graph_Point point, Train& train, Graph_Line line);
 	int lengthToPoint(Graph_Point point, Train & train);
 	Train nearestTrain(Graph_Line line, Train& train);

@@ -20,14 +20,14 @@ public:
 	RoutePlaner(RoutePlaner const&) = delete;
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 
-	TrainDriver getTrainDriverByIdx(int idx);
+	TrainDriver& getTrainDriverByIdx(int idx);
 	Route getRouteByIdx(int idx);
 	std::map<int, TrainDriver>& getDrivers();
 	void loadDrivers();
 
 	void makeTurn();
 
-
+	int countTrainsInMarket(int point);
 private:
 	Regulator reg;
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
@@ -50,6 +50,8 @@ private:
 
 	void makeQueue();
 
+	int server_tick_to_update = std::stoi(Data_manager::getInstance().config["server_tick_to_update"]);
+	int game_tick_to_update = std::stoi(Data_manager::getInstance().config["game_tick_to_update"]);
 	int game_stage = std::stoi(Data_manager::getInstance().config["game_stage"]);
 	int max_town_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_town_max"]);
 	int max_train_level = std::stoi(Data_manager::getInstance().config["stage_" + std::to_string(game_stage) + "_train_max"]);

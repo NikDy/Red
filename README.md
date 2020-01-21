@@ -21,13 +21,18 @@ usage run Red.exe in build/bin
 ```
 ```
 contols:
+
+ C - center on graph
+ R - center on home town
+ TAB - center on raitings
+ 
  W - zoom in
  S - zoom out
  C - center camera on graph center
  R - center camera on home town
  Arrows - camera movement
  ```
-
+you can change username, zoom and camera speed in config.cfg
 
 
 #### Red team:

@@ -31,8 +31,30 @@ bool Data_manager::login(std::string name, std::string password, std::string gam
 	this->map_layer_01 = std::shared_ptr<Graph>(&map_layer_0_copy);
 	this->map_layer_01->createAdjacencyLists();
 	this->map_layer_10 = getMapLayer10FromServer();
+	waitUntilStart(game);
 	updateThread = std::thread(&Data_manager::updateGame, this);
 	return true;
+}
+
+
+void Data_manager::waitUntilStart(std::string game_name)
+{
+	std::cout << "Wait for other players" << std::endl;
+	while (true)
+	{
+		exist_games = getGamesFromServer();
+		auto it = std::find_if(exist_games->games.begin(), exist_games->games.end(), [&game_name](const Game& obj) {return obj.name == game_name; });
+		if (it != exist_games->games.end())
+		{
+			if (it->state == 2) break;
+		}
+		else
+		{
+			std::cout << "Game was canceled :(" << std::endl;
+			logout();
+			break;
+		}
+	}
 }
 
 
@@ -42,7 +64,9 @@ void Data_manager::logout()
 		std::lock_guard<std::mutex> locker(update_mutex);
 		update_on = false;
 	}
-	updateThread.join();
+	if (updateThread.joinable()) {
+		updateThread.join();
+	}
 	net.Logout();
 }
 
@@ -130,15 +154,12 @@ bool Data_manager::isTown(int point_idx)
 void Data_manager::setLoginData(std::string name, std::string password, std::string game, int num_turns, int num_players)
 {
 	login_data.emplace_back(std::pair<std::string, std::string>("name", name));
-	if (password != "")
-	{
-		login_data.emplace_back(std::pair<std::string, std::string>("password", password));
-	}
+	//login_data.emplace_back(std::pair<std::string, std::string>("password", name));
 	if (game != "")
 	{
 		login_data.emplace_back(std::pair<std::string, std::string>("game", game));
 	}
-	if (num_turns != -1)
+	if (num_turns != 0)
 	{
 		login_data.emplace_back(std::pair<std::string, std::string>("num_turns", std::to_string(num_turns)));
 	}

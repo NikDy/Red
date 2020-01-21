@@ -25,7 +25,7 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& t
 			train.speed = Data_manager::getInstance().getMapLayer0().getLineDirectionByTwoPoints(current, next);
 			if (train.speed == 1) train.position = 0;
 			else train.position = line.lenght;
-			if (current == begin && (checkLine(line, train) == false || checkPoint(points[next], train, line) == false)) {
+			if (current == begin && (checkLine(line, train, points[current]) == false || checkPoint(points[next], train, line) == false)) {
 				continue;
 			}
 			int new_cost;
@@ -144,10 +144,15 @@ int Regulator::wayLength(std::vector<std::pair<int, int>> way)
 	return lenght;
 }
 
-bool Regulator::checkLine(Graph_Line line,Train& train)
+bool Regulator::checkLine(Graph_Line line,Train& train, Graph_Point pointNow)
 {
+	int homeIdx = Data_manager::getInstance().getPlayer().getHome().idx;
 	Train tr = nearestTrain(line, train);
 	if (tr.idx != train.idx) {
+		if (pointNow.idx == homeIdx && tr.speed != train.speed) {
+			int trToPoint = lengthToPoint(pointNow, tr);
+			if (trToPoint <= (line.lenght - 1)) return true;
+		}
 		if (tr.speed != train.speed) return false;
 		/*else {
 			if (train.speed == 1 && tr.position < 2) return false;
@@ -169,6 +174,7 @@ bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 			if (tr.line_idx == line.idx && tr.speed == train.speed) continue;
 			if (tr.getPlayerIdx() == train.getPlayerIdx() && pointNow == homeIdx) return false;
 			int trToPoint = lengthToPoint(point, tr);
+			if ((trainToPoint + 2) < trToPoint) continue;
 			if (tr.getPlayerIdx() == train.getPlayerIdx() && trToPoint <= trainToPoint && trainToPoint > 2) {
 				Route dri =  RoutePlaner::getInstance().getRouteByIdx(tr.idx);
 				if (dri.path_seq.size() == 1) {
