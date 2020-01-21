@@ -7,6 +7,7 @@ TrainDriver& RoutePlaner::getTrainDriverByIdx(int idx)
 	for (auto& driver : drivers) {
 		if (driver.second.getIdx() == idx) return driver.second;
 	}
+	return drivers.begin()->second;
 }
 
 Route RoutePlaner::getRouteByIdx(int idx)
