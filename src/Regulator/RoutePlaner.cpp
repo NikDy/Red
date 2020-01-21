@@ -2,7 +2,7 @@
 
 
 
-TrainDriver RoutePlaner::getTrainDriverByIdx(int idx)
+TrainDriver& RoutePlaner::getTrainDriverByIdx(int idx)
 {
 	for (auto& driver : drivers) {
 		if (driver.second.getIdx() == idx) return driver.second;
@@ -30,6 +30,17 @@ void RoutePlaner::makeTurn()
 {
 	resetTrainsLists();
 	stageAffairs();
+}
+
+int RoutePlaner::countTrainsInMarket(int point)
+{
+	int count = 0;
+	for (auto dr : drivers) {
+		if (dr.second.marketIdx == point) {
+			++count;
+		}
+	}
+	return count;
 }
 
 
@@ -165,7 +176,9 @@ int RoutePlaner::lengthToPoint(Graph_Point point, Train & train)
 std::vector<std::pair<int, int>> RoutePlaner::bestWayToStorage(int begin, Train & train)
 {
 	auto town = Data_manager::getInstance().getPlayer().getTown();
-
+	if (train.goods_type == 2) {
+		return bestWayToHome(begin, train);
+	}
 	routeSeq bestWay = routeSeq();
 	int bestDelta = 10000000;
 	for (auto storage : Data_manager::getInstance().getMapLayer1().getStorages()) {
@@ -276,6 +289,7 @@ routeSeq RoutePlaner::bestWayToHome(int begin, Train& train)
 {
 	train.inMarket = false;
 	train.longway = false;
+	getTrainDriverByIdx(train.idx).marketIdx = -1;
 	return reg.findWay(begin, Data_manager::getInstance().getPlayer().getTown().point_idx, train);
 }
 
@@ -285,9 +299,14 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 
 	routeSeq bestWay = routeSeq();
 	int bestDelta = 10000000;
+	if (train.goods_type == 3) {
+		return bestWayToHome(begin, train);
+	}
+	auto& trainDr = getTrainDriverByIdx(train.idx);
 	for (auto market : Data_manager::getInstance().getMapLayer1().getMarkets()) {
 		if (begin == market.second->point_idx) continue;
 		routeSeq way;
+		if (countTrainsInMarket(market.second->point_idx) * train.goods_capacity > market.second->product_capacity) continue;
 		if(train.goods_type != 2) way = reg.findWay(begin, market.second->point_idx, train, 2);
 		else way = reg.findWay(begin, market.second->point_idx, train);
 		if (way.size() == 0) continue;
@@ -297,6 +316,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 		int possible_to_take = std::min(market.second->product, train.goods_capacity);
 		if (safe_product_capacity - possible_to_take < bestDelta)
 		{
+			trainDr.marketIdx = market.second->point_idx;
 			bestWay = way;
 			bestDelta = safe_product_capacity - possible_to_take;
 		}
@@ -304,6 +324,7 @@ routeSeq RoutePlaner::bestWayToMarket(int begin, Train& train) {
 
 	if (train.goods - train.goods_capacity < reg.wayLength(bestWay) && train.goods != 0)
 	{
+		trainDr.marketIdx = begin;
 		return routeSeq();
 	}
 	else

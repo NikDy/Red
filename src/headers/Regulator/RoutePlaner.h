@@ -20,14 +20,14 @@ public:
 	RoutePlaner(RoutePlaner const&) = delete;
 	RoutePlaner operator=(RoutePlaner const&) = delete;//singleton
 
-	TrainDriver getTrainDriverByIdx(int idx);
+	TrainDriver& getTrainDriverByIdx(int idx);
 	Route getRouteByIdx(int idx);
 	std::map<int, TrainDriver>& getDrivers();
 	void loadDrivers();
 
 	void makeTurn();
 
-
+	int countTrainsInMarket(int point);
 private:
 	Regulator reg;
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
