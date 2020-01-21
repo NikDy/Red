@@ -20,6 +20,7 @@ void Menu::gameSelect()
 	}
 	std::string game_name;
 	int number_of_players = 1;
+	int number_of_ticks = -1;
 	std::cout << "Enter game name to connect or create new game: ";
 	while (true)
 	{
@@ -34,33 +35,13 @@ void Menu::gameSelect()
 		{
 			std::cout << "Enter numer of players: ";
 			std::cin >> number_of_players;
+			std::cout << "Enter numer of ticks: ";
+			std::cin >> number_of_ticks;
 			break;
 		}
 	}
-	if (number_of_players <= 4 && number_of_players > 0)
+	if (number_of_players > 0)
 	{
-		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, -1, number_of_players);
-	}
-	waitUntilStart(game_name);
-}
-
-
-void Menu::waitUntilStart(std::string game_name)
-{
-	std::cout << "Wait for other players" << std::endl;
-	while (true)
-	{
-		exist_games = Data_manager::getInstance().getGamesFromServer();
-		auto it = std::find_if(exist_games->games.begin(), exist_games->games.end(), [&game_name](const Game& obj) {return obj.name == game_name; });
-		if (it != exist_games->games.end())
-		{
-			if (it->state == 2) break;
-		}
-		else
-		{
-			std::cout << "Game was canceled :(" << std::endl;
-			Data_manager::getInstance().logout();
-			break;
-		}
+		Data_manager::getInstance().login(Data_manager::getInstance().config["name"], "", game_name, (int)number_of_ticks, (int)number_of_players);
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Network_manager.h"
+#include "SFML/Network.hpp"
 #include "Game_object.h"
 #include "Graph.h"
 #include "MapLayer1.h"
@@ -33,10 +34,10 @@ public:
 	bool forceTurn();
 
 	Graph& getMapLayer0();
+	MapLayer10& getMapLayer10();
 	Graph& getMapLayer01();
 	MapLayer1& getMapLayer1();
 	Player& getPlayer();
-
 
 	std::shared_ptr<Games> getGamesFromServer();
 
@@ -44,15 +45,17 @@ public:
 	bool update_on = true;
 	~Data_manager();
 	bool turn = false;
-
 	bool stopUpdate = false;
 	int count_Refuges = 0;
 	int last_tick_Refuges = 0;
-
+	int last_tick_ = 0;
 	std::mutex update_mutex;
-
+	int tick = 0;
 	int countOfCol = 0;
 	int maxRating = 0;
+
+	bool isTown(int point_idx);
+	void updateRefuges();
 private:
 	Data_manager() {};
 
@@ -60,18 +63,25 @@ private:
 	std::shared_ptr<Player> player = nullptr;
 	std::shared_ptr<MapLayer1> map_layer_1 = nullptr;
 	std::shared_ptr<Graph> map_layer_0 = nullptr;
+	Graph map_layer_0_copy = Graph("", 0);
 	std::shared_ptr<Graph> map_layer_01 = nullptr;
+	std::shared_ptr<MapLayer10> map_layer_10 = nullptr;
 	Network_manager net;
 	std::vector<std::pair<std::string, std::string>> login_data;
 	void setLoginData(std::string name, std::string password, std::string game, int num_turns, int num_players);
 	std::vector<std::pair<std::string, std::string>> setMoveData(std::string lineIdx, std::string speed, std::string trainIdx);
 	std::shared_ptr<Graph> getMapLayer0FromServer();
+	std::shared_ptr<MapLayer10> getMapLayer10FromServer();
 	std::shared_ptr<MapLayer1> getMapLayer1FromServer();
 	std::shared_ptr<Player> getPlayerFromServer();
+	std::vector<int> townsIdx;
 	std::thread updateThread;
 	void updateGame();
-	void updateRefuges();
 	std::condition_variable update_check;
+	void waitUntilStart(std::string game_name);
 	void markPoints();
+	void takeTownsIdx();
+
+	std::shared_ptr<Games> exist_games;
 };
 

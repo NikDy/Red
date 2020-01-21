@@ -18,10 +18,10 @@ Route::~Route()
 
 void Route::buildPathQueue(std::vector<std::pair<int, int>> points_n_weigths)
 {
+	route_lenght = points_n_weigths.back().second;
 	for (auto point = points_n_weigths.begin(); point != points_n_weigths.end(); point++)
 	{
 		path_seq.push_back(point->first);
-		route_lenght += point->second;
 	}
 }
 
@@ -37,6 +37,11 @@ void Route::showRoute() {
 
 void Route::pathPop()
 {
+	if (path_seq.size() >= 2) {
+		Graph_Line line = Data_manager::getInstance().getMapLayer0().getLineByTwoPoints(path_seq[0], path_seq[1]);
+		route_lenght -= line.lenght;
+	}
+	else route_lenght = 0;
 	path_seq.erase(path_seq.begin());
 }
 

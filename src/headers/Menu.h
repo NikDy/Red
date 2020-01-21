@@ -20,6 +20,7 @@ public:
 
 private:
 	std::shared_ptr<Games> exist_games;
+
 	void waitUntilStart(std::string);
 
 	Menu() {};
