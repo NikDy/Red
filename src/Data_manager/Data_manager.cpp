@@ -64,6 +64,7 @@ void Data_manager::logout()
 		std::lock_guard<std::mutex> locker(update_mutex);
 		update_on = false;
 	}
+	system("pause");
 	if (updateThread.joinable()) {
 		updateThread.join();
 	}
@@ -84,7 +85,7 @@ void Data_manager::logout()
 
 bool Data_manager::makeMove(int trainIdx, int lineIdx, int speed)
 {
-	return net.Action(3, setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx))) != nullptr;
+	return net.makeMove(setMoveData(std::to_string(lineIdx), std::to_string(speed), std::to_string(trainIdx)));
 }
 
 
@@ -137,7 +138,6 @@ bool Data_manager::forceTurn()
 	std::lock_guard<std::mutex> locker(update_mutex);
 	turn = true;
 	while(net.forceTurn(std::pair<std::string, std::string>("", "")) == false);
-
 	update_check.notify_one();
 
 	return true;
@@ -215,7 +215,7 @@ void Data_manager::updateGame()
 	while (update_on) 
 	{
 		std::unique_lock<std::mutex> locker(update_mutex);
-		update_check.wait_for(locker, std::chrono::seconds(20), [&]() {return (this->turn); });
+		update_check.wait_for(locker, std::chrono::seconds(30), [&]() {return (this->turn); });
 		map_layer_1 = getMapLayer1FromServer();
 		map_layer_0 = std::make_shared<Graph>(getMapLayer01());
 		player = getPlayerFromServer();
@@ -254,14 +254,14 @@ void Data_manager::markPoints()
 			}
 		}
 		else if (train.second.speed == 0) {
-			if (train.second.position == 0) {
+			if (train.second.position == 0 && isTown(line.points.first) == false) {
 				points[line.points.first].trains.push_back(train.second);
 				for (auto point : points[line.points.first].adjacency_list) {
 					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.first, point);
 					if (nextLine.idx != line.idx && nextLine.lenght == 1 && isTown(point) == false) points[point].trains.push_back(train.second);
 				}
 			}
-			else if (train.second.position == line.lenght) {
+			else if (train.second.position == line.lenght && isTown(line.points.second) == false) {
 				points[line.points.second].trains.push_back(train.second);
 				for (auto point : points[line.points.second].adjacency_list) {
 					Graph_Line nextLine = map_layer_0->getLineByTwoPoints(line.points.second, point);

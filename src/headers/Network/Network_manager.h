@@ -46,6 +46,7 @@ public:
 		INTERNAL_SERVER_ERROR = 500
 	};
 	bool forceTurn(std::pair<std::string, std::string> key_value_pairs);
+	bool makeMove(std::vector<std::pair<std::string, std::string>> key_value_pairs);
 	std::shared_ptr<Game_object> Login(std::vector<std::pair<std::string, std::string>> login_data);
 	std::shared_ptr<Game_object> Action(int action_code, std::vector<std::pair<std::string, std::string>> key_value_pairs);
 	std::shared_ptr<Game_object> Action(int action_code, std::pair<std::string, std::string> key_value_pairs);

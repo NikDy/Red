@@ -5,15 +5,14 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& t
 {
 	auto& Graph = Data_manager::getInstance().getMapLayer0();
 	auto& points = Graph.getPoints();
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-	auto& storages = Data_manager::getInstance().getMapLayer1().getStorages();
+
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::less<std::pair<int, int>>> frontier;
 	frontier.emplace(std::pair<int, int>(Graph.getPoints()[begin].idx, 0));
 	std::unordered_map<int, int> came_from;
 	came_from[begin] = begin;
 	std::unordered_map<int, int> cost_so_far;
 	cost_so_far[begin] = 0;
-
+	int i = 1;
 	while (!frontier.empty())
 	{
 		auto current = frontier.top().first;
@@ -37,16 +36,16 @@ std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, Train& t
 			{
 				continue;
 			}
-
 			if (!cost_so_far.count(next) || new_cost < cost_so_far[next])
 			{
 				cost_so_far[next] = new_cost;
 				came_from[next] = current;
 				frontier.emplace(std::pair<int, int>(next, new_cost));
 			}
+			i++;
 		}
 	}
-	std::vector<std::pair<int, int>> path;
+	std::vector<std::pair<int, int>> path = std::vector<std::pair<int, int>>();
 	auto current = end;
 	if (came_from.find(current) == came_from.end()) return path;
 	path.push_back(std::make_pair(current, cost_so_far[current]));
@@ -66,14 +65,14 @@ int Regulator::nextPointWeight(int current_point_idx, int next_point_idx, int tr
 	auto markets = Data_manager::getInstance().getMapLayer1().getMarkets();
 	auto storages = Data_manager::getInstance().getMapLayer1().getStorages();
 	if (train_type == 1) {
-		for (auto& market : markets) {
+		for (auto market : markets) {
 			if (next_point_idx == market.second->point_idx) {
 				return -1;
 			}
 		}
 	}
 	else if (train_type == 2) {
-		for (auto& storage : storages) {
+		for (auto storage : storages) {
 			if (next_point_idx == storage.second->point_idx) {
 				return -1;
 			}
@@ -87,9 +86,6 @@ int Regulator::nextPointWeight(int current_point_idx, int next_point_idx, int tr
 std::vector<std::pair<int, int>> Regulator::findWay(int begin, int end, int type)
 {
 	auto& Graph = Data_manager::getInstance().getMapLayer0();
-	auto& points = Graph.getPoints();
-	auto& markets = Data_manager::getInstance().getMapLayer1().getMarkets();
-	auto& storages = Data_manager::getInstance().getMapLayer1().getStorages();
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::less<std::pair<int, int>>> frontier;
 	frontier.emplace(std::pair<int, int>(Graph.getPoints()[begin].idx, 0));
 	std::unordered_map<int, int> came_from;
@@ -151,7 +147,7 @@ bool Regulator::checkLine(Graph_Line line,Train& train, Graph_Point pointNow)
 	if (tr.idx != train.idx) {
 		if (pointNow.idx == homeIdx && tr.speed != train.speed) {
 			int trToPoint = lengthToPoint(pointNow, tr);
-			if (trToPoint <= (line.lenght - 1)) return true;
+			if (trToPoint <= (line.lenght)) return true;
 		}
 		if (tr.speed != train.speed) return false;
 		/*else {
@@ -166,37 +162,47 @@ bool Regulator::checkPoint(Graph_Point point, Train& train, Graph_Line line)
 {
 	int trainToPoint = line.lenght;
 	int pointNow = 0;
-	int homeIdx = Data_manager::getInstance().getPlayer().getHome().idx;
 	if (point.idx == line.points.first) pointNow = line.points.second;
 	else pointNow = line.points.first;
-	for (auto tr : point.trains) {
-		if (tr.idx != train.idx) {
-			if (tr.line_idx == line.idx && tr.speed == train.speed) continue;
-			if (tr.getPlayerIdx() == train.getPlayerIdx() && pointNow == homeIdx) return false;
-			int trToPoint = lengthToPoint(point, tr);
-			if ((trainToPoint + 2) < trToPoint) continue;
-			if (tr.getPlayerIdx() == train.getPlayerIdx() && trToPoint <= trainToPoint && trainToPoint > 2) {
-				Route dri =  RoutePlaner::getInstance().getRouteByIdx(tr.idx);
-				if (dri.path_seq.size() == 1) {
-					if (dri.path_seq[0] == pointNow) {
-						return false;
+		for (auto tr : point.trains) {
+			if (tr.idx != train.idx) {
+				int trToPoint = lengthToPoint(point, tr);
+				if (tr.line_idx == line.idx && tr.speed == train.speed) {
+					if (tr.getPlayerIdx() == train.getPlayerIdx()) {
+						Route dri = RoutePlaner::getInstance().getRouteByIdx(tr.idx);
+						if (dri.path_seq.size() == 0 && trToPoint == 0 && tr.goods != 0) {
+							return false;
+						}
+						else if (dri.path_seq.size() == 1 && trToPoint <= trainToPoint) {
+							return false;
+						}
+						continue;
 					}
 					else continue;
 				}
-				else if (dri.path_seq.size() >= 2) {
-					if (dri.path_seq[0] == pointNow || dri.path_seq[1] == pointNow) {
-						return false;
+				//if (tr.getPlayerIdx() == train.getPlayerIdx() && pointNow == homeIdx) return false;
+				if ((trainToPoint + 1) < trToPoint) continue;
+				if (tr.getPlayerIdx() == train.getPlayerIdx() && trToPoint <= trainToPoint && trainToPoint > 2) {
+					Route dri = RoutePlaner::getInstance().getRouteByIdx(tr.idx);
+					if (dri.path_seq.size() == 1) {
+						if (dri.path_seq[0] == pointNow) {
+							return false;
+						}
+						else continue;
+					}
+					else if (dri.path_seq.size() >= 2) {
+						if (dri.path_seq[0] == pointNow || dri.path_seq[1] == pointNow) {
+							return false;
+						}
+						else continue;
 					}
 					else continue;
 				}
-				else continue;
+				if (trToPoint == 0 && line.lenght != 1 && train.getPlayerIdx() != tr.getPlayerIdx()) continue;
+				//if (trToPoint == 0 && tr.getPlayerIdx() == train.getPlayerIdx()) continue;
+				return false;
 			}
-			if (trToPoint == 0 && line.lenght != 1 && train.getPlayerIdx() != tr.getPlayerIdx()) continue;
-			//if (trToPoint == 0 && tr.getPlayerIdx() == train.getPlayerIdx()) continue;
-
-			return false;
 		}
-	}
 	return true;
 }
 

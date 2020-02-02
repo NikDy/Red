@@ -25,7 +25,7 @@ public:
 	std::map<int, std::shared_ptr<Town>>& getTowns();
 	std::map<int, std::shared_ptr<Storage>>& getStorages();
 	std::map<int, std::shared_ptr<Market>>& getMarkets();
-	Train getTrainByIdx(const int& idx);
+	Train getTrainByIdx(const int& idx_);
 	const std::type_info& getObjectType();
 	std::shared_ptr<Game_object> getObjectPtr();
 	~MapLayer1();

@@ -108,9 +108,9 @@ int Graph::getLineDirectionByTwoPoints(int first, int second)
 }
 
 
-Graph_Line Graph::getLineByIdx(const int& idx) {
+Graph_Line Graph::getLineByIdx(const int& idx_) {
 	for (auto line : lines) {
-		if (line.second.idx == idx) {
+		if (line.second.idx == idx_) {
 			return line.second;
 		}
 	}

@@ -3,12 +3,12 @@
 
 Drawer::Drawer()
 {
-	font.loadFromFile(Data_manager::getInstance().config["font"]);
-	market_texture.loadFromFile(Data_manager::getInstance().config["market_texture"]);
-	storage_texture.loadFromFile(Data_manager::getInstance().config["storage_texture"]);
-	town_texture.loadFromFile(Data_manager::getInstance().config["town_texture"]);
-	train_texture.loadFromFile(Data_manager::getInstance().config["train_texture"]);
-	enemy_texture.loadFromFile(Data_manager::getInstance().config["enemy_texture"]);
+		font.loadFromFile(Data_manager::getInstance().config["font"]);
+		market_texture.loadFromFile(Data_manager::getInstance().config["market_texture"]);
+		storage_texture.loadFromFile(Data_manager::getInstance().config["storage_texture"]);
+		town_texture.loadFromFile(Data_manager::getInstance().config["town_texture"]);
+		train_texture.loadFromFile(Data_manager::getInstance().config["train_texture"]);
+		enemy_texture.loadFromFile(Data_manager::getInstance().config["enemy_texture"]);
 }
 
 

@@ -95,9 +95,9 @@ bool MapLayer1::addStorage(std::shared_ptr<Game_object> post)
 	return storages.emplace(storage_->point_idx, storage_).second;
 }
 
-Train MapLayer1::getTrainByIdx(const int& idx) {
+Train MapLayer1::getTrainByIdx(const int& idx_) {
 	for (auto train : trains) {
-		if (train.second.getIdx() == idx) {
+		if (train.second.getIdx() == idx_) {
 			return train.second;
 		}
 	}

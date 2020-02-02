@@ -33,7 +33,7 @@ public:
 	bool waitForOrder = true;
 	int goodsType = 0; //0 - wait for order, 1 - food, 2 - armor
 
-	int marketIdx = -1;
+	int postIdx = -1;
 
 	TrainDriver();
 	TrainDriver(int _idx);

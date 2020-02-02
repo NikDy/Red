@@ -27,7 +27,7 @@ public:
 
 	void makeTurn();
 
-	int countTrainsInMarket(int point);
+	int countTrainsInPoint(int point);
 private:
 	Regulator reg;
 	int getPointIdxByLineAndPosition(Graph_Line line, int pos);
